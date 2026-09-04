@@ -16,6 +16,7 @@ export function showMatch(digest, world, { instant = false } = {}) {
     const homeClub = world.clubs[result.homeClubId] || world.europeClubs?.[result.homeClubId];
     const awayClub = world.clubs[result.awayClubId] || world.europeClubs?.[result.awayClubId];
     const lines = buildCommentary(result, game.rng, homeClub, awayClub);
+    const yourClubId = world.playerClubId;
 
     const host = document.getElementById('overlays');
     let cancelled = false;
@@ -41,7 +42,7 @@ export function showMatch(digest, world, { instant = false } = {}) {
       // Make sure every line is present when skipping.
       if (feed.childElementCount < lines.length) {
         clear(feed);
-        for (const line of lines) feed.appendChild(commentaryLine(line));
+        for (const line of lines) feed.appendChild(commentaryLine(line, yourClubId));
         feed.scrollTop = feed.scrollHeight;
       }
     };
@@ -93,7 +94,7 @@ export function showMatch(digest, world, { instant = false } = {}) {
       if (i >= lines.length) { finish(); return; }
       const line = lines[i++];
 
-      feed.appendChild(commentaryLine(line));
+      feed.appendChild(commentaryLine(line, yourClubId));
       feed.scrollTop = feed.scrollHeight;
       clockEl.textContent = minuteLabel(line.minute) || "0'";
 
@@ -111,8 +112,10 @@ export function showMatch(digest, world, { instant = false } = {}) {
   });
 }
 
-function commentaryLine(line) {
-  return h('div', { class: `commentary-line ${line.type}${line.major ? ' major' : ''}` },
+function commentaryLine(line, yourClubId) {
+  // A goal for you and a goal against you must not look the same at a glance.
+  const side = line.clubId == null ? '' : line.clubId === yourClubId ? ' ours' : ' theirs';
+  return h('div', { class: `commentary-line ${line.type}${line.major ? ' major' : ''}${side}` },
     h('span', { class: 'minute' }, minuteLabel(line.minute)),
     h('span', { class: 'text' }, line.text),
   );

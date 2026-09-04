@@ -51,26 +51,57 @@ export function mount(el, ...children) {
 export const $ = (sel, root = document) => root.querySelector(sel);
 export const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 
-// Relative luminance, for deciding whether a kit colour will actually be visible.
-function luminance(hex) {
+function toRgb(hex) {
   const m = /^#?([0-9a-f]{6})$/i.exec(hex || '');
-  if (!m) return 0.5;
+  if (!m) return null;
   const n = parseInt(m[1], 16);
-  const channel = (c) => {
-    const v = c / 255;
-    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
-  };
-  return 0.2126 * channel((n >> 16) & 255) + 0.7152 * channel((n >> 8) & 255) + 0.0722 * channel(n & 255);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 }
 
-// Several real clubs play in black or near-black, which disappears entirely against
-// this interface's ground. Where that happens, lead with the second kit colour so
-// the club is still identifiable.
+function toHsl([r, g, b]) {
+  r /= 255; g /= 255; b /= 255;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const l = (max + min) / 2;
+  if (max === min) return [0, 0, l];
+  const d = max - min;
+  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+  let hue;
+  if (max === r) hue = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+  else if (max === g) hue = ((b - r) / d + 2) / 6;
+  else hue = ((r - g) / d + 4) / 6;
+  return [hue, s, l];
+}
+
+function hslToHex(h, s, l) {
+  const f = (n) => {
+    const k = (n + h * 12) % 12;
+    const a = s * Math.min(l, 1 - l);
+    const v = l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1));
+    return Math.round(v * 255).toString(16).padStart(2, '0');
+  };
+  return `#${f(0)}${f(8)}${f(4)}`;
+}
+
+// Many real clubs play in navy, maroon or black, which all but vanish against this
+// interface's near-black ground.
+//
+// Raising lightness while keeping the hue is better than swapping in the second kit
+// colour: Chelsea stay blue and Burnley stay claret, just readable. Only genuinely
+// achromatic kits — the true blacks — fall back to the secondary, because there is no
+// hue there to brighten.
 export function visibleColours(colors = {}) {
   const primary = colors.primary || '#8A94A6';
   const secondary = colors.secondary || '#4A554F';
-  if (luminance(primary) < 0.045 && luminance(secondary) > luminance(primary)) {
+  const rgb = toRgb(primary);
+  if (!rgb) return { primary, secondary };
+
+  const [h, sat, light] = toHsl(rgb);
+  if (sat < 0.15 && light < 0.28) {
     return { primary: secondary, secondary: primary };
+  }
+  if (light < 0.4) {
+    return { primary: hslToHex(h, Math.max(sat, 0.55), 0.46), secondary };
   }
   return { primary, secondary };
 }

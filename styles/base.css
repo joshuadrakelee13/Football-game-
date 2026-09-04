@@ -26,12 +26,15 @@ h1, h2, h3, h4 {
   line-height: 1.15;
 }
 
-/* Broadcast graphics speak in condensed uppercase; so do the section labels. */
+/* Broadcast graphics speak in condensed uppercase; so do the section labels.
+   Wide tracking swallows the word gap unless word-spacing is opened up to match,
+   which is what stops "BANK BALANCE" reading as "BAN K BALANCE". */
 .eyebrow {
   font-family: var(--font-display);
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.14em;
+  word-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--text-3);
   font-stretch: 105%;

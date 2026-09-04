@@ -2,7 +2,7 @@
 
 import { h, clubChip, formGuide, meter, panel, emptyState } from './dom.js';
 import { money, compact, ordinal, seasonLabel, matchDate, num } from '../core/format.js';
-import { playerClub, fixtureForClubOnMatchday } from '../model/world.js';
+import { playerClub, fixtureForClubOnMatchday, upcomingFixtures } from '../model/world.js';
 import { DIVISION_BY_TIER } from '../data/competitions.js';
 import { squadRating, squadMorale, weeklyWages, overallStrength } from '../model/club.js';
 import { standings } from '../engine/league.js';
@@ -17,6 +17,10 @@ export function renderOverview(world) {
   const div = DIVISION_BY_TIER[you.tier];
   const next = playerFixture(world);
   const md = currentMatchday(world);
+  // The player will not have a game on every matchday: cup rounds they are not in and
+  // European nights both leave gaps. Look ahead so the dashboard can still show what
+  // is coming rather than claiming the season is over.
+  const upcoming = next ? null : upcomingFixtures(world, you.id, 1)[0];
 
   return h('div', { class: 'stagger' },
     h('div', { class: 'screen-title' },
@@ -24,7 +28,7 @@ export function renderOverview(world) {
       h('span', { class: 'sub' }, `${div.name} · Season ${world.seasonNumber} · ${seasonLabel(world.startYear)}`),
     ),
 
-    nextMatchHero(world, you, next, md),
+    nextMatchHero(world, you, next, md, upcoming),
     objectiveStrip(world),
 
     h('div', { class: 'grid split' },
@@ -42,14 +46,34 @@ export function renderOverview(world) {
 
 // ---------------------------------------------------------------------------
 
-function nextMatchHero(world, you, next, md) {
-  if (!next) {
+function nextMatchHero(world, you, next, md, upcoming) {
+  // Nothing now and nothing ahead: the season really is done.
+  if (!next && !upcoming) {
     return h('div', { class: 'hero' },
       h('div', { class: 'eyebrow' }, 'Season complete'),
       h('h2', { style: { fontSize: '22px', marginTop: '6px' } }, 'All fixtures played'),
       h('p', { style: { color: 'var(--text-3)', margin: '8px 0 16px' } },
         'Wrap the season up to see the final tables, prize money and who goes up.'),
       h('button', { class: 'btn primary lg', onclick: () => advance('quick') }, 'End the season'),
+    );
+  }
+
+  // No game today, but one is coming. Offer to play the rest of the world forward.
+  if (!next && upcoming) {
+    const isHome = upcoming.home === you.id;
+    const opponentId = isHome ? upcoming.away : upcoming.home;
+    const opponent = world.clubs[opponentId] || world.europeClubs?.[opponentId];
+    const compLabel = competitionLabel(upcoming, upcoming.matchday, world);
+    return h('div', { class: 'hero' },
+      h('div', { class: 'eyebrow' }, `No fixture today · ${md ? matchDate(md.day, world.startYear) : ''}`),
+      h('h2', { style: { fontSize: '20px', marginTop: '8px' } },
+        `Next up: ${isHome ? '' : 'away at '}${opponent?.short || 'TBC'}`),
+      h('p', { style: { color: 'var(--text-3)', margin: '6px 0 16px', fontSize: '13px' } },
+        `${compLabel} · ${matchDate(upcoming.matchday.day, world.startYear)}`),
+      h('div', { style: { display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' } },
+        h('button', { class: 'btn primary lg', onclick: () => simToNextFixture() }, 'Advance to the match'),
+        h('button', { class: 'btn', onclick: () => advance('quick') }, 'Advance one matchday'),
+      ),
     );
   }
 

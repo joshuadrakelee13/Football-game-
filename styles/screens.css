@@ -86,6 +86,13 @@
 .objective-row .desc { color: var(--text-3); font-size: 12px; }
 .objective-row .meter { width: 120px; flex: none; }
 
+/* Below this the meter crowds the text, so stack instead of squeezing. */
+@media (max-width: 620px) {
+  .objective-row { flex-wrap: wrap; }
+  .objective-row .text { flex-basis: 100%; }
+  .objective-row .meter { width: 100%; }
+}
+
 .result-row {
   display: flex;
   align-items: center;
@@ -232,7 +239,15 @@
   padding-top: 1px;
 }
 .commentary-line.major { color: var(--text); font-weight: 500; }
-.commentary-line.goal .text { color: var(--pitch); font-weight: 600; }
+/* Your goals in the accent colour, theirs in a neutral one. Reading the feed should
+   tell you whether something good just happened without parsing the sentence. */
+.commentary-line.goal .text { font-weight: 600; }
+.commentary-line.goal.ours .text { color: var(--pitch); }
+.commentary-line.goal.theirs .text { color: var(--text); }
+.commentary-line.goal.theirs { background: rgba(255, 90, 90, 0.045); }
+.commentary-line.goal.ours { background: rgba(91, 228, 155, 0.05); }
+.commentary-line.penalty_missed.ours .text { color: var(--danger); }
+.commentary-line.penalty_missed.theirs .text { color: var(--pitch); }
 .commentary-line.red_card .text, .commentary-line.penalty_missed .text { color: var(--danger); }
 .commentary-line.woodwork .text { color: var(--warn); }
 .commentary-line.full_time .text, .commentary-line.half_time .text {
@@ -263,6 +278,7 @@
   font-family: var(--font-display);
   font-size: 9px;
   letter-spacing: 0.13em;
+  word-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--text-3);
   font-weight: 600;
@@ -366,6 +382,7 @@
   color: var(--text-faint);
   font-family: var(--font-display);
   letter-spacing: 0.1em;
+  word-spacing: 0.2em;
   line-height: 1.2;
 }
 .pitch-slot.out-of-position .shirt { border-color: var(--warn); color: var(--warn); }

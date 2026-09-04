@@ -44,9 +44,9 @@ export const DIVISIONS = [
     autoPromoted: 2,
     playoffPlaces: [3, 4, 5, 6],
     relegated: 4,
-    prizeBase: 900_000,
-    prizePerPlace: 40_000,
-    sponsorBase: 520_000,
+    prizeBase: 620_000,
+    prizePerPlace: 30_000,
+    sponsorBase: 360_000,
     ticketPrice: 22,
   },
   {
@@ -58,9 +58,9 @@ export const DIVISIONS = [
     autoPromoted: 3,
     playoffPlaces: [4, 5, 6, 7],
     relegated: 2,
-    prizeBase: 600_000,
-    prizePerPlace: 25_000,
-    sponsorBase: 260_000,
+    prizeBase: 380_000,
+    prizePerPlace: 18_000,
+    sponsorBase: 150_000,
     ticketPrice: 18,
   },
   {
@@ -72,9 +72,9 @@ export const DIVISIONS = [
     autoPromoted: 1,
     playoffPlaces: [2, 3, 4, 5, 6, 7],
     relegated: 0,
-    prizeBase: 180_000,
-    prizePerPlace: 8_000,
-    sponsorBase: 90_000,
+    prizeBase: 120_000,
+    prizePerPlace: 5_000,
+    sponsorBase: 60_000,
     ticketPrice: 14,
   },
 ];
@@ -118,7 +118,7 @@ export const CUPS = {
     short: 'Carabao Cup',
     entries: [
       { round: 0, tiers: [1, 2, 3] },
-      { round: 2, tiers: [0] },
+      { round: 1, tiers: [0] },
     ],
     twoLegged: [],
     prizes: [25_000, 40_000, 80_000, 200_000, 500_000, 1_200_000, 2_500_000],
@@ -200,8 +200,21 @@ export function leaguePrize(tier, position) {
   return d.prizeBase + (d.clubs + 1 - position) * d.prizePerPlace;
 }
 
-// Knockout rounds are named by how many clubs remain, so the same code handles
-// any field size (the FA Cup's 62-club third round included).
+// Early rounds are named by their ordinal position and the last three by how many
+// clubs are left. A pure count-based name cannot tell the FA Cup's 36-club second
+// round from its 62-club third round; the round index can.
+const ORDINAL_ROUNDS = ['First round', 'Second round', 'Third round', 'Fourth round', 'Fifth round', 'Sixth round'];
+
+export function cupRoundLabel(roundIndex, clubsRemaining) {
+  if (clubsRemaining <= 8) return roundName(clubsRemaining);
+  return ORDINAL_ROUNDS[roundIndex] || `Round ${roundIndex + 1}`;
+}
+
+export function cupRoundShort(roundIndex, clubsRemaining) {
+  if (clubsRemaining <= 8) return shortRoundName(clubsRemaining);
+  return 'R' + (roundIndex + 1);
+}
+
 export function roundName(clubsRemaining) {
   if (clubsRemaining <= 2) return 'Final';
   if (clubsRemaining <= 4) return 'Semi-final';

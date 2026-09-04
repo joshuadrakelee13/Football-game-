@@ -84,12 +84,14 @@ export function createClub(rng, base, { isPlayerClub = false, ratingTarget = nul
   const wageBill = weeklyWages(club);
   if (isPlayerClub) {
     club.balance = 100_000;
+    club.transferBudget = 100_000;
     club.wageBudget = 10_000;
     club.stadiumCapacity = 2000;
     club.fans = 1000;
   } else {
     // AI clubs run on roughly a season of headroom, scaled by division.
     club.balance = Math.round(div.prizeBase * (0.10 + prestige / 500) + wageBill * 4);
+    club.transferBudget = Math.round(club.balance * 0.5);
     club.wageBudget = Math.round(wageBill * 1.18);
   }
 

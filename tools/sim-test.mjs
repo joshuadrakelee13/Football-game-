@@ -25,6 +25,7 @@ const SQUAD_PAIRS = 24;
 function runSeries(gap, n) {
   const rng = new Rng(1234 + gap);
   let hw = 0, d = 0, aw = 0, hg = 0, ag = 0, shots = 0, onT = 0, reds = 0;
+  let hostGoals = 0, guestGoals = 0;
   let realisedGap = 0;
   const perPair = Math.max(1, Math.round(n / SQUAD_PAIRS));
   let played = 0;
@@ -38,11 +39,23 @@ function runSeries(gap, n) {
       // Reset condition each match so fatigue does not accumulate across the series.
       for (const c of [home, away]) for (const p of c.squad) { p.fitness = 95; p.morale = 70; p.form = 0; p.injuredFor = 0; }
       c_reset(home); c_reset(away);
-      const m = simulateMatch(home, away, rng, { competition: 'LEAGUE' });
-      if (m.homeGoals > m.awayGoals) hw++;
-      else if (m.homeGoals === m.awayGoals) d++;
+
+      // Alternate the venue across the same two squads. Without this, any bias in
+      // squad generation reads as home advantage and the measurement is worthless.
+      const swap = i % 2 === 1;
+      const hostClub = swap ? away : home;
+      const guestClub = swap ? home : away;
+      const m = simulateMatch(hostClub, guestClub, rng, { competition: 'LEAGUE' });
+
+      // Report from the stronger side's point of view so the gap columns stay readable,
+      // but accumulate the goal split by venue so home advantage is isolated.
+      hostGoals += m.homeGoals; guestGoals += m.awayGoals;
+      const favouriteGoals = swap ? m.awayGoals : m.homeGoals;
+      const underdogGoals = swap ? m.homeGoals : m.awayGoals;
+      if (favouriteGoals > underdogGoals) hw++;
+      else if (favouriteGoals === underdogGoals) d++;
       else aw++;
-      hg += m.homeGoals; ag += m.awayGoals;
+      hg += favouriteGoals; ag += underdogGoals;
       shots += m.stats.shots[0] + m.stats.shots[1];
       onT += m.stats.onTarget[0] + m.stats.onTarget[1];
       reds += m.stats.reds[0] + m.stats.reds[1];
@@ -55,6 +68,7 @@ function runSeries(gap, n) {
     homeWin: (hw / played) * 100, draw: (d / played) * 100, awayWin: (aw / played) * 100,
     goalsPerGame: (hg + ag) / played,
     homeGoals: hg / played, awayGoals: ag / played,
+    hostGoals: hostGoals / played, guestGoals: guestGoals / played,
     shotsPerGame: shots / played, onTargetPerGame: onT / played,
     redsPerGame: reds / played,
   };
@@ -68,13 +82,13 @@ function c_reset(club) {
 const results = [0, 5, 10, 15, 20, 30].map((gap) => runSeries(gap, N));
 
 console.log(`\nMatch engine balance  (${N} matches per row)\n`);
-console.log('  gap  real   home%   draw%   away%   goals   H-A goals    shots   on tgt');
+console.log('  gap  real    fav%   draw%   dog%   goals   host-guest    shots   on tgt');
 console.log('  ' + '-'.repeat(72));
 for (const r of results) {
   console.log(
     `  ${String(r.gap).padStart(3)}  ${r.realisedGap.toFixed(1).padStart(4)}   ` +
     `${r.homeWin.toFixed(1).padStart(5)}   ${r.draw.toFixed(1).padStart(5)}   ${r.awayWin.toFixed(1).padStart(5)}   ` +
-    `${r.goalsPerGame.toFixed(2).padStart(5)}   ${r.homeGoals.toFixed(2)}-${r.awayGoals.toFixed(2)}    ` +
+    `${r.goalsPerGame.toFixed(2).padStart(5)}   ${r.hostGoals.toFixed(2)}-${r.guestGoals.toFixed(2)}      ` +
     `${r.shotsPerGame.toFixed(1).padStart(5)}   ${r.onTargetPerGame.toFixed(1).padStart(5)}`
   );
 }
@@ -86,9 +100,16 @@ const big = results[3];   // 15-point gap
 const huge = results[5];  // 30-point gap
 
 checks.push(['goals per game in 2.4-3.2', even.goalsPerGame >= 2.4 && even.goalsPerGame <= 3.2, even.goalsPerGame.toFixed(2)]);
-checks.push(['home win 40-50% at parity', even.homeWin >= 40 && even.homeWin <= 50, even.homeWin.toFixed(1) + '%']);
+// With the venue swapped every other match, an evenly matched pair should split the
+// wins almost exactly and draw the rest. Which side is labelled "favourite" at a zero
+// gap is arbitrary, so the meaningful test is that the two are close and both land in
+// the band a 23% draw rate leaves room for.
+const parityGap = Math.abs(even.homeWin - even.awayWin);
+checks.push(['parity: both sides win 34-42%', even.homeWin >= 34 && even.homeWin <= 42 && even.awayWin >= 34 && even.awayWin <= 42, `${even.homeWin.toFixed(1)}% / ${even.awayWin.toFixed(1)}%`]);
+checks.push(['parity: win rates within 4 points', parityGap <= 4, parityGap.toFixed(1) + ' pts apart']);
 checks.push(['draws 20-30% at parity', even.draw >= 20 && even.draw <= 30, even.draw.toFixed(1) + '%']);
-checks.push(['home advantage worth 0.2-0.5 goals', even.homeGoals - even.awayGoals >= 0.2 && even.homeGoals - even.awayGoals <= 0.5, (even.homeGoals - even.awayGoals).toFixed(2)]);
+const homeEdge = even.hostGoals - even.guestGoals;
+checks.push(['home advantage worth 0.2-0.5 goals', homeEdge >= 0.2 && homeEdge <= 0.5, homeEdge.toFixed(2)]);
 checks.push(['shots per game 20-30', even.shotsPerGame >= 20 && even.shotsPerGame <= 30, even.shotsPerGame.toFixed(1)]);
 checks.push(['favourite wins 60-80% at 15-pt gap', big.homeWin >= 60 && big.homeWin <= 80, big.homeWin.toFixed(1) + '%']);
 checks.push(['underdog still wins >=10% at 15-pt gap', big.awayWin >= 10, big.awayWin.toFixed(1) + '%']);

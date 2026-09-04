@@ -17,9 +17,11 @@ export const TUNING = {
   strengthExponent: 2.15,      // how sharply shot volume responds to a rating edge
   onTargetBase: 0.355,         // share of shots that hit the target
   conversionBase: 0.272,       // share of on-target shots that beat the keeper
-  homeAttack: 1.062,
-  homeDefence: 1.028,
-  formSd: 0.120,               // per-match variance: the "any given Saturday" factor
+  // These look big, but the attack-vs-defence ratio damps them sharply: together
+  // they are worth about a quarter of a goal, which is real football's home edge.
+  homeAttack: 1.160,
+  homeDefence: 1.075,
+  formSd: 0.130,               // per-match variance: the "any given Saturday" factor
   yellowPerTeam: 1.5,
   redChance: 0.010,            // straight red
   secondYellowRed: 0.4,        // a booked player who fouls again does not always walk

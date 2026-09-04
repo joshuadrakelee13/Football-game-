@@ -1,0 +1,15 @@
+{
+  "name": "football-club-tycoon",
+  "version": "1.0.0",
+  "description": "A football club management tycoon game. Take a tiny club from League Two to the Premier League.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "node tools/serve.mjs",
+    "test": "node tools/sim-test.mjs && node tools/season-test.mjs && node tools/balance-test.mjs",
+    "test:sim": "node tools/sim-test.mjs",
+    "test:season": "node tools/season-test.mjs",
+    "test:balance": "node tools/balance-test.mjs"
+  },
+  "engines": { "node": ">=18" }
+}

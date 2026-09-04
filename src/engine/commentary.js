@@ -7,8 +7,24 @@ function fill(template, data) {
   return template.replace(/\{(\w+)\}/g, (_, key) => (data[key] ?? ''));
 }
 
-function choose(rng, list) {
-  return list[Math.floor(rng.next() * list.length)];
+// Remembers the last phrase used for each bucket and re-rolls rather than repeating
+// it. Two identical lines a minute apart is the fastest way to break the illusion.
+function makeChooser(rng) {
+  const lastUsed = new Map();
+  return (bucket, list) => {
+    if (!list || !list.length) return '';
+    if (list.length === 1) return list[0];
+    let pick = list[Math.floor(rng.next() * list.length)];
+    if (pick === lastUsed.get(bucket)) {
+      pick = list[Math.floor(rng.next() * list.length)];
+      if (pick === lastUsed.get(bucket)) {
+        const alternatives = list.filter((t) => t !== lastUsed.get(bucket));
+        pick = alternatives[Math.floor(rng.next() * alternatives.length)];
+      }
+    }
+    lastUsed.set(bucket, pick);
+    return pick;
+  };
 }
 
 // Which commentary bucket an event maps to.
@@ -40,7 +56,15 @@ const SOMETIMES_SHOW = {
   substitution: 0.85,
 };
 
+// "12" -> "12'", "90+3" -> "90+3'", kickoff -> "".
+export function minuteLabel(minute) {
+  const raw = String(minute ?? '').trim();
+  if (!raw || raw === '0') return '';
+  return raw.endsWith("'") ? raw : raw + "'";
+}
+
 export function buildCommentary(result, rng, homeClub, awayClub) {
+  const choose = makeChooser(rng);
   const lines = [];
   const context = {
     home: homeClub.short,
@@ -74,7 +98,7 @@ export function buildCommentary(result, rng, homeClub, awayClub) {
       type: event.type,
       clubId: event.clubId ?? null,
       isHome,
-      text: fill(choose(rng, templates), data),
+      text: fill(choose(bucket, templates), data),
       homeGoals,
       awayGoals,
       major: event.type === 'goal' || event.type === 'red_card' || event.type === 'full_time',
@@ -84,10 +108,10 @@ export function buildCommentary(result, rng, homeClub, awayClub) {
   }
 
   // Drop a little colour into any long gap so the feed never stalls.
-  return padQuietSpells(lines, rng, context, result);
+  return padQuietSpells(lines, rng, context, result, choose);
 }
 
-function padQuietSpells(lines, rng, context, result) {
+function padQuietSpells(lines, rng, context, result, choose) {
   const out = [];
   for (let i = 0; i < lines.length; i++) {
     out.push(lines[i]);
@@ -103,7 +127,7 @@ function padQuietSpells(lines, rng, context, result) {
         type: 'flavour',
         clubId: null,
         isHome: false,
-        text: fill(choose(rng, COMMENTARY[bucket]), context),
+        text: fill(choose(bucket, COMMENTARY[bucket]), context),
         homeGoals: lines[i].homeGoals,
         awayGoals: lines[i].awayGoals,
         major: false,

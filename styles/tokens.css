@@ -1,0 +1,72 @@
+/* Design tokens.
+   The interface is deliberately near-monochrome: one accent for actions, one for
+   money, one for danger. All the other colour on screen comes from the clubs
+   themselves, which is what stops it looking like a generic dashboard theme. */
+
+:root {
+  /* Ground: near-black with a green cast, like a stadium at night. */
+  --bg:            #0B0F0E;
+  --bg-raised:     #121815;
+  --surface:       #161D1A;
+  --surface-2:     #1B2320;
+  --surface-3:     #222B27;
+
+  /* Hairlines instead of shadows. Shadows on a dark ground just make mud. */
+  --line:          #232C28;
+  --line-strong:   #313C37;
+  --line-faint:    #1A211E;
+
+  --text:          #E8EDEA;
+  --text-2:        #A3AFA9;
+  --text-3:        #6E7B75;
+  --text-faint:    #4A554F;
+
+  /* Exactly one UI accent. */
+  --pitch:         #5BE49B;
+  --pitch-dim:     #2E7D57;
+  --pitch-glow:    rgba(91, 228, 155, 0.12);
+
+  --gold:          #E8B84B;
+  --gold-dim:      #8A6D24;
+  --danger:        #FF5A5A;
+  --danger-dim:    #8A2F2F;
+  --warn:          #E8A03B;
+  --info:          #6BA8E8;
+
+  --win:           #5BE49B;
+  --draw:          #8A94A6;
+  --loss:          #FF5A5A;
+
+  --radius:        4px;
+  --radius-lg:     6px;
+
+  --space-1:       4px;
+  --space-2:       8px;
+  --space-3:       12px;
+  --space-4:       16px;
+  --space-5:       24px;
+  --space-6:       32px;
+  --space-7:       48px;
+
+  /* Archivo carries a width axis, so the condensed uppercase of broadcast
+     graphics comes from one font file rather than two. */
+  --font-display: 'Archivo', 'Helvetica Neue', 'Arial Narrow', sans-serif;
+  --font-body:    'Public Sans', -apple-system, 'Segoe UI', sans-serif;
+  --font-mono:    'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --ease:          cubic-bezier(0.2, 0.8, 0.2, 1);
+  --fast:          140ms;
+  --normal:        220ms;
+  --slow:          340ms;
+
+  --rail-width:    212px;
+  --hud-height:    56px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

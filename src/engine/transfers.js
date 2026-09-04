@@ -86,17 +86,40 @@ export function generateFreeAgents(world, rng) {
 // Player-initiated moves
 // ---------------------------------------------------------------------------
 
+// Average squad rating of a division, cached per matchday. Recomputing it for every
+// row of the transfer market would mean re-rating a few thousand players each render.
+export function divisionStrength(world, tier) {
+  const stamp = `${world.seasonNumber}:${world.matchdayIndex}`;
+  if (world._divisionStrengthStamp !== stamp) {
+    world._divisionStrengthStamp = stamp;
+    world._divisionStrength = {};
+  }
+  if (world._divisionStrength[tier] !== undefined) return world._divisionStrength[tier];
+
+  const ids = world.divisions[tier] || [];
+  const total = ids.reduce((sum, id) => sum + squadRating(world.clubs[id]), 0);
+  const average = ids.length ? total / ids.length : 50;
+  world._divisionStrength[tier] = average;
+  return average;
+}
+
 export function canSign(world, club, player) {
   const fee = player.askingPrice ?? player.value;
   const reasons = [];
   if (club.squad.length >= 30) reasons.push('Squad is full (30 players)');
   if (fee > transferBudget(club)) reasons.push('Transfer budget too low');
   if (!canAffordWage(club, player.wage)) reasons.push('Wage budget too low');
-  // Better players need convincing that the club is going somewhere. Reputation runs
-  // 1-100 and ratings run 20-92, so the pull has to be converted onto the rating
-  // scale before the two can be compared at all.
-  const pull = ratingForPrestige(club.reputation) + (club.tier <= 1 ? 4 : 0);
+
+  // What a player will accept is driven by the division as much as by the club: people
+  // sign for a Championship club because it is a Championship club. Judging purely on
+  // reputation made every promotion a trapdoor, because a freshly promoted side could
+  // not sign anyone good enough for the league it had just reached. Reputation still
+  // matters — it is what lets a big club reach above its division for a star.
+  const reputationPull = ratingForPrestige(club.reputation);
+  const divisionPull = divisionStrength(world, club.tier) - 2;
+  const pull = Math.max(reputationPull, divisionPull);
   if (player.overall > pull + 9) reasons.push('Not interested in a club this size');
+
   return { ok: reasons.length === 0, reasons, fee };
 }
 

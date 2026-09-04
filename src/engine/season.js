@@ -15,7 +15,7 @@ import {
 } from './europe.js';
 import {
   payMatchday, chargeWeeklyCosts, paySponsorship, payLeaguePrize, payParachute,
-  recordLedger, setTransferBudget, refreshSponsor,
+  recordLedger, setTransferBudget, setWageBudget, refreshSponsor,
 } from './finance.js';
 
 const nameOf = (world) => (id) => anyClub(world, id)?.name || id;
@@ -623,6 +623,10 @@ function ageAndDevelopSquads(world, rng) {
       p.fitness = clamp(p.fitness + 12, 40, 100);
       p.injuredFor = 0;
       p.injuryType = null;
+      p.form = 0;
+      // Pre-season resets the mood. Without it a relegated squad stays broken and the
+      // club spirals down the pyramid with no way back.
+      p.morale = clamp(p.morale + (64 - p.morale) * 0.7, 30, 100);
 
       if (p.age >= 35 && rng.chance(0.45)) retiring.push(p.id);
       else if (p.age >= 38) retiring.push(p.id);
@@ -696,9 +700,10 @@ function refreshClubEconomies(world, rng) {
     club.fans = Math.round(clamp(club.fans + (ceiling - club.fans) * 0.28, 400, 3_000_000));
 
     setTransferBudget(club);
+    setWageBudget(club);
     if (!club.isPlayerClub) {
-      const target = weeklyWages(club);
-      club.wageBudget = Math.round(Math.max(target * 1.1, club.wageBudget * 0.9));
+      // AI clubs never let their budget fall below what they already pay out.
+      club.wageBudget = Math.max(club.wageBudget, Math.round(weeklyWages(club) * 1.1));
       // AI clubs reinvest rather than hoarding, which keeps the world's economy sane
       // across decades of simulation.
       const cap = weeklyWages(club) * 90;

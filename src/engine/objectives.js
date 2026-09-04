@@ -8,7 +8,12 @@ export const OBJECTIVES = [
   {
     id: 'survive', name: 'Stay in the Football League',
     describe: () => 'Avoid relegation out of League Two in your first season',
-    progress: (world, club) => ({ current: club.tier <= 3 ? 1 : 0, target: 1 }),
+    // Tracks how far through the season you are, so the bar means something while
+    // the objective is still live rather than sitting full and incomplete.
+    progress: (world, club) => ({
+      current: Math.min(world.matchdayIndex, world.calendar.length),
+      target: Math.max(1, world.calendar.length),
+    }),
     done: (world, club) => world.seasonNumber > 1 && club.tier <= 3,
   },
   {

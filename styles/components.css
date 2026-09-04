@@ -1,0 +1,527 @@
+/* Reusable pieces: nav, HUD, panels, tables, club identity, buttons, bars. */
+
+/* ---- Left rail ---------------------------------------------------------- */
+
+.rail-brand {
+  padding: var(--space-4) var(--space-4) var(--space-3);
+  border-bottom: 1px solid var(--line);
+}
+.rail-brand .club {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  font-stretch: 92%;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  display: block;
+}
+.rail-brand .division {
+  font-size: 11px;
+  color: var(--text-3);
+  margin-top: 2px;
+  display: block;
+}
+
+.rail-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-2) 0;
+  min-height: 0;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px var(--space-4);
+  color: var(--text-2);
+  font-size: 13.5px;
+  text-align: left;
+  border-left: 2px solid transparent;
+  transition: color var(--fast) var(--ease), background var(--fast) var(--ease);
+  position: relative;
+}
+.nav-item:hover { color: var(--text); background: var(--surface); }
+.nav-item.active {
+  color: var(--text);
+  background: var(--surface);
+  border-left-color: var(--pitch);
+  font-weight: 600;
+}
+.nav-item .icon {
+  width: 16px;
+  flex: none;
+  text-align: center;
+  opacity: 0.75;
+  font-size: 13px;
+}
+.nav-item.active .icon { opacity: 1; }
+.nav-item .badge {
+  margin-left: auto;
+  background: var(--pitch);
+  color: #062015;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 8px;
+}
+
+.rail-foot {
+  border-top: 1px solid var(--line);
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+@media (max-width: 1080px) {
+  .rail-brand .club, .rail-brand .division, .nav-item .label, .rail-foot { display: none; }
+  .nav-item { justify-content: center; padding: 11px 0; }
+  .rail-brand { padding: var(--space-3) 0; text-align: center; }
+}
+
+/* ---- HUD ticker ---------------------------------------------------------- */
+/* Reads as a broadcast strip: dense, tabular, one row of hard numbers. */
+
+.hud-stats {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.hud-stats::-webkit-scrollbar { display: none; }
+
+.hud-stat {
+  padding: 0 var(--space-4);
+  border-right: 1px solid var(--line-faint);
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  min-width: 0;
+}
+.hud-stat .k {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  font-weight: 600;
+}
+.hud-stat .v {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  line-height: 1.25;
+  white-space: nowrap;
+}
+.hud-stat .v.money { color: var(--gold); }
+.hud-stat .v.good { color: var(--pitch); }
+.hud-stat .v.bad { color: var(--danger); }
+
+.hud-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-4);
+  flex: none;
+  border-left: 1px solid var(--line);
+}
+
+/* ---- Buttons ------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line-strong);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background var(--fast) var(--ease), border-color var(--fast) var(--ease), color var(--fast) var(--ease);
+}
+.btn:hover:not(:disabled) { background: var(--surface-3); border-color: var(--line-strong); }
+.btn:active:not(:disabled) { transform: translateY(0.5px); }
+.btn:disabled { opacity: 0.38; }
+
+.btn.primary {
+  background: var(--pitch);
+  border-color: var(--pitch);
+  color: #062015;
+  font-weight: 650;
+}
+.btn.primary:hover:not(:disabled) { background: #6BEDA6; border-color: #6BEDA6; }
+
+.btn.ghost { background: transparent; border-color: var(--line); color: var(--text-2); }
+.btn.ghost:hover:not(:disabled) { background: var(--surface); color: var(--text); }
+
+.btn.danger { border-color: var(--danger-dim); color: var(--danger); background: transparent; }
+.btn.danger:hover:not(:disabled) { background: rgba(255, 90, 90, 0.09); }
+
+.btn.sm { padding: 5px 10px; font-size: 12px; }
+.btn.lg { padding: 12px 22px; font-size: 15px; }
+.btn.block { width: 100%; }
+
+/* ---- Panels -------------------------------------------------------------- */
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 11px var(--space-4);
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-raised);
+}
+.panel-head h3 {
+  font-size: 12px;
+  font-family: var(--font-display);
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  font-weight: 600;
+}
+.panel-body { padding: var(--space-4); }
+.panel-body.flush { padding: 0; }
+
+.grid { display: grid; gap: var(--space-4); }
+.grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+/* Asymmetric by default: a dominant column and a narrower context column. */
+.grid.split { grid-template-columns: minmax(0, 1.85fr) minmax(0, 1fr); align-items: start; }
+
+@media (max-width: 1180px) {
+  .grid.split, .grid.cols-3, .grid.cols-4 { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 720px) {
+  .grid.cols-2 { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ---- Club identity ------------------------------------------------------- */
+/* A 2px colour bar drawn from the club's real kit, striped where the club plays
+   in stripes. Cheaper and far better than a fake crest. */
+
+.club-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+.club-bar {
+  width: 3px;
+  height: 15px;
+  border-radius: 1px;
+  flex: none;
+  background: var(--club-primary, var(--text-3));
+}
+.club-bar[data-pattern='stripes'] {
+  background: repeating-linear-gradient(90deg,
+    var(--club-primary) 0 1.5px, var(--club-secondary) 1.5px 3px);
+}
+.club-bar[data-pattern='hoops'] {
+  background: repeating-linear-gradient(180deg,
+    var(--club-primary) 0 3px, var(--club-secondary) 3px 6px);
+}
+.club-bar[data-pattern='halves'] {
+  background: linear-gradient(90deg, var(--club-primary) 50%, var(--club-secondary) 50%);
+}
+.club-chip .name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.club-chip.you .name { color: var(--pitch); font-weight: 600; }
+
+/* ---- Tables -------------------------------------------------------------- */
+
+table.data {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+table.data th {
+  font-family: var(--font-display);
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  font-weight: 600;
+  text-align: left;
+  padding: 8px var(--space-3);
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-raised);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  white-space: nowrap;
+}
+table.data th.num, table.data td.num { text-align: right; }
+table.data td {
+  padding: 7px var(--space-3);
+  border-bottom: 1px solid var(--line-faint);
+  color: var(--text-2);
+  white-space: nowrap;
+}
+table.data td.strong { color: var(--text); font-weight: 500; }
+table.data tbody tr { transition: background var(--fast) var(--ease); }
+table.data tbody tr:hover { background: var(--surface-2); }
+table.data tbody tr.you { background: rgba(91, 228, 155, 0.055); }
+table.data tbody tr.you:hover { background: rgba(91, 228, 155, 0.085); }
+table.data tbody tr:last-child td { border-bottom: none; }
+table.data tr.clickable { cursor: pointer; }
+
+.table-scroll { overflow-x: auto; }
+
+/* Promotion, play-off and relegation bands read down the left edge of the table. */
+td.pos { position: relative; padding-left: 16px; color: var(--text-3); }
+td.pos::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: transparent;
+}
+tr.zone-promo td.pos::before { background: var(--pitch); }
+tr.zone-playoff td.pos::before { background: var(--info); }
+tr.zone-releg td.pos::before { background: var(--danger); }
+
+.zone-key { display: flex; gap: var(--space-4); flex-wrap: wrap; font-size: 11px; color: var(--text-3); }
+.zone-key span { display: inline-flex; align-items: center; gap: 6px; }
+.zone-key i { width: 8px; height: 2px; border-radius: 1px; display: inline-block; }
+
+/* ---- Form guide and movement -------------------------------------------- */
+
+.form-guide { display: inline-flex; gap: 2px; }
+.form-guide i {
+  width: 15px; height: 15px;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #06120D;
+}
+.form-guide i.W { background: var(--win); }
+.form-guide i.D { background: var(--draw); }
+.form-guide i.L { background: var(--loss); }
+.form-guide i.empty { background: var(--surface-3); }
+
+.move { font-family: var(--font-mono); font-size: 10px; }
+.move.up { color: var(--pitch); }
+.move.down { color: var(--danger); }
+.move.same { color: var(--text-faint); }
+
+/* ---- Bars and meters ----------------------------------------------------- */
+
+.meter {
+  height: 4px;
+  background: var(--surface-3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.meter > i {
+  display: block;
+  height: 100%;
+  background: var(--pitch);
+  border-radius: 2px;
+  transition: width var(--slow) var(--ease);
+}
+.meter.gold > i { background: var(--gold); }
+.meter.danger > i { background: var(--danger); }
+.meter.warn > i { background: var(--warn); }
+
+.stat-tile {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.stat-tile .k {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  font-weight: 600;
+}
+.stat-tile .v {
+  font-family: var(--font-mono);
+  font-size: 21px;
+  font-variant-numeric: tabular-nums;
+  margin-top: 3px;
+  line-height: 1.1;
+}
+.stat-tile .note { font-size: 11px; color: var(--text-3); margin-top: 3px; }
+.stat-tile .v.money { color: var(--gold); }
+.stat-tile .v.good { color: var(--pitch); }
+.stat-tile .v.bad { color: var(--danger); }
+
+/* ---- Rating pill --------------------------------------------------------- */
+
+.rating {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  background: var(--surface-3);
+  color: var(--text);
+}
+.rating.elite  { background: rgba(91, 228, 155, 0.18); color: var(--pitch); }
+.rating.good   { background: rgba(107, 168, 232, 0.16); color: var(--info); }
+.rating.ok     { background: var(--surface-3); color: var(--text-2); }
+.rating.poor   { background: rgba(255, 90, 90, 0.13); color: var(--danger); }
+
+.pot-range { font-family: var(--font-mono); font-size: 11.5px; color: var(--text-3); }
+.pot-range.exact { color: var(--gold); }
+
+/* ---- Tags and pills ------------------------------------------------------ */
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 7px;
+  border-radius: 3px;
+  font-size: 10.5px;
+  font-weight: 500;
+  background: var(--surface-3);
+  color: var(--text-2);
+  white-space: nowrap;
+}
+.tag.pitch { background: rgba(91, 228, 155, 0.14); color: var(--pitch); }
+.tag.gold  { background: rgba(232, 184, 75, 0.14); color: var(--gold); }
+.tag.danger{ background: rgba(255, 90, 90, 0.14); color: var(--danger); }
+.tag.info  { background: rgba(107, 168, 232, 0.14); color: var(--info); }
+.tag.muted { background: transparent; color: var(--text-faint); border: 1px solid var(--line); }
+
+.empty-state {
+  padding: var(--space-6);
+  text-align: center;
+  color: var(--text-3);
+  font-size: 13px;
+}
+
+/* ---- Toasts -------------------------------------------------------------- */
+
+#toasts {
+  position: fixed;
+  right: var(--space-5);
+  bottom: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  z-index: 400;
+  pointer-events: none;
+  max-width: 340px;
+}
+.toast {
+  background: var(--surface-2);
+  border: 1px solid var(--line-strong);
+  border-left: 2px solid var(--pitch);
+  border-radius: var(--radius);
+  padding: 10px var(--space-4);
+  font-size: 13px;
+  animation: toast-in var(--normal) var(--ease);
+  pointer-events: auto;
+}
+.toast.gold { border-left-color: var(--gold); }
+.toast.danger { border-left-color: var(--danger); }
+.toast .title { font-weight: 600; font-size: 12px; }
+.toast .body { color: var(--text-2); font-size: 12.5px; margin-top: 1px; }
+.toast.leaving { animation: toast-out var(--fast) var(--ease) forwards; }
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(12px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes toast-out {
+  to { opacity: 0; transform: translateX(12px); }
+}
+
+/* ---- Modal --------------------------------------------------------------- */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 8, 7, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  padding: var(--space-5);
+  animation: fade var(--fast) var(--ease);
+}
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  width: min(560px, 100%);
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  animation: rise var(--normal) var(--ease);
+}
+.modal.wide { width: min(880px, 100%); }
+.modal-head {
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.modal-head h2 { font-size: 18px; font-stretch: 95%; }
+.modal-body { padding: var(--space-5); overflow-y: auto; }
+.modal-foot {
+  padding: var(--space-3) var(--space-5) var(--space-4);
+  border-top: 1px solid var(--line);
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.choice-list { display: flex; flex-direction: column; gap: var(--space-2); }
+.choice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  width: 100%;
+  text-align: left;
+  padding: 11px var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  transition: border-color var(--fast) var(--ease), background var(--fast) var(--ease);
+}
+.choice:hover { border-color: var(--pitch-dim); background: var(--surface-3); }
+.choice .label { font-weight: 500; }
+.choice .detail { color: var(--text-3); font-size: 12px; font-family: var(--font-mono); }

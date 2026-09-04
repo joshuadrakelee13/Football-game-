@@ -1,0 +1,163 @@
+/* Reset, typography and the application shell. */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow: hidden;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+
+/* Broadcast graphics speak in condensed uppercase; so do the section labels. */
+.eyebrow {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  font-stretch: 105%;
+}
+
+.mono, td.num, th.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* Every number in a table is tabular, so the league table never jitters as it
+   updates and columns line up down the page. */
+table { font-variant-numeric: tabular-nums; }
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+button:disabled { cursor: not-allowed; }
+
+a { color: var(--pitch); text-decoration: none; }
+
+input, select {
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 7px 10px;
+  outline: none;
+}
+input:focus, select:focus { border-color: var(--pitch-dim); }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 5px; border: 3px solid var(--bg); }
+::-webkit-scrollbar-thumb:hover { background: var(--line-strong); }
+
+:focus-visible { outline: 2px solid var(--pitch); outline-offset: 2px; }
+
+/* ---- Shell -------------------------------------------------------------- */
+
+#app {
+  display: grid;
+  grid-template-columns: var(--rail-width) 1fr;
+  grid-template-rows: 100%;
+  height: 100vh;
+  height: 100dvh;
+}
+
+#rail {
+  background: var(--bg-raised);
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+#main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+#hud {
+  height: var(--hud-height);
+  flex: none;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-raised);
+  display: flex;
+  align-items: stretch;
+}
+
+#screen {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--space-5) var(--space-6) var(--space-7);
+}
+
+/* One orchestrated entrance per screen: a short fade and rise, staggered down the
+   page. Restrained on purpose — this is the only motion most screens have. */
+.stagger > * {
+  animation: rise var(--normal) var(--ease) backwards;
+}
+.stagger > *:nth-child(1) { animation-delay: 0ms; }
+.stagger > *:nth-child(2) { animation-delay: 26ms; }
+.stagger > *:nth-child(3) { animation-delay: 52ms; }
+.stagger > *:nth-child(4) { animation-delay: 78ms; }
+.stagger > *:nth-child(5) { animation-delay: 104ms; }
+.stagger > *:nth-child(6) { animation-delay: 130ms; }
+.stagger > *:nth-child(n+7) { animation-delay: 156ms; }
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.screen-title {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+.screen-title h1 {
+  font-size: 26px;
+  font-stretch: 92%;
+  letter-spacing: -0.015em;
+}
+.screen-title .sub { color: var(--text-3); font-size: 13px; }
+
+@media (max-width: 1080px) {
+  :root { --rail-width: 60px; }
+  #screen { padding: var(--space-4) var(--space-4) var(--space-6); }
+}

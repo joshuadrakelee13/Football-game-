@@ -123,14 +123,56 @@ export function receiveTransferFee(club, amount, season, description) {
   recordLedger(club, season, 'transfers', description, amount);
 }
 
-// At the end of a season the board reviews the books and sets next year's allowance:
-// a share of the cash pile, floored so there is always something to work with.
+// Projected turnover for the season ahead: prize money, sponsorship and the gate.
+// Used to set a wage budget the club can actually sustain.
+export function projectedRevenue(club) {
+  const div = DIVISION_BY_TIER[club.tier];
+  if (!div) return 0;
+  const homeGames = div.clubs === 20 ? 19 : 23;
+  const expectedCrowd = Math.min(club.stadiumCapacity, club.fans * 0.92);
+  const gate = expectedCrowd * (div.ticketPrice + 6.5) * homeGames;
+  // Assume a mid-table finish when projecting; over-promising here would let the
+  // club spend money it has not earned.
+  const prize = div.prizeBase + (div.clubs / 2) * div.prizePerPlace;
+  return gate + prize + (club.sponsor?.value || div.sponsorBase);
+}
+
+// Share of turnover the board will sanction for wages, by tier. Smaller clubs run
+// hotter, as they do in reality. The ceiling is set by what the rest of the model
+// costs: staff and operations add another 55% on top of wages, so a share far above
+// 0.6 would make every club structurally insolvent.
+const WAGE_SHARE_BY_TIER = [0.50, 0.55, 0.57, 0.58, 0.60];
+
+// The wage budget the board will sanction. Without this the player's budget stays at
+// its founding value forever and the squad can never improve.
+export function setWageBudget(club) {
+  const weekly = projectedRevenue(club) / 52;
+  const share = WAGE_SHARE_BY_TIER[club.tier] ?? 0.85;
+  const floor = [400_000, 60_000, 18_000, 9_000, 4_500][club.tier] ?? 4_500;
+  const budget = Math.max(floor, Math.round((weekly * share) / 50) * 50);
+  // Never set a budget below what the squad already costs, or a relegated club is
+  // locked out of the market entirely and can never rebuild.
+  club.wageBudget = Math.max(budget, Math.round(weeklyWages(club) * 0.95 / 50) * 50);
+  return club.wageBudget;
+}
+
+// At the end of a season the board reviews the books and sets next year's allowance.
+//
+// It is drawn mostly from projected turnover rather than from the cash pile, which is
+// how football clubs actually budget — and it matters, because a lower-league club
+// that merely breaks even would otherwise never get a penny to spend and could never
+// climb. Spare cash on top lets a well-run club invest more aggressively.
+//
+// The share is high because transfer fees, not wages, are the binding constraint on
+// squad quality here: a club given a small fee budget cannot come close to spending
+// its wage budget, and gets stranded at the foot of whatever division it reaches.
 export function setTransferBudget(club) {
   const runway = weeklyRunningCost(club).total * 14;
   const spare = Math.max(0, club.balance - runway);
-  const share = club.isPlayerClub ? 0.62 : 0.55;
-  const floor = [8_000_000, 900_000, 180_000, 90_000, 40_000][club.tier] ?? 40_000;
-  club.transferBudget = Math.max(floor, Math.round((spare * share) / 1000) * 1000);
+  const fromRevenue = projectedRevenue(club) * (club.isPlayerClub ? 0.30 : 0.26);
+  const fromCash = spare * (club.isPlayerClub ? 0.5 : 0.45);
+  const floor = [8_000_000, 900_000, 200_000, 100_000, 50_000][club.tier] ?? 50_000;
+  club.transferBudget = Math.max(floor, Math.round((fromRevenue + fromCash) / 1000) * 1000);
   return club.transferBudget;
 }
 

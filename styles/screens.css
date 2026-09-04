@@ -1,0 +1,515 @@
+/* Screen-specific layout: the dashboard, the match overlay, and the rest. */
+
+/* ---- Overview ------------------------------------------------------------ */
+
+.hero {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  padding: var(--space-5);
+  overflow: hidden;
+}
+/* A faint centre circle and touchline, drawn in CSS. Texture that belongs to
+   football rather than decoration borrowed from a dashboard template. */
+.hero::before {
+  content: '';
+  position: absolute;
+  right: -90px;
+  top: 50%;
+  width: 320px;
+  height: 320px;
+  transform: translateY(-50%);
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  opacity: 0.5;
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  right: 70px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--line-strong);
+  opacity: 0.5;
+  pointer-events: none;
+}
+.hero > * { position: relative; }
+
+.next-match {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+}
+.next-match .versus {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+.next-match .side {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.next-match .side .club-name {
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 700;
+  font-stretch: 92%;
+  letter-spacing: -0.012em;
+}
+.next-match .vs {
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--text-faint);
+  text-transform: uppercase;
+}
+.next-match .meta { font-size: 12px; color: var(--text-3); }
+.next-match .actions { margin-left: auto; display: flex; gap: var(--space-2); flex-wrap: wrap; }
+
+.objective-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.objective-row .text { flex: 1; min-width: 0; }
+.objective-row .name { font-weight: 600; font-size: 13.5px; }
+.objective-row .desc { color: var(--text-3); font-size: 12px; }
+.objective-row .meter { width: 120px; flex: none; }
+
+.result-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 7px var(--space-4);
+  border-bottom: 1px solid var(--line-faint);
+  font-size: 13px;
+}
+.result-row:last-child { border-bottom: none; }
+.result-row .score {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: var(--surface-3);
+  flex: none;
+}
+.result-row .score.W { background: rgba(91, 228, 155, 0.16); color: var(--pitch); }
+.result-row .score.L { background: rgba(255, 90, 90, 0.14); color: var(--danger); }
+.result-row .opponent { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.result-row .comp { font-size: 10.5px; color: var(--text-faint); flex: none; }
+
+/* ---- Match overlay ------------------------------------------------------- */
+
+.match-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 600;
+  display: flex;
+  flex-direction: column;
+  animation: fade var(--fast) var(--ease);
+}
+
+.match-scoreboard {
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-raised);
+  padding: var(--space-5) var(--space-6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-6);
+  flex: none;
+  position: relative;
+}
+.match-scoreboard .team {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: 1;
+  min-width: 0;
+}
+.match-scoreboard .team.away { flex-direction: row-reverse; text-align: right; }
+.match-scoreboard .team .club-name {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  font-stretch: 90%;
+  letter-spacing: -0.012em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.match-scoreboard .team .bar { width: 4px; height: 30px; border-radius: 1px; flex: none; }
+
+.scoreline {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex: none;
+}
+.scoreline .goals {
+  font-family: var(--font-mono);
+  font-size: 46px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  min-width: 44px;
+  text-align: center;
+  transition: color var(--fast) var(--ease);
+}
+.scoreline .goals.pulse { animation: goal-pulse 620ms var(--ease); }
+@keyframes goal-pulse {
+  0%   { transform: scale(1); color: var(--text); }
+  22%  { transform: scale(1.28); color: var(--pitch); }
+  100% { transform: scale(1); color: var(--text); }
+}
+.scoreline .dash { color: var(--text-faint); font-size: 26px; }
+
+.match-clock {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-3);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.match-clock .live-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--danger);
+  animation: blink 1.4s ease-in-out infinite;
+}
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+
+.match-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  min-height: 0;
+}
+.commentary {
+  overflow-y: auto;
+  padding: var(--space-5) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.commentary-line {
+  display: flex;
+  gap: var(--space-4);
+  padding: 6px 0;
+  font-size: 13.5px;
+  color: var(--text-2);
+  border-bottom: 1px solid var(--line-faint);
+  animation: line-in 260ms var(--ease);
+}
+@keyframes line-in {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: none; }
+}
+.commentary-line .minute {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text-faint);
+  width: 42px;
+  flex: none;
+  text-align: right;
+  padding-top: 1px;
+}
+.commentary-line.major { color: var(--text); font-weight: 500; }
+.commentary-line.goal .text { color: var(--pitch); font-weight: 600; }
+.commentary-line.red_card .text, .commentary-line.penalty_missed .text { color: var(--danger); }
+.commentary-line.woodwork .text { color: var(--warn); }
+.commentary-line.full_time .text, .commentary-line.half_time .text {
+  font-family: var(--font-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 12px;
+  color: var(--text-3);
+}
+.commentary-line.flavour .text { color: var(--text-3); font-style: italic; }
+
+.match-stats {
+  border-left: 1px solid var(--line);
+  padding: var(--space-5) var(--space-4);
+  overflow-y: auto;
+  background: var(--bg-raised);
+}
+.stat-bar { margin-bottom: var(--space-4); }
+.stat-bar .row {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 5px;
+}
+.stat-bar .label {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  font-weight: 600;
+}
+.stat-bar .track { display: flex; height: 3px; border-radius: 2px; overflow: hidden; background: var(--surface-3); }
+.stat-bar .track .home { background: var(--pitch); }
+.stat-bar .track .away { background: var(--info); }
+
+.match-foot {
+  flex: none;
+  border-top: 1px solid var(--line);
+  padding: var(--space-3) var(--space-6);
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+  background: var(--bg-raised);
+}
+
+@media (max-width: 900px) {
+  .match-body { grid-template-columns: minmax(0, 1fr); }
+  .match-stats { border-left: none; border-top: 1px solid var(--line); }
+  .match-scoreboard .team .club-name { font-size: 15px; }
+  .scoreline .goals { font-size: 32px; }
+}
+
+/* ---- Squad --------------------------------------------------------------- */
+
+.pitch-view {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(91, 228, 155, 0.03), transparent),
+    var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  aspect-ratio: 3 / 4;
+  max-height: 560px;
+  overflow: hidden;
+}
+.pitch-lines {
+  position: absolute;
+  inset: 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
+  pointer-events: none;
+  opacity: 0.65;
+}
+.pitch-lines::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; top: 50%;
+  border-top: 1px solid var(--line-strong);
+}
+.pitch-lines::after {
+  content: '';
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 84px; height: 84px;
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+}
+.pitch-slot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  width: 88px;
+}
+/* Slots are positioned within this inset box rather than the raw panel, so a
+   goalkeeper at 92% is not half cut off by the panel edge. */
+.pitch-inner {
+  position: absolute;
+  inset: 34px 10px 30px;
+}
+.pitch-slot .shirt {
+  width: 34px; height: 34px;
+  margin: 0 auto 4px;
+  border-radius: 3px;
+  background: var(--surface-3);
+  border: 1px solid var(--line-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  transition: border-color var(--fast) var(--ease), background var(--fast) var(--ease);
+}
+.pitch-slot:hover .shirt { border-color: var(--pitch); background: var(--surface-3); }
+.pitch-slot .pname {
+  display: block;
+  font-size: 10.5px;
+  color: var(--text-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.25;
+}
+.pitch-slot .ppos {
+  display: block;
+  font-size: 9px;
+  color: var(--text-faint);
+  font-family: var(--font-display);
+  letter-spacing: 0.1em;
+  line-height: 1.2;
+}
+.pitch-slot.out-of-position .shirt { border-color: var(--warn); color: var(--warn); }
+.pitch-slot.injured .shirt { border-color: var(--danger); color: var(--danger); }
+
+.formation-picker { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+.formation-option {
+  padding: 6px 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  transition: border-color var(--fast) var(--ease), color var(--fast) var(--ease);
+}
+.formation-option:hover { border-color: var(--line-strong); }
+.formation-option.active { border-color: var(--pitch); color: var(--pitch); background: var(--pitch-glow); }
+
+/* ---- Upgrade tracks (stadium, facilities) -------------------------------- */
+
+.track { display: flex; flex-direction: column; gap: 1px; }
+.track-step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: 11px var(--space-4);
+  background: var(--surface);
+  border-left: 2px solid var(--line);
+  transition: background var(--fast) var(--ease);
+}
+.track-step.done { border-left-color: var(--pitch-dim); }
+.track-step.current { border-left-color: var(--pitch); background: var(--surface-2); }
+.track-step.locked { opacity: 0.52; }
+.track-step .step-name { flex: 1; min-width: 0; }
+.track-step .step-name .n { font-weight: 500; }
+.track-step .step-name .e { font-size: 11.5px; color: var(--text-3); }
+.track-step .cost { font-family: var(--font-mono); font-size: 12.5px; color: var(--gold); flex: none; }
+
+.capacity-visual {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 46px;
+  margin: var(--space-3) 0;
+}
+.capacity-visual i {
+  flex: 1;
+  background: var(--surface-3);
+  border-radius: 1px 1px 0 0;
+  transition: background var(--fast) var(--ease), height var(--slow) var(--ease);
+}
+.capacity-visual i.filled { background: var(--pitch); }
+.capacity-visual i.current { background: var(--gold); }
+
+/* ---- Finances ------------------------------------------------------------ */
+
+.ledger-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 6px var(--space-4);
+  border-bottom: 1px solid var(--line-faint);
+  font-size: 12.5px;
+}
+.ledger-row:last-child { border-bottom: none; }
+.ledger-row .desc { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-2); }
+.ledger-row .amt { font-family: var(--font-mono); font-variant-numeric: tabular-nums; flex: none; }
+.ledger-row .amt.in { color: var(--pitch); }
+.ledger-row .amt.out { color: var(--danger); }
+
+.finance-bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: var(--surface-3); }
+.finance-bar i { display: block; height: 100%; }
+
+/* ---- Season review ------------------------------------------------------- */
+
+.review-banner {
+  text-align: center;
+  padding: var(--space-6) var(--space-5);
+  border-bottom: 1px solid var(--line);
+}
+.review-banner .headline {
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 700;
+  font-stretch: 92%;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.review-banner .headline.promoted { color: var(--pitch); }
+.review-banner .headline.relegated { color: var(--danger); }
+.review-banner .headline.champion { color: var(--gold); }
+.review-banner .sub { color: var(--text-3); margin-top: var(--space-2); font-size: 14px; }
+
+/* ---- Setup --------------------------------------------------------------- */
+
+.setup {
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5);
+  overflow-y: auto;
+}
+.setup-card {
+  width: min(520px, 100%);
+  animation: rise var(--slow) var(--ease);
+}
+.setup-card .brand {
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: 700;
+  font-stretch: 88%;
+  letter-spacing: -0.028em;
+  line-height: 1;
+  margin-bottom: var(--space-2);
+}
+.setup-card .brand em { font-style: normal; color: var(--pitch); }
+.setup-card .tagline { color: var(--text-3); margin-bottom: var(--space-6); font-size: 14px; }
+.field { margin-bottom: var(--space-4); }
+.field label { display: block; margin-bottom: 5px; }
+.field input { width: 100%; }
+.field .hint { font-size: 11.5px; color: var(--text-faint); margin-top: 4px; }
+
+.starting-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: var(--space-5);
+}
+.starting-facts div {
+  background: var(--surface);
+  padding: 9px var(--space-3);
+}
+.starting-facts .k {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  font-weight: 600;
+}
+.starting-facts .v { font-family: var(--font-mono); font-size: 13px; }

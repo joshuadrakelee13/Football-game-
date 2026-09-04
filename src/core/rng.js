@@ -12,11 +12,24 @@ export function mulberry32(seed) {
   };
 }
 
+// The same generator as mulberry32, but keeping its state on the owning Rng so it
+// can be written to a save file and restored exactly.
+function mulberry32Stateful(owner) {
+  return function () {
+    owner.state = (owner.state + 0x6d2b79f5) >>> 0;
+    let t = owner.state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
 export class Rng {
   constructor(seed = Date.now()) {
     this.seed = seed >>> 0;
+    this.state = seed >>> 0;
     this.calls = 0;
-    this._next = mulberry32(this.seed);
+    this._next = mulberry32Stateful(this);
   }
 
   // Advance and return a float in [0, 1).
@@ -73,15 +86,23 @@ export class Rng {
     return mean + Math.max(-3, Math.min(3, z)) * sd;
   }
 
-  // Serialisation: restore an RNG mid-stream by replaying its call count.
+  // Mulberry32's entire state is one 32-bit integer, so a save can restore the
+  // stream exactly rather than replaying millions of calls to catch up.
   toJSON() {
-    return { seed: this.seed, calls: this.calls };
+    return { seed: this.seed, state: this.state, calls: this.calls };
   }
 
   static fromJSON(data) {
-    const rng = new Rng(data.seed);
-    for (let i = 0; i < data.calls; i++) rng.next();
+    if (!data) return new Rng();
+    const rng = new Rng(data.seed ?? Date.now());
+    if (Number.isFinite(data.state)) rng.setState(data.state);
+    rng.calls = data.calls || 0;
     return rng;
+  }
+
+  setState(state) {
+    this.state = state >>> 0;
+    this._next = mulberry32Stateful(this);
   }
 }
 

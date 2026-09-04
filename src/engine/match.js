@@ -382,24 +382,35 @@ function makeSub(minute, side, rng, push, outEntry, forced) {
 
 function shootout(home, away, rng, push) {
   push(120, 'shootout_start', {});
-  const takers = (side) => [...side.onPitch].sort((a, b) => b.player.attributes.finishing - a.player.attributes.finishing).map((e) => e.player);
+  // A side reduced by red cards can end the match with very few players on the pitch,
+  // so fall back to the wider squad rather than indexing into an empty list.
+  const takers = (side) => {
+    const onPitch = [...side.onPitch]
+      .sort((a, b) => b.player.attributes.finishing - a.player.attributes.finishing)
+      .map((e) => e.player);
+    if (onPitch.length) return onPitch;
+    const squad = [...(side.club.squad || [])].sort((a, b) => b.attributes.finishing - a.attributes.finishing);
+    return squad.length ? squad : null;
+  };
   const homeTakers = takers(home);
   const awayTakers = takers(away);
   let h = 0, a = 0;
 
   const kick = (side, taker, opponent) => {
+    if (!taker) return rng.chance(0.5);
     const p = clamp(0.7 + (taker.attributes.finishing - opponent.ratings.gk) * 0.004, 0.5, 0.92);
     return rng.chance(p);
   };
+  const pickTaker = (list, i) => (list && list.length ? list[i % list.length] : null);
 
   for (let i = 0; i < 5; i++) {
-    if (kick(home, homeTakers[i % homeTakers.length], away)) h++;
-    if (kick(away, awayTakers[i % awayTakers.length], home)) a++;
+    if (kick(home, pickTaker(homeTakers, i), away)) h++;
+    if (kick(away, pickTaker(awayTakers, i), home)) a++;
   }
   let round = 5;
   while (h === a && round < 15) {
-    const hs = kick(home, homeTakers[round % homeTakers.length], away);
-    const as = kick(away, awayTakers[round % awayTakers.length], home);
+    const hs = kick(home, pickTaker(homeTakers, round), away);
+    const as = kick(away, pickTaker(awayTakers, round), home);
     if (hs) h++;
     if (as) a++;
     round++;

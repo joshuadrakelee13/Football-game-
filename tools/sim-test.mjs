@@ -57,7 +57,12 @@ function runSeries(gap, n) {
       const swap = i % 2 === 1;
       const hostClub = swap ? away : home;
       const guestClub = swap ? home : away;
-      const m = simulateMatch(hostClub, guestClub, rng, { competition: 'LEAGUE' });
+      // Same isolation reasoning as the tactics reset above: the AI's half-time
+      // reaction (ai-tactics.js) nudges mentality/pressing based on the scoreline,
+      // which correlates with the very rating gap this harness exists to isolate.
+      // Off here for the same reason identity is reset to neutral above — this
+      // measures the core engine, not the AI behaviour layered on top of it.
+      const m = simulateMatch(hostClub, guestClub, rng, { competition: 'LEAGUE', aiHalfTimeReactions: false });
 
       // Report from the stronger side's point of view so the gap columns stay readable,
       // but accumulate the goal split by venue so home advantage is isolated.

@@ -16,6 +16,7 @@ import {
   tempoVolumeFactor, tempoQualityAdjust, widthCornerFactor, widthInvolvement, dutyInvolvement,
   OPPOSITION_FOCUS_TARGET_DEBUFF, OPPOSITION_FOCUS_OWN_DEFENCE_COST,
 } from '../data/tactics.js';
+import { aiAdjustTactics } from './ai-tactics.js';
 
 export const TUNING = {
   shotsPerTeam: 12.0,          // baseline shots for an evenly matched side
@@ -69,10 +70,15 @@ function buildSide(club, isHome, { debuffs = null, ownDefenceCost = null } = {})
     club,
     isHome,
     ratings,
-    // Snapshotted, not a live reference to club.tactics — mid-match tactical changes
-    // (a later phase) refresh this explicitly via syncSideTactics rather than having
-    // every read implicitly notice a mutation.
+    // Snapshotted, not a live reference to club.tactics — a mid-match tactical
+    // change (the AI's half-time reaction, or later a human's) refreshes this
+    // explicitly via syncSideTactics rather than having every read implicitly
+    // notice a mutation partway through a match.
     tactics: club.tactics || defaultTactics(),
+    // Kept so syncSideTactics can recompute ratings with the same opposition-focus
+    // debuff still applied — that part of a side's state is fixed at kickoff and
+    // does not change mid-match, only the tactics dials might.
+    debuffs, ownDefenceCost,
     onPitch,
     bench: benchPlayers(club).filter(isAvailable),
     subsUsed: 0,
@@ -114,6 +120,11 @@ export function simulateMatch(homeClub, awayClub, rng, options = {}) {
     extraTime = false,
     penaltiesIfDrawn = false,
     aggregate = null,
+    // Off only for harnesses that hold a club's tactics fixed to isolate one lever's
+    // effect (see tools/tactics-test.mjs, tools/sim-test.mjs) — real play, season-test
+    // and balance-test all want the AI actually reacting at half time, same as every
+    // other tactics behaviour.
+    aiHalfTimeReactions = true,
   } = options;
 
   // Opposition focus: whichever side has it switched on debuffs the opponent's best
@@ -160,7 +171,7 @@ export function simulateMatch(homeClub, awayClub, rng, options = {}) {
       tickMinute(minute, away, home, 1 - homeShare, rng, push, phase);
       if (minute === 45 && phase === 'normal') {
         push(45, 'half_time', { homeGoals: home.goals, awayGoals: away.goals });
-        applyHalfTime(home, away, rng, push);
+        applyHalfTime(home, away, rng, push, aiHalfTimeReactions);
       }
       if (minute % 15 === 0) considerSubs(minute, home, rng, push), considerSubs(minute, away, rng, push);
     }
@@ -386,9 +397,32 @@ function injurePlayer(minute, side, rng, push, minuteLabel) {
   makeSub(minute, side, rng, push, entry, true);
 }
 
-function applyHalfTime(home, away, rng, push) {
+// Recomputes a side's cached ratings after club.tactics has changed mid-match (the
+// AI's half-time reaction here, or later a human's pause-menu change) — reapplies the
+// same opposition-focus debuff and own-defence cost fixed at kickoff against the club's
+// new tactics, rather than rebuilding the side from scratch.
+function syncSideTactics(side) {
+  side.tactics = side.club.tactics || defaultTactics();
+  const ratings = teamRatings(side.club, { debuffs: side.debuffs });
+  if (side.ownDefenceCost) ratings.defence *= side.ownDefenceCost;
+  side.ratings = ratings;
+}
+
+function applyHalfTime(home, away, rng, push, aiHalfTimeReactions = true) {
   for (const side of [home, away]) {
     for (const entry of side.onPitch) entry.matchFitness = Math.min(100, entry.matchFitness + 3);
+  }
+
+  if (!aiHalfTimeReactions) return;
+
+  // The AI reacts to the scoreline at the break — a losing side pushes on, a side
+  // sitting on a comfortable lead shuts up shop — for every match this engine plays,
+  // quick-simmed or live, not only ones a human happens to be watching. The player's
+  // own club is left untouched: their tactics change only through their own action.
+  for (const [side, opponent] of [[home, away], [away, home]]) {
+    if (side.club.isPlayerClub) continue;
+    const changed = aiAdjustTactics(side.club, { goalsFor: side.goals, goalsAgainst: opponent.goals });
+    if (changed) syncSideTactics(side);
   }
 }
 

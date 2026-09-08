@@ -150,7 +150,11 @@ function compareTactic(seed, baseTactics, treatTactics, n) {
     for (let i = 0; i < perPair; i++) {
       for (const [home, bucket] of [[homeBase, base], [homeTreat, treat]]) {
         resetCondition(home); resetCondition(away);
-        const m = simulateMatch(home, away, rng, { competition: 'LEAGUE' });
+        // The AI's half-time reaction (see ai-tactics.js) nudges a non-player club's
+        // own mentality/pressing based on the scoreline — exactly the kind of
+        // uncontrolled confound this comparison exists to exclude, since it would
+        // let the scoreline itself perturb the very dial being held fixed mid-match.
+        const m = simulateMatch(home, away, rng, { competition: 'LEAGUE', aiHalfTimeReactions: false });
         bucket.shotsHome += m.stats.shots[0];
         bucket.shotsAway += m.stats.shots[1];
         bucket.onTargetHome += m.stats.onTarget[0];
@@ -232,14 +236,18 @@ function compareTactic(seed, baseTactics, treatTactics, n) {
       resetCondition(home);
       home.tactics.oppositionFocus = false;
       resetCondition(awayBase);
-      const m1 = simulateMatch(home, awayBase, rng, { competition: 'LEAGUE' });
+      // aiHalfTimeReactions: false — see the comment in compareTactic above. Without
+      // it, home.tactics (a non-player club) could pick up a scoreline-driven nudge in
+      // the first match that leaks into the second, since resetCondition intentionally
+      // does not touch club.tactics.
+      const m1 = simulateMatch(home, awayBase, rng, { competition: 'LEAGUE', aiHalfTimeReactions: false });
       outputBase += m1.away.scorers.filter((s) => s.playerId === targetId).length + m1.away.assists.filter((a) => a.playerId === targetId).length;
       matchesBase++;
 
       resetCondition(home);
       home.tactics.oppositionFocus = true;
       resetCondition(awayFocused);
-      const m2 = simulateMatch(home, awayFocused, rng, { competition: 'LEAGUE' });
+      const m2 = simulateMatch(home, awayFocused, rng, { competition: 'LEAGUE', aiHalfTimeReactions: false });
       outputFocused += m2.away.scorers.filter((s) => s.playerId === targetId).length + m2.away.assists.filter((a) => a.playerId === targetId).length;
       matchesFocused++;
     }

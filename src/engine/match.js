@@ -8,9 +8,14 @@
 // numbers there were fitted with tools/sim-test.mjs rather than guessed.
 
 import { clamp } from '../core/rng.js';
-import { teamRatings, lineupPlayers, benchPlayers } from '../model/club.js';
+import { teamRatings, lineupPlayers, benchPlayers, pickOppositionFocusTarget } from '../model/club.js';
 import { positionFit } from '../data/positions.js';
 import { isAvailable } from '../model/player.js';
+import {
+  defaultTactics, pressingDefenceFactor, pressingFatigueFactor, pressingFoulFactor,
+  tempoVolumeFactor, tempoQualityAdjust, widthCornerFactor, widthInvolvement, dutyInvolvement,
+  OPPOSITION_FOCUS_TARGET_DEBUFF, OPPOSITION_FOCUS_OWN_DEFENCE_COST,
+} from '../data/tactics.js';
 
 export const TUNING = {
   shotsPerTeam: 12.0,          // baseline shots for an evenly matched side
@@ -36,25 +41,38 @@ const SCORER_WEIGHT = { ST: 10, LW: 6.5, RW: 6.5, CAM: 5.5, CM: 2.6, CDM: 1.1, L
 const ASSIST_WEIGHT = { CAM: 8, LW: 7, RW: 7, CM: 6, ST: 4, LB: 3.2, RB: 3.2, CDM: 2.2, CB: 0.9, GK: 0.15 };
 const CARD_WEIGHT   = { CDM: 3.2, CB: 3, CM: 2.4, LB: 2, RB: 2, ST: 1.5, CAM: 1.2, LW: 1.1, RW: 1.1, GK: 0.4 };
 
-function pickWeighted(rng, entries, weightTable, attribute, exclude = null) {
+// `side` is passed only at the scorer/assist call sites, never at the CARD_WEIGHT
+// ones — width and duty shift who gets the ball in a scoring position, not who
+// concedes a foul, so a call site that omits `side` gets tacticalFactor 1, unchanged.
+function pickWeighted(rng, entries, weightTable, attribute, exclude = null, side = null) {
   const pool = entries.filter((e) => e.player && e.player.id !== exclude);
   if (!pool.length) return null;
   const weights = pool.map((e) => {
     const positional = weightTable[e.slot] ?? 1;
     const skill = attribute ? Math.pow(e.player.attributes[attribute] / 55, 1.6) : 1;
-    return Math.max(0.01, positional * skill);
+    const tacticalFactor = side
+      ? widthInvolvement(e.slot, side.tactics?.width ?? 0) * dutyInvolvement(e.duty)
+      : 1;
+    return Math.max(0.01, positional * skill * tacticalFactor);
   });
   return rng.weighted(pool, weights).player;
 }
 
 // Side state carried through the 90 minutes.
-function buildSide(club, isHome) {
-  const ratings = teamRatings(club);
+// `debuffs` and `ownDefenceCost` implement opposition focus — see simulateMatch for
+// how they're built from each club's tactics.oppositionFocus.
+function buildSide(club, isHome, { debuffs = null, ownDefenceCost = null } = {}) {
+  const ratings = teamRatings(club, { debuffs });
+  if (ownDefenceCost) ratings.defence *= ownDefenceCost;
   const onPitch = lineupPlayers(club).map((e) => ({ ...e, matchFitness: e.player.fitness }));
   return {
     club,
     isHome,
     ratings,
+    // Snapshotted, not a live reference to club.tactics — mid-match tactical changes
+    // (a later phase) refresh this explicitly via syncSideTactics rather than having
+    // every read implicitly notice a mutation.
+    tactics: club.tactics || defaultTactics(),
     onPitch,
     bench: benchPlayers(club).filter(isAvailable),
     subsUsed: 0,
@@ -84,7 +102,8 @@ function attackingPower(side) {
 function defensivePower(side) {
   const r = side.ratings;
   const base = r.defence * 0.7 + r.midfield * 0.18 + r.gk * 0.12;
-  return base * side.form * (side.isHome ? TUNING.homeDefence : 1) * side.manpower;
+  const pressing = pressingDefenceFactor(side.tactics?.pressing ?? 0);
+  return base * pressing * side.form * (side.isHome ? TUNING.homeDefence : 1) * side.manpower;
 }
 
 export function simulateMatch(homeClub, awayClub, rng, options = {}) {
@@ -97,8 +116,21 @@ export function simulateMatch(homeClub, awayClub, rng, options = {}) {
     aggregate = null,
   } = options;
 
-  const home = buildSide(homeClub, !neutralVenue);
-  const away = buildSide(awayClub, false);
+  // Opposition focus: whichever side has it switched on debuffs the opponent's best
+  // available starter for this match, recomputed fresh rather than stored — and pays
+  // a small cost of its own to its defence line, so it's a trade like every other
+  // lever, not a free lunch.
+  const homeFocusesOn = homeClub.tactics?.oppositionFocus ? pickOppositionFocusTarget(awayClub) : null;
+  const awayFocusesOn = awayClub.tactics?.oppositionFocus ? pickOppositionFocusTarget(homeClub) : null;
+
+  const home = buildSide(homeClub, !neutralVenue, {
+    debuffs: awayFocusesOn ? new Map([[awayFocusesOn.id, OPPOSITION_FOCUS_TARGET_DEBUFF]]) : null,
+    ownDefenceCost: homeFocusesOn ? OPPOSITION_FOCUS_OWN_DEFENCE_COST : null,
+  });
+  const away = buildSide(awayClub, false, {
+    debuffs: homeFocusesOn ? new Map([[homeFocusesOn.id, OPPOSITION_FOCUS_TARGET_DEBUFF]]) : null,
+    ownDefenceCost: awayFocusesOn ? OPPOSITION_FOCUS_OWN_DEFENCE_COST : null,
+  });
 
   for (const side of [home, away]) {
     side.form = clamp(rng.normal(1, TUNING.formSd), 0.72, 1.3);
@@ -214,23 +246,34 @@ function tickMinute(minute, side, opponent, possessionShare, rng, push, phase, m
   const volume = Math.pow(ratio / 0.5, TUNING.strengthExponent);
 
   // Expected shots for this side across the match, converted to a per-minute rate.
+  // Tempo is a volume lever here; its quality trade-off lives in resolveChance's
+  // onTargetProb, deliberately a separate touch point so the two effects stay
+  // independently measurable.
   const possessionFactor = 0.6 + 0.8 * possessionShare;
-  const expected = TUNING.shotsPerTeam * volume * possessionFactor;
+  const tempo = tempoVolumeFactor(side.tactics?.tempo ?? 0);
+  const expected = TUNING.shotsPerTeam * volume * possessionFactor * tempo;
   let perMinute = expected / 90;
   if (phase === 'stoppage' || phase === 'extra') perMinute *= 1.1; // tired legs, stretched games
 
-  // Fatigue drags on the chasing side late on.
+  // Fatigue drags on the chasing side late on. Pressing raises the drain rate — the
+  // cost side of what is otherwise a pure defensive boost in defensivePower().
+  const pressingFatigue = pressingFatigueFactor(side.tactics?.pressing ?? 0);
   for (const entry of side.onPitch) {
-    entry.matchFitness = Math.max(30, entry.matchFitness - 0.16);
+    entry.matchFitness = Math.max(30, entry.matchFitness - 0.16 * pressingFatigue);
   }
 
   if (rng.chance(perMinute)) {
     resolveChance(minute, side, opponent, rng, push, minuteLabel);
   }
 
-  // Corners, fouls and cards tick along independently of shots.
-  if (rng.chance(0.055 * (0.6 + 0.8 * possessionShare))) side.corners++;
-  if (rng.chance(0.13)) {
+  // Corners, fouls and cards tick along independently of shots. Width raises corners
+  // (more crosses, more deflected balls out); pressing raises fouls (and, through the
+  // existing yellow-card roll below, cards) — pressing's second cost, alongside fatigue.
+  const widthCorner = widthCornerFactor(side.tactics?.width ?? 0);
+  if (rng.chance(0.055 * (0.6 + 0.8 * possessionShare) * widthCorner)) side.corners++;
+
+  const pressingFoul = pressingFoulFactor(side.tactics?.pressing ?? 0);
+  if (rng.chance(0.13 * pressingFoul)) {
     side.fouls++;
     if (rng.chance(TUNING.yellowPerTeam / 12)) bookPlayer(minute, side, rng, push, minuteLabel);
   }
@@ -246,7 +289,7 @@ function resolveChance(minute, side, opponent, rng, push, minuteLabel) {
 
   // A penalty is a chance resolved differently.
   if (rng.chance(TUNING.penaltyChance)) {
-    const taker = pickWeighted(rng, side.onPitch, SCORER_WEIGHT, 'finishing');
+    const taker = pickWeighted(rng, side.onPitch, SCORER_WEIGHT, 'finishing', null, side);
     if (taker) {
       const converted = rng.chance(TUNING.penaltyConversion + (taker.attributes.finishing - 60) * 0.0022);
       if (converted) {
@@ -259,13 +302,17 @@ function resolveChance(minute, side, opponent, rng, push, minuteLabel) {
     }
   }
 
-  const onTargetProb = clamp(TUNING.onTargetBase + (attackQuality - keeperQuality) * 0.0035, 0.18, 0.62);
+  // Tempo's quality trade: rushed, fast-tempo shots are less accurate; patient,
+  // slow-tempo ones more so. Kept separate from tempo's volume effect in tickMinute
+  // so a harness can attribute each independently.
+  const tempoQuality = tempoQualityAdjust(side.tactics?.tempo ?? 0);
+  const onTargetProb = clamp(TUNING.onTargetBase + (attackQuality - keeperQuality) * 0.0035 + tempoQuality, 0.18, 0.62);
   if (!rng.chance(onTargetProb)) {
     if (rng.chance(TUNING.woodworkShare)) {
-      const player = pickWeighted(rng, side.onPitch, SCORER_WEIGHT, 'finishing');
+      const player = pickWeighted(rng, side.onPitch, SCORER_WEIGHT, 'finishing', null, side);
       push(label, 'woodwork', { club: side.club.short, clubId: side.club.id, player: player?.name });
     } else {
-      const player = pickWeighted(rng, side.onPitch, SCORER_WEIGHT, 'finishing');
+      const player = pickWeighted(rng, side.onPitch, SCORER_WEIGHT, 'finishing', null, side);
       push(label, 'shot_off', { club: side.club.short, clubId: side.club.id, player: player?.name });
     }
     return;
@@ -273,11 +320,11 @@ function resolveChance(minute, side, opponent, rng, push, minuteLabel) {
 
   side.onTarget++;
   const conversion = clamp(TUNING.conversionBase + (attackQuality - keeperQuality) * 0.0042, 0.08, 0.62);
-  const scorer = pickWeighted(rng, side.onPitch, SCORER_WEIGHT, 'finishing');
+  const scorer = pickWeighted(rng, side.onPitch, SCORER_WEIGHT, 'finishing', null, side);
   if (!scorer) return;
 
   if (rng.chance(conversion)) {
-    const assister = rng.chance(0.72) ? pickWeighted(rng, side.onPitch, ASSIST_WEIGHT, 'passing', scorer.id) : null;
+    const assister = rng.chance(0.72) ? pickWeighted(rng, side.onPitch, ASSIST_WEIGHT, 'passing', scorer.id, side) : null;
     recordGoal(minute, side, scorer, assister, rng, push, label, 'open_play');
   } else {
     push(label, 'shot_saved', { club: side.club.short, clubId: side.club.id, player: scorer.name });

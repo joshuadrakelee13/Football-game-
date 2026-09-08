@@ -3,11 +3,12 @@
 import { h, clubChip, ratingPill, meter, panel, emptyState } from './dom.js';
 import { money, num } from '../core/format.js';
 import { playerClub } from '../model/world.js';
-import { FORMATIONS, FORMATION_KEYS, positionFit } from '../data/positions.js';
+import { FORMATIONS, FORMATION_KEYS, positionFit, ROLE_OPTIONS, ROLE_LABELS, DUTY_OPTIONS } from '../data/positions.js';
 import { pickBestXI, lineupPlayers, benchPlayers, squadRating, weeklyWages, teamRatings } from '../model/club.js';
 import { moraleLabel, isAvailable, effectiveRating } from '../model/player.js';
 import { renewalDemand, renewContract, sellPlayer } from '../engine/transfers.js';
 import { visiblePotential } from '../engine/scouting.js';
+import { DIAL_KEYS, DIAL_LABELS, dialLevelLabel } from '../data/tactics.js';
 import { persist, render } from '../main.js';
 import { openModal, closeModal, confirmDialog } from './modal.js';
 import { toast } from './toast.js';
@@ -38,6 +39,7 @@ export function renderSquad(world) {
       h('div', { class: 'grid', style: { gap: 'var(--space-4)' } },
         formationPanel(world, you),
         pitchPanel(world, you),
+        tacticsPanel(you),
         linesPanel(you),
       ),
     ),
@@ -88,7 +90,7 @@ function pitchPanel(world, you) {
             class: classes.join(' '),
             style: { left: x + '%', top: y + '%' },
             title: `${entry.player.name} — ${entry.player.position} in a ${entry.slot} role`,
-            onclick: () => openPlayer(world, you, entry.player),
+            onclick: () => openPlayer(world, you, entry.player, entry.slot),
           },
             h('span', { class: 'shirt' }, Math.round(entry.player.overall)),
             h('span', { class: 'pname' }, entry.player.last),
@@ -97,6 +99,50 @@ function pitchPanel(world, you) {
         })),
       ),
     ),
+  );
+}
+
+// The whole point of this panel: teamRatings(you) below already renders live off
+// club.tactics, so moving a slider here and watching linesPanel's meters shift is
+// the cheapest, most direct proof a lever is real — visible before a match is played.
+function tacticsPanel(you) {
+  return panel('Tactics',
+    h('div', { class: 'panel-body', style: { display: 'grid', gap: 'var(--space-4)' } },
+      ...DIAL_KEYS.map((key) => dialRow(you, key)),
+      oppositionFocusRow(you),
+    ),
+  );
+}
+
+function dialRow(you, key) {
+  const value = you.tactics[key];
+  const label = DIAL_LABELS[key];
+  return h('div', null,
+    h('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: '6px' } },
+      h('span', { class: 'eyebrow' }, label.name),
+      h('span', { class: 'mono', style: { fontSize: '11.5px', color: 'var(--text-2)' } }, dialLevelLabel(key, value)),
+    ),
+    h('div', { class: 'formation-picker' }, ...[-2, -1, 0, 1, 2].map((v) =>
+      h('button', {
+        class: 'formation-option' + (value === v ? ' active' : ''),
+        style: { minWidth: '36px', textAlign: 'center' },
+        onclick: () => { you.tactics[key] = v; persist(); render(); },
+      }, v > 0 ? '+' + v : String(v)),
+    )),
+  );
+}
+
+function oppositionFocusRow(you) {
+  return h('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'var(--space-3)' } },
+    h('div', { style: { minWidth: 0 } },
+      h('div', { style: { fontWeight: 500, fontSize: '13px' } }, 'Opposition focus'),
+      h('div', { style: { color: 'var(--text-3)', fontSize: '11.5px' } },
+        'Mark their best player tighter — costs a little of your own defensive shape.'),
+    ),
+    h('button', {
+      class: 'btn sm ' + (you.tactics.oppositionFocus ? 'primary' : 'ghost'),
+      onclick: () => { you.tactics.oppositionFocus = !you.tactics.oppositionFocus; persist(); render(); },
+    }, you.tactics.oppositionFocus ? 'On' : 'Off'),
   );
 }
 
@@ -148,9 +194,10 @@ function squadTable(world, you) {
         h('tbody', null, ...squad.map((p) => {
           const pot = visiblePotential(you, p);
           const starting = inXI.has(p.id);
+          const slot = starting ? you.lineup.find((l) => l.playerId === p.id)?.slot : null;
           return h('tr', {
             class: 'clickable' + (starting ? ' you' : ''),
-            onclick: () => openPlayer(world, you, p),
+            onclick: () => openPlayer(world, you, p, slot),
           },
             h('td', null, starting ? h('span', { class: 'tag pitch' }, 'XI') : ''),
             h('td', { class: 'strong' },
@@ -193,7 +240,7 @@ function moraleColour(m) {
 
 // ---------------------------------------------------------------------------
 
-export function openPlayer(world, club, player) {
+export function openPlayer(world, club, player, slot = null) {
   const pot = visiblePotential(club, player);
   const demand = renewalDemand(player);
   const attrs = ['pace', 'finishing', 'passing', 'tackling', 'physical', 'technique'];
@@ -219,6 +266,8 @@ export function openPlayer(world, club, player) {
         `${player.seasonApps} appearances this season, ${player.seasonGoals} goals and ${player.seasonAssists} assists.`,
         !isAvailable(player) ? ` Currently out for ${player.injuredFor} weeks (${player.injuryType}).` : '',
       ),
+
+      slot ? rolePicker(world, club, player, slot) : null,
 
       h('div', { class: 'grid cols-2' }, ...attrs.map((a) =>
         h('div', null,
@@ -257,6 +306,48 @@ export function openPlayer(world, club, player) {
       }, 'Sell'),
     ],
   });
+}
+
+// Only shown for a player currently in the starting XI — role/duty are meaningful
+// relative to the slot he's actually playing, and ROLE_OPTIONS is keyed by slot.
+function rolePicker(world, club, player, slot) {
+  const roles = ROLE_OPTIONS[slot] || [];
+  const current = club.playerTactics[player.id] || { role: null, duty: 'support' };
+
+  const apply = (patch) => {
+    club.playerTactics[player.id] = { ...current, ...patch };
+    club.lineup = pickBestXI(club);
+    persist();
+    render();
+    openPlayer(world, club, player, slot); // refresh the modal in place with the new state
+  };
+
+  return h('div', { style: { marginBottom: 'var(--space-4)', display: 'grid', gap: '12px' } },
+    h('div', null,
+      h('div', { class: 'eyebrow', style: { marginBottom: '6px' } }, 'Role'),
+      h('div', { class: 'formation-picker' },
+        h('button', {
+          class: 'formation-option' + (!current.role ? ' active' : ''),
+          onclick: () => apply({ role: null }),
+        }, 'Natural'),
+        ...roles.map((role) => h('button', {
+          class: 'formation-option' + (current.role === role ? ' active' : ''),
+          onclick: () => apply({ role }),
+        }, ROLE_LABELS[role])),
+      ),
+    ),
+    // A goalkeeper's duty is a structural no-op (see ADJACENT_LINE in positions.js) —
+    // omitted rather than shown as buttons that would silently do nothing.
+    slot !== 'GK' ? h('div', null,
+      h('div', { class: 'eyebrow', style: { marginBottom: '6px' } }, 'Duty'),
+      h('div', { class: 'formation-picker' },
+        ...DUTY_OPTIONS.map((duty) => h('button', {
+          class: 'formation-option' + (current.duty === duty ? ' active' : ''),
+          onclick: () => apply({ duty }),
+        }, duty[0].toUpperCase() + duty.slice(1))),
+      ),
+    ) : null,
+  );
 }
 
 function pill(k, v) {

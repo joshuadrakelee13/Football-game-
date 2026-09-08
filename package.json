@@ -6,9 +6,10 @@
   "private": true,
   "scripts": {
     "start": "node tools/serve.mjs",
-    "test": "node tools/sim-test.mjs && node tools/season-test.mjs && node tools/balance-test.mjs",
+    "test": "node tools/sim-test.mjs && node tools/season-test.mjs && node tools/tactics-test.mjs && node tools/balance-test.mjs",
     "test:sim": "node tools/sim-test.mjs",
     "test:season": "node tools/season-test.mjs",
+    "test:tactics": "node tools/tactics-test.mjs",
     "test:balance": "node tools/balance-test.mjs"
   },
   "engines": { "node": ">=18" }

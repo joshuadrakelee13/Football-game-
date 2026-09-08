@@ -15,7 +15,7 @@ import {
 import { applyTraining, nextFacilityUpgrade } from '../src/engine/training.js';
 import { setTransferBudget, setWageBudget, transferBudget, recordLedger, weeklyRunningCost } from '../src/engine/finance.js';
 import { nextTier } from '../src/engine/stadium.js';
-import { squadRating, weeklyWages, pickBestXI } from '../src/model/club.js';
+import { squadRating, weeklyWages, pickBestXI, pickClubIdentity } from '../src/model/club.js';
 import { DIVISION_BY_TIER } from '../src/data/competitions.js';
 
 const RUNS = Number(process.env.RUNS || 6);
@@ -88,7 +88,25 @@ function manageSummer(world, rng) {
   }
 
   you.trainingFocus = you.tier >= 3 ? 'youth' : 'balanced';
-  you.lineup = pickBestXI(you);
+
+  // A sensible manager sets tactics too, not just squad and facilities — every AI
+  // club now does (see pickClubIdentity in club.js), and leaving the player's own
+  // club at all-neutral dials while every opponent commits to a coherent identity
+  // is exactly the asymmetry that made this measurement worth re-running in the
+  // first place.
+  //
+  // A fixed identity, not a random re-roll: a real manager settles on an approach
+  // rather than reinventing their whole tactical philosophy every summer. Two
+  // earlier attempts measured worse: the same fully random identity AI clubs get
+  // (re-rolled every season) dropped the 12-season Premier League arrival rate and
+  // pushed the median out to season 13; the fixed but fully conservative
+  // 'possession' identity (everyone at support duty) measured 4/12 over a larger,
+  // more reliable sample — an underdog playing it that safe leaves value on the
+  // table against AI opponents a quarter of whom draw an attack-leaning identity.
+  // 'high-press' is at least as realistic a choice for a newly-promoted small club
+  // short on technical quality — aggressive, high-energy, and it gets the same
+  // attack-duty benefit two of the four AI profiles get.
+  pickClubIdentity(rng, you, 'high-press');
 }
 
 function playSeason(world, rng) {

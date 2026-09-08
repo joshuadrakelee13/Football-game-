@@ -3,7 +3,7 @@
 
 import { clamp } from '../core/rng.js';
 import { DIVISIONS, DIVISION_BY_TIER, REPUTATION, EURO_COMPS, CUPS, PARACHUTE } from '../data/competitions.js';
-import { pickBestXI, weeklyWages, overallStrength, squadRating } from '../model/club.js';
+import { pickBestXI, weeklyWages, overallStrength, squadRating, pickClubIdentity } from '../model/club.js';
 import { refreshDerived, generatePlayer, isAvailable } from '../model/player.js';
 import { startSeason, playerClub, fixtureForClubOnMatchday, pickSponsor, sponsorValue } from '../model/world.js';
 import { simulateMatch } from './match.js';
@@ -636,6 +636,7 @@ function ageAndDevelopSquads(world, rng) {
       club.squad = club.squad.filter((p) => !retiring.includes(p.id));
     }
     replenishSquad(world, club, rng);
+    if (!club.isPlayerClub) pickClubIdentity(rng, club);
     club.lineup = pickBestXI(club);
   }
 }

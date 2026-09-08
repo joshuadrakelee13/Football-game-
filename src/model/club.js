@@ -2,8 +2,9 @@
 
 import { clamp } from '../core/rng.js';
 import { DIVISION_BY_TIER } from '../data/competitions.js';
-import { FORMATIONS, positionFit, SLOT_SPLIT, SLOT_LINE } from '../data/positions.js';
+import { FORMATIONS, positionFit, SLOT_SPLIT, SLOT_LINE, roleFit, dutyLineBias, ROLE_OPTIONS } from '../data/positions.js';
 import { generatePlayer, SQUAD_TEMPLATE, effectiveRating, isAvailable } from './player.js';
+import { defaultTactics, mentalityBias } from '../data/tactics.js';
 
 // Prestige -> the rating a club's first-choice XI should average.
 // Interpolated between control points so the whole pyramid stays plausible.
@@ -62,6 +63,8 @@ export function createClub(rng, base, { isPlayerClub = false, ratingTarget = nul
     squad: [],
     formation: '4-4-2',
     lineup: [],
+    tactics: defaultTactics(),
+    playerTactics: {},   // { [playerId]: { role, duty } } — persisted, NOT on lineup (see save.js)
     fans,
     reputation: isPlayerClub ? 10 : prestige,
     balance: 0,
@@ -96,7 +99,72 @@ export function createClub(rng, base, { isPlayerClub = false, ratingTarget = nul
   }
 
   club.lineup = pickBestXI(club);
+  if (!isPlayerClub) pickClubIdentity(rng, club);
   return club;
+}
+
+// Named tactical profiles for AI clubs — the first, deliberate departure from
+// neutral-by-default in this whole system. Individual player roles/duties still
+// default to neutral everywhere (see pickBestXI); it is only here, assigning a
+// club's identity, that non-neutral values get introduced, which is what keeps this
+// one balance-relevant change isolated and separately re-measurable.
+// Each dial sums to exactly 0 across the four equally-likely profiles, and every
+// value stays within +/-1 rather than reaching the +/-2 extremes.
+//
+// Both constraints came from measurement, not caution for its own sake. A first
+// version averaged +0.25 on mentality and tempo, and a whole league of AI clubs
+// drawing from a population that skews even slightly attacking compounded into a
+// real, measured shift: goals/game rose from 2.69 to 3.01 in sim-test, 3.64 in the
+// Premier League specifically in season-test. Zeroing the population mean brought
+// sim-test back to 2.86 — better, but a longer season-test run still crept back to
+// 3.6+ in the top two divisions. The reason: mentality's own bias table isn't even
+// symmetric (-2 gives defence x1.10, +2 gives defence x0.92) and shot volume is a
+// clamped, nonlinear function of the attack/defence ratio — a zero-mean population
+// of *inputs* doesn't guarantee a zero-mean population of *goals*. Shrinking every
+// value to +/-1 keeps identities clearly differentiated while asking much less of
+// that nonlinearity, which is what the validation section of the plan meant by
+// "shrink the new tactics factors before touching the already-fitted constants."
+const CLUB_IDENTITY_TACTICS = {
+  possession:   { mentality: 0, pressing: -1, tempo: -1, width: -1 },
+  direct:       { mentality: 1, pressing: 0, tempo: 1, width: 1 },
+  defensive:    { mentality: -1, pressing: 0, tempo: -1, width: -1 },
+  'high-press': { mentality: 0, pressing: 1, tempo: 1, width: 1 },
+};
+const CLUB_IDENTITY_KEYS = Object.keys(CLUB_IDENTITY_TACTICS);
+
+// Which duty each identity tends to hand to a slot that can meaningfully carry
+// forward — everyone else stays at support.
+const IDENTITY_DUTY_LEAN = { possession: 'support', direct: 'attack', defensive: 'defend', 'high-press': 'attack' };
+
+// Gives a club a tactical identity: the four dials, plus best-fit roles and
+// identity-leaning duties for its likely starters. Called on AI clubs at creation
+// and again whenever a squad regenerates, so identities aren't frozen at world-build
+// time. `forcedKey` lets a caller pin a specific identity rather than rolling one —
+// used by tools/balance-test.mjs, where a real manager settles on an approach
+// instead of reinventing their whole tactical philosophy every single summer; role
+// and duty still refresh each call, for whoever is actually in the XI that season.
+export function pickClubIdentity(rng, club, forcedKey = null) {
+  const key = forcedKey || rng.pick(CLUB_IDENTITY_KEYS);
+  club.tactics = { ...defaultTactics(), ...CLUB_IDENTITY_TACTICS[key], oppositionFocus: rng.chance(0.15) };
+  club.identity = key;
+
+  const lean = IDENTITY_DUTY_LEAN[key];
+  const xi = pickBestXI(club);
+  for (const entry of xi) {
+    const player = club.squad.find((p) => p.id === entry.playerId);
+    if (!player) continue;
+    const roles = ROLE_OPTIONS[entry.slot] || [];
+    let bestRole = null, bestFit = 1;
+    for (const role of roles) {
+      const fit = roleFit(player, entry.slot, role);
+      if (fit > bestFit) { bestFit = fit; bestRole = role; }
+    }
+    // Not every eligible player gets the identity's duty lean — otherwise every club
+    // sharing a profile would play in lockstep. GK is excluded: duty is a no-op there.
+    const duty = entry.slot !== 'GK' && rng.chance(0.55) ? lean : 'support';
+    club.playerTactics[player.id] = { role: bestRole, duty };
+  }
+  club.lineup = pickBestXI(club);
 }
 
 export function weeklyWages(club) {
@@ -136,7 +204,11 @@ export function pickBestXI(club, formationKey = club.formation) {
     }
     if (best) {
       used.add(best.id);
-      lineup.push({ slot, playerId: best.id });
+      // Role/duty live on club.playerTactics, keyed by player, never on the lineup
+      // entry itself — the lineup is disposable and gets regenerated on load (see
+      // save.js's unpackClubs), so anything stored only here would vanish on reload.
+      const pt = club.playerTactics?.[best.id];
+      lineup.push({ slot, playerId: best.id, role: pt?.role ?? null, duty: pt?.duty ?? 'support' });
     }
   }
   return lineup;
@@ -154,7 +226,11 @@ export function benchPlayers(club) {
 
 // Team ratings for the match engine: three lines plus a goalkeeper.
 // CDMs, full-backs and wingers contribute to two lines, which is why formation matters.
-export function teamRatings(club) {
+//
+// `debuffs` is an optional Map<playerId, factor> for opposition focus — a match-only,
+// never-persisted reduction to how much one named opposing player contributes to his
+// own team's lines. See src/engine/match.js's simulateMatch for how it's built.
+export function teamRatings(club, { debuffs = null } = {}) {
   const formation = FORMATIONS[club.formation] || FORMATIONS['4-4-2'];
   // Weighted accumulator per line, so a CDM who is 45% defender / 55% midfielder
   // contributes proportionally to both without inflating either average.
@@ -165,25 +241,51 @@ export function teamRatings(club) {
     attack: { sum: 0, weight: 0 },
   };
 
-  for (const { slot, player } of lineupPlayers(club)) {
-    const rating = effectiveRating(player) * positionFit(player.position, slot);
+  // Duty's effect is aggregated separately, below, rather than folded into this
+  // split — see dutyLineBias's comment in positions.js for why redistributing
+  // weight at face value isn't reliably directional.
+  let dutyAttack = 1, dutyDefence = 1, dutyMidfield = 1;
+  const DUTY_NUDGE = 0.007;
+
+  for (const { slot, player, role, duty } of lineupPlayers(club)) {
+    const debuff = debuffs?.get(player.id) ?? 1;
+    const rating = effectiveRating(player) * positionFit(player.position, slot) * roleFit(player, slot, role) * debuff;
     const split = slot === 'GK' ? { gk: 1 } : SLOT_SPLIT[slot] || { [SLOT_LINE[slot]]: 1 };
     for (const line in split) {
       lines[line].sum += rating * split[line];
       lines[line].weight += split[line];
     }
+
+    const bias = dutyLineBias(slot, duty);
+    if (bias) {
+      const nudge = { attack: dutyAttack, defence: dutyDefence, midfield: dutyMidfield };
+      nudge[bias.toward] += DUTY_NUDGE * bias.magnitude / 0.12;
+      nudge[bias.away] -= DUTY_NUDGE * 0.75 * bias.magnitude / 0.12;
+      dutyAttack = nudge.attack; dutyDefence = nudge.defence; dutyMidfield = nudge.midfield;
+    }
   }
 
   const base = squadRating(club) * 0.85;
   const avg = (line) => (line.weight > 0 ? line.sum / line.weight : base);
+  // Same mechanism as formation.bias, composed alongside it rather than replacing it.
+  const mentality = mentalityBias(club.tactics?.mentality ?? 0);
 
   return {
     gk: avg(lines.gk),
-    defence: avg(lines.defence) * formation.bias.defence,
-    midfield: avg(lines.midfield) * formation.bias.midfield,
-    attack: avg(lines.attack) * formation.bias.attack,
+    defence: avg(lines.defence) * formation.bias.defence * mentality.defence * dutyDefence,
+    midfield: avg(lines.midfield) * formation.bias.midfield * dutyMidfield,
+    attack: avg(lines.attack) * formation.bias.attack * mentality.attack * dutyAttack,
     formation: formation.name,
   };
+}
+
+// Highest-overall available starter — the target when a club has opposition focus
+// switched on. Recomputed fresh every match rather than stored, so it can never go
+// stale when the fixture changes.
+export function pickOppositionFocusTarget(club) {
+  const entries = lineupPlayers(club);
+  if (!entries.length) return null;
+  return entries.reduce((best, e) => (!best || e.player.overall > best.player.overall ? e : best), null).player;
 }
 
 // One number for league tables, transfer ambition and cup seeding.

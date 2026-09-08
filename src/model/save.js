@@ -3,6 +3,7 @@
 
 import { encodeSquad, decodeSquad } from './codec.js';
 import { pickBestXI } from './club.js';
+import { defaultTactics } from '../data/tactics.js';
 
 export const SAVE_KEY = 'fct.save.v1';
 export const SAVE_VERSION = 1;
@@ -31,7 +32,14 @@ function packClubs(clubs) {
 function unpackClubs(clubs) {
   const out = {};
   for (const [id, club] of Object.entries(clubs)) {
-    const restored = { ...club, squad: decodeSquad(club.squad || []) };
+    const restored = {
+      ...club,
+      squad: decodeSquad(club.squad || []),
+      // Backfilled rather than a SAVE_VERSION bump: purely additive fields, safe
+      // defaults for any save written before tactics existed.
+      tactics: club.tactics ?? defaultTactics(),
+      playerTactics: club.playerTactics ?? {},
+    };
     restored.lineup = pickBestXI(restored);
     out[id] = restored;
   }

@@ -112,7 +112,21 @@ function defensivePower(side) {
   return base * pressing * side.form * (side.isHome ? TUNING.homeDefence : 1) * side.manpower;
 }
 
-export function simulateMatch(homeClub, awayClub, rng, options = {}) {
+// A resumable match: setup-through-kickoff happens once in createMatchSession, the
+// 90 minutes advance in whatever chunks a caller asks for via advanceSession (a
+// quick-simmed match asks for all 90 at once; a live match asks for 15 at a time,
+// pausing to show a checkpoint modal in between), and finishSession resolves
+// stoppage time, extra time and penalties and builds the same result shape
+// simulateMatch has always returned. simulateMatch below is the single-call form of
+// exactly this sequence — the three pieces exist so match-view.js's live-match view
+// can drive the same engine minute-by-minute instead of only ever seeing it as one
+// atomic call.
+//
+// The three functions must run their RNG draws and push() calls in exactly the order
+// the old monolithic simulateMatch did, or every save/replay seeded before this split
+// would resolve differently — tools/season-test.mjs and tools/sim-test.mjs's fixed
+// seeds are what catch a reordering here.
+export function createMatchSession(homeClub, awayClub, rng, options = {}) {
   const {
     neutralVenue = false,
     competition = 'LEAGUE',
@@ -164,20 +178,45 @@ export function simulateMatch(homeClub, awayClub, rng, options = {}) {
     competition, label,
   });
 
-  const totalMinutes = 90;
-  const simulateBlock = (from, to, phase) => {
-    for (let minute = from; minute <= to; minute++) {
-      tickMinute(minute, home, away, homeShare, rng, push, phase);
-      tickMinute(minute, away, home, 1 - homeShare, rng, push, phase);
-      if (minute === 45 && phase === 'normal') {
-        push(45, 'half_time', { homeGoals: home.goals, awayGoals: away.goals });
-        applyHalfTime(home, away, rng, push, aiHalfTimeReactions);
-      }
-      if (minute % 15 === 0) considerSubs(minute, home, rng, push), considerSubs(minute, away, rng, push);
-    }
+  return {
+    homeClub, awayClub, home, away, rng, push, events, homeShare,
+    minute: 0, // minutes of normal time resolved so far — advanceSession's resume point
+    finished: false,
+    options: { neutralVenue, competition, label, extraTime, penaltiesIfDrawn, aggregate, aiHalfTimeReactions },
   };
+}
 
-  simulateBlock(1, totalMinutes, 'normal');
+// Resolves normal-time minutes up to toMinute (capped at 90), resuming from wherever
+// the session last stopped. Calling this repeatedly with increasing checkpoints (15,
+// 30, 45, ...) produces exactly the same events and final state as one call to 90 —
+// the loop body only ever depends on the minute and side state, never on the target
+// passed in, so splitting it across calls changes nothing about what it computes.
+export function advanceSession(session, toMinute) {
+  const { home, away, rng, push, homeShare } = session;
+  const { aiHalfTimeReactions } = session.options;
+  const target = Math.min(toMinute, 90);
+
+  for (let minute = session.minute + 1; minute <= target; minute++) {
+    tickMinute(minute, home, away, homeShare, rng, push, 'normal');
+    tickMinute(minute, away, home, 1 - homeShare, rng, push, 'normal');
+    if (minute === 45) {
+      push(45, 'half_time', { homeGoals: home.goals, awayGoals: away.goals });
+      applyHalfTime(home, away, rng, push, aiHalfTimeReactions);
+    }
+    if (minute % 15 === 0) considerSubs(minute, home, rng, push), considerSubs(minute, away, rng, push);
+  }
+  session.minute = Math.max(session.minute, target);
+  return session;
+}
+
+// Resolves everything after normal time — stoppage, extra time, a shootout if the tie
+// calls for one — and returns the same result shape simulateMatch always has. Fast-
+// forwards to 90 first if the caller paused before full time and never resumed.
+export function finishSession(session) {
+  const { home, away, rng, push, homeShare, homeClub, awayClub, events } = session;
+  const { competition, label, neutralVenue, extraTime, penaltiesIfDrawn, aggregate } = session.options;
+
+  if (session.minute < 90) advanceSession(session, 90);
 
   // Stoppage time: a short extra block where late drama happens.
   const stoppage = rng.int(1, 5);
@@ -211,6 +250,7 @@ export function simulateMatch(homeClub, awayClub, rng, options = {}) {
   }
 
   push(90, 'full_time', { homeGoals: home.goals, awayGoals: away.goals });
+  session.finished = true;
 
   return {
     homeClubId: homeClub.id,
@@ -235,6 +275,12 @@ export function simulateMatch(homeClub, awayClub, rng, options = {}) {
     home: summarise(home),
     away: summarise(away),
   };
+}
+
+export function simulateMatch(homeClub, awayClub, rng, options = {}) {
+  const session = createMatchSession(homeClub, awayClub, rng, options);
+  advanceSession(session, 90);
+  return finishSession(session);
 }
 
 function summarise(side) {
@@ -398,10 +444,12 @@ function injurePlayer(minute, side, rng, push, minuteLabel) {
 }
 
 // Recomputes a side's cached ratings after club.tactics has changed mid-match (the
-// AI's half-time reaction here, or later a human's pause-menu change) — reapplies the
-// same opposition-focus debuff and own-defence cost fixed at kickoff against the club's
-// new tactics, rather than rebuilding the side from scratch.
-function syncSideTactics(side) {
+// AI's half-time reaction here, or a human's pause-menu change via the live-match UI)
+// — reapplies the same opposition-focus debuff and own-defence cost fixed at kickoff
+// against the club's new tactics, rather than rebuilding the side from scratch.
+// Exported: the live-match UI calls this itself after the player edits their own
+// club's tactics, since applyHalfTime only ever syncs non-player sides automatically.
+export function syncSideTactics(side) {
   side.tactics = side.club.tactics || defaultTactics();
   const ratings = teamRatings(side.club, { debuffs: side.debuffs });
   if (side.ownDefenceCost) ratings.defence *= side.ownDefenceCost;

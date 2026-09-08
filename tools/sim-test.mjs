@@ -6,16 +6,28 @@
 import { Rng } from '../src/core/rng.js';
 import { createClub, overallStrength, pickBestXI } from '../src/model/club.js';
 import { simulateMatch } from '../src/engine/match.js';
+import { defaultTactics } from '../src/data/tactics.js';
 
 const N = Number(process.env.N || 4000);
 
 // A synthetic club at an exact rating, so gaps are precise rather than approximate.
 function clubAt(rng, rating, id) {
-  return createClub(rng, {
+  const club = createClub(rng, {
     id, name: id, short: id, abbr: id.slice(0, 3).toUpperCase(),
     stadium: id + ' Park', capacity: 20000, prestige: 50, tier: 1,
     colors: { primary: '#fff', secondary: '#000' }, pattern: 'solid',
   }, { ratingTarget: rating });
+  // createClub assigns every non-player club a random AI tactical identity (see
+  // pickClubIdentity in club.js). This harness exists to isolate the rating-gap
+  // effect specifically — the file's own existing methodology already averages many
+  // squad pairs and alternates venue so nothing except the gap under test varies.
+  // Random tactical identity is a second, uncontrolled confound on top of that; reset
+  // to neutral so this harness keeps measuring the core engine, not the identity
+  // layer (which tools/tactics-test.mjs tests directly and deliberately).
+  club.tactics = defaultTactics();
+  club.playerTactics = {};
+  club.lineup = pickBestXI(club);
+  return club;
 }
 
 // Averaged over many independently generated squad pairs, so one unlucky squad

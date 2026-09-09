@@ -1,66 +1,98 @@
 /* Reusable pieces: nav, HUD, panels, tables, club identity, buttons, bars. */
 
-/* ---- Left rail ---------------------------------------------------------- */
+/* ---- Left rail ------------------------------------------------------------
+   FM's sidebar runs its own deep violet, distinct from every navy content panel
+   beside it — the crest swatch plus that colour shift is most of what makes a
+   glance at the sidebar read as "this is a football management game." */
+
+#rail { background: var(--side-bg); border-right: 1px solid var(--side-line); }
 
 .rail-brand {
-  padding: var(--space-4) var(--space-4) var(--space-3);
-  border-bottom: 1px solid var(--line);
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--side-line);
+  display: flex;
+  align-items: center;
+  gap: 11px;
 }
+.rail-brand .crest {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius);
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.55);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+}
+.rail-brand .id { min-width: 0; }
 .rail-brand .club {
   font-family: var(--font-display);
-  font-size: 17px;
+  font-size: 15.5px;
   font-weight: 700;
   font-stretch: 92%;
   letter-spacing: -0.01em;
-  line-height: 1.2;
+  line-height: 1.25;
   display: block;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .rail-brand .division {
   font-size: 11px;
-  color: var(--text-3);
-  margin-top: 2px;
+  color: var(--side-text-dim);
+  margin-top: 1px;
   display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .rail-nav {
   flex: 1;
   overflow-y: auto;
-  padding: var(--space-2) 0;
+  padding: var(--space-3) 10px;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 11px;
   width: 100%;
-  padding: 8px var(--space-4);
-  color: var(--text-2);
-  font-size: 13.5px;
+  padding: 9px 11px;
+  border-radius: var(--radius);
+  color: var(--side-text-dim);
+  font-size: 13px;
   text-align: left;
-  border-left: 2px solid transparent;
   transition: color var(--fast) var(--ease), background var(--fast) var(--ease);
   position: relative;
 }
-.nav-item:hover { color: var(--text); background: var(--surface); }
+.nav-item:hover { color: var(--side-text); background: rgba(255, 255, 255, 0.045); }
 .nav-item.active {
-  color: var(--text);
-  background: var(--surface);
-  border-left-color: var(--pitch);
+  color: #fff;
+  background: var(--side-active);
   font-weight: 600;
 }
 .nav-item .icon {
-  width: 16px;
+  width: 17px;
   flex: none;
   text-align: center;
-  opacity: 0.75;
+  opacity: 0.85;
   font-size: 13px;
 }
 .nav-item.active .icon { opacity: 1; }
 .nav-item .badge {
   margin-left: auto;
   background: var(--pitch);
-  color: #062015;
+  color: #0D1907;
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 600;
@@ -69,17 +101,19 @@
 }
 
 .rail-foot {
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--side-line);
   padding: var(--space-3) var(--space-4);
   display: flex;
   gap: var(--space-2);
   flex-wrap: wrap;
 }
+.rail-foot .btn.ghost { border-color: var(--side-line); color: var(--side-text-dim); }
+.rail-foot .btn.ghost:hover:not(:disabled) { background: rgba(255, 255, 255, 0.06); color: var(--side-text); }
 
 @media (max-width: 1080px) {
-  .rail-brand .club, .rail-brand .division, .nav-item .label, .rail-foot { display: none; }
+  .rail-brand .id, .nav-item .label, .rail-foot { display: none; }
   .nav-item { justify-content: center; padding: 11px 0; }
-  .rail-brand { padding: var(--space-3) 0; text-align: center; }
+  .rail-brand { padding: var(--space-3) 0; justify-content: center; }
 }
 
 /* ---- HUD ticker ---------------------------------------------------------- */
@@ -97,7 +131,7 @@
 
 .hud-stat {
   padding: 0 var(--space-4);
-  border-right: 1px solid var(--line-faint);
+  border-right: 1px solid var(--side-line);
   flex: none;
   display: flex;
   flex-direction: column;
@@ -111,14 +145,14 @@
   letter-spacing: 0.13em;
   word-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--text-3);
+  color: var(--side-text-dim);
   font-weight: 600;
 }
 .hud-stat .v {
   font-family: var(--font-mono);
   font-size: 14px;
   font-variant-numeric: tabular-nums;
-  color: var(--text);
+  color: var(--side-text);
   line-height: 1.25;
   white-space: nowrap;
 }
@@ -132,7 +166,7 @@
   gap: var(--space-2);
   padding: 0 var(--space-4);
   flex: none;
-  border-left: 1px solid var(--line);
+  border-left: 1px solid var(--side-line);
   position: relative;
 }
 /* The stat strip scrolls horizontally when it will not fit. Fading its trailing edge
@@ -144,7 +178,7 @@
   top: 0;
   bottom: 0;
   width: 28px;
-  background: linear-gradient(90deg, transparent, var(--bg-raised));
+  background: linear-gradient(90deg, transparent, var(--side-bg-2));
   pointer-events: none;
 }
 
@@ -172,16 +206,16 @@
 .btn.primary {
   background: var(--pitch);
   border-color: var(--pitch);
-  color: #062015;
+  color: #0D1907;
   font-weight: 650;
 }
-.btn.primary:hover:not(:disabled) { background: #6BEDA6; border-color: #6BEDA6; }
+.btn.primary:hover:not(:disabled) { background: #93E874; border-color: #93E874; }
 
 .btn.ghost { background: transparent; border-color: var(--line); color: var(--text-2); }
 .btn.ghost:hover:not(:disabled) { background: var(--surface); color: var(--text); }
 
 .btn.danger { border-color: var(--danger-dim); color: var(--danger); background: transparent; }
-.btn.danger:hover:not(:disabled) { background: rgba(255, 90, 90, 0.09); }
+.btn.danger:hover:not(:disabled) { background: rgba(255, 93, 108, 0.09); }
 
 .btn.sm { padding: 5px 10px; font-size: 12px; }
 .btn.lg { padding: 12px 22px; font-size: 15px; }
@@ -293,10 +327,13 @@ table.data td {
   white-space: nowrap;
 }
 table.data td.strong { color: var(--text); font-weight: 500; }
+/* FM's tables are dense enough that a very faint row band is what keeps a wide
+   row legible without reading every value against a ruler. */
+table.data tbody tr:nth-child(even) { background: rgba(255, 255, 255, 0.022); }
 table.data tbody tr { transition: background var(--fast) var(--ease); }
-table.data tbody tr:hover { background: var(--surface-2); }
-table.data tbody tr.you { background: rgba(91, 228, 155, 0.055); }
-table.data tbody tr.you:hover { background: rgba(91, 228, 155, 0.085); }
+table.data tbody tr:hover { background: var(--surface-3); }
+table.data tbody tr.you { background: rgba(123, 219, 86, 0.07); }
+table.data tbody tr.you:hover { background: rgba(123, 219, 86, 0.1); }
 table.data tbody tr:last-child td { border-bottom: none; }
 table.data tr.clickable { cursor: pointer; }
 
@@ -406,13 +443,44 @@ tr.zone-releg td.pos::before { background: var(--danger); }
   background: var(--surface-3);
   color: var(--text);
 }
-.rating.elite  { background: rgba(91, 228, 155, 0.18); color: var(--pitch); }
-.rating.good   { background: rgba(107, 168, 232, 0.16); color: var(--info); }
+.rating.elite  { background: rgba(123, 219, 86, 0.18); color: var(--pitch); }
+.rating.good   { background: rgba(90, 167, 245, 0.16); color: var(--info); }
 .rating.ok     { background: var(--surface-3); color: var(--text-2); }
-.rating.poor   { background: rgba(255, 90, 90, 0.13); color: var(--danger); }
+.rating.poor   { background: rgba(255, 93, 108, 0.13); color: var(--danger); }
 
 .pot-range { font-family: var(--font-mono); font-size: 11.5px; color: var(--text-3); }
 .pot-range.exact { color: var(--gold); }
+
+/* The small coloured number box next to every attribute on an FM player screen —
+   red through amber to green, computed per value by dom.js's attrColor. */
+.attr-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 20px;
+  padding: 0 4px;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: rgba(10, 14, 6, 0.82);
+}
+
+.attr-list { row-gap: 6px; }
+.attr-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 3px 0;
+}
+.attr-row .name {
+  font-size: 12.5px;
+  color: var(--text-2);
+  text-transform: capitalize;
+}
 
 /* ---- Tags and pills ------------------------------------------------------ */
 
@@ -428,10 +496,10 @@ tr.zone-releg td.pos::before { background: var(--danger); }
   color: var(--text-2);
   white-space: nowrap;
 }
-.tag.pitch { background: rgba(91, 228, 155, 0.14); color: var(--pitch); }
-.tag.gold  { background: rgba(232, 184, 75, 0.14); color: var(--gold); }
-.tag.danger{ background: rgba(255, 90, 90, 0.14); color: var(--danger); }
-.tag.info  { background: rgba(107, 168, 232, 0.14); color: var(--info); }
+.tag.pitch { background: rgba(123, 219, 86, 0.14); color: var(--pitch); }
+.tag.gold  { background: rgba(240, 194, 77, 0.14); color: var(--gold); }
+.tag.danger{ background: rgba(255, 93, 108, 0.14); color: var(--danger); }
+.tag.info  { background: rgba(90, 167, 245, 0.14); color: var(--info); }
 .tag.muted { background: transparent; color: var(--text-faint); border: 1px solid var(--line); }
 
 .empty-state {

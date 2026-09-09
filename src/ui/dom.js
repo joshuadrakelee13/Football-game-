@@ -128,6 +128,35 @@ export function ratingPill(value, { context = 60 } = {}) {
   return h('span', { class: `rating ${band}` }, v);
 }
 
+// A five-stop red -> orange -> yellow -> light green -> deep green ramp, the same
+// shape as the 1-to-20 colour coding attribute lists use, walked here against
+// whatever scale the caller's numbers actually live on (this game's attributes run
+// 0-99, not 1-20 — the colour band is what should look familiar, not the ceiling).
+const ATTR_STOPS = [
+  [0.00, [196, 56, 74]],   // --attr-poor
+  [0.32, [219, 122, 58]],  // --attr-below
+  [0.52, [222, 194, 74]],  // --attr-average
+  [0.74, [147, 204, 87]],  // --attr-good
+  [1.00, [53, 168, 91]],   // --attr-elite
+];
+
+export function attrColor(value, max = 99) {
+  const t = Math.max(0, Math.min(1, value / max));
+  let i = 0;
+  while (i < ATTR_STOPS.length - 2 && t > ATTR_STOPS[i + 1][0]) i++;
+  const [t0, c0] = ATTR_STOPS[i];
+  const [t1, c1] = ATTR_STOPS[i + 1];
+  const f = (t - t0) / (t1 - t0 || 1);
+  const rgb = c0.map((v, idx) => Math.round(v + (c1[idx] - v) * f));
+  return `rgb(${rgb.join(',')})`;
+}
+
+// The small coloured number box next to every attribute in an FM player screen.
+export function attrBadge(value, max = 99) {
+  return h('span', { class: 'attr-badge', style: { background: attrColor(value, max) } },
+    Math.round(value));
+}
+
 export function formGuide(form, size = 5) {
   const recent = (form || []).slice(-size);
   const pad = Array(Math.max(0, size - recent.length)).fill(null);

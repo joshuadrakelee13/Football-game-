@@ -94,8 +94,8 @@ input:focus, select:focus { border-color: var(--pitch-dim); }
 }
 
 #rail {
-  background: var(--bg-raised);
-  border-right: 1px solid var(--line);
+  /* background/border-right: see components.css — the rail runs its own violet
+     palette, distinct from the navy every content panel sits on. */
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -111,8 +111,8 @@ input:focus, select:focus { border-color: var(--pitch-dim); }
 #hud {
   height: var(--hud-height);
   flex: none;
-  border-bottom: 1px solid var(--line);
-  background: var(--bg-raised);
+  border-bottom: 1px solid var(--side-line);
+  background: var(--side-bg-2);
   display: flex;
   align-items: stretch;
 }

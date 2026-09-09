@@ -1,44 +1,63 @@
 /* Design tokens.
-   The interface is deliberately near-monochrome: one accent for actions, one for
-   money, one for danger. All the other colour on screen comes from the clubs
-   themselves, which is what stops it looking like a generic dashboard theme. */
+   Restyled toward Football Manager's dark purple-navy theme: a deep violet
+   sidebar/header distinct from flatter navy-grey content panels, and green as the
+   one "good" accent — the two things that make an FM screenshot instantly
+   recognisable at a glance. This is a fan-made homage to the genre's visual
+   language, not a copy of any of FM's actual assets, wordmarks or exact palette. */
 
 :root {
-  /* Ground: near-black with a green cast, like a stadium at night. */
-  --bg:            #0B0F0E;
-  --bg-raised:     #121815;
-  --surface:       #161D1A;
-  --surface-2:     #1B2320;
-  --surface-3:     #222B27;
+  /* Ground: dark navy with a faint purple cast, not pure black. */
+  --bg:            #14151F;
+  --bg-raised:     #191B29;
+  --surface:       #1D1F30;
+  --surface-2:     #262940;
+  --surface-3:     #303454;
 
-  /* Hairlines instead of shadows. Shadows on a dark ground just make mud. */
-  --line:          #232C28;
-  --line-strong:   #313C37;
-  --line-faint:    #1A211E;
+  --line:          #2B2E48;
+  --line-strong:   #3C4066;
+  --line-faint:    #1E2036;
 
-  --text:          #E8EDEA;
-  --text-2:        #A3AFA9;
-  --text-3:        #6E7B75;
-  --text-faint:    #4A554F;
+  --text:          #ECEDF6;
+  --text-2:        #A7ABC9;
+  --text-3:        #75799E;
+  --text-faint:    #4C5077;
 
   /* Exactly one UI accent. */
-  --pitch:         #5BE49B;
-  --pitch-dim:     #2E7D57;
-  --pitch-glow:    rgba(91, 228, 155, 0.12);
+  --pitch:         #7BDB56;
+  --pitch-dim:     #3E7A2E;
+  --pitch-glow:    rgba(123, 219, 86, 0.14);
 
-  --gold:          #E8B84B;
-  --gold-dim:      #8A6D24;
-  --danger:        #FF5A5A;
-  --danger-dim:    #8A2F2F;
-  --warn:          #E8A03B;
-  --info:          #6BA8E8;
+  --gold:          #F0C24D;
+  --gold-dim:      #8C6C24;
+  --danger:        #FF5D6C;
+  --danger-dim:    #7B2A38;
+  --warn:          #F2A23D;
+  --info:          #5AA7F5;
 
-  --win:           #5BE49B;
-  --draw:          #8A94A6;
-  --loss:          #FF5A5A;
+  --win:           #7BDB56;
+  --draw:          #8B90C4;
+  --loss:          #FF5D6C;
+
+  /* The sidebar and header get their own deep violet, distinct from the flatter
+     navy panels everything else sits on — the single most recognisable FM cue. */
+  --side-bg:       #211A3E;
+  --side-bg-2:     #2A2150;
+  --side-line:     #382C5E;
+  --side-active:   #4B3A87;
+  --side-text:     #C7C4E6;
+  --side-text-dim: #8983B8;
+
+  /* FM's 1-to-20-style attribute colour coding, interpolated in JS (dom.js's
+     attrColor) against this game's 0-99 attribute range — these five stops are
+     the palette that function walks between. */
+  --attr-poor:     #C4384A;
+  --attr-below:    #DB7A3A;
+  --attr-average:  #DEC24A;
+  --attr-good:     #93CC57;
+  --attr-elite:    #35A85B;
 
   --radius:        4px;
-  --radius-lg:     6px;
+  --radius-lg:     7px;
 
   --space-1:       4px;
   --space-2:       8px;

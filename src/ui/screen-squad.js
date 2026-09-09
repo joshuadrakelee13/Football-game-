@@ -1,6 +1,6 @@
 // Squad: the starting XI on a pitch, the formation picker, and the full squad list.
 
-import { h, clubChip, ratingPill, meter, panel, emptyState } from './dom.js';
+import { h, clubChip, ratingPill, meter, attrBadge, panel, emptyState } from './dom.js';
 import { money, num } from '../core/format.js';
 import { playerClub } from '../model/world.js';
 import { FORMATIONS, FORMATION_KEYS, positionFit, ROLE_OPTIONS, ROLE_LABELS, DUTY_OPTIONS } from '../data/positions.js';
@@ -79,7 +79,10 @@ function pitchPanel(world, you) {
   return panel('Starting XI',
     h('div', { class: 'panel-body flush', style: { padding: '10px' } },
       h('div', { class: 'pitch-view' },
-        h('div', { class: 'pitch-lines' }),
+        h('div', { class: 'pitch-lines' },
+          h('i', { class: 'box top' }),
+          h('i', { class: 'box bottom' }),
+        ),
         h('div', { class: 'pitch-inner' }, ...entries.map((entry, i) => {
           const [x, y] = layout[i] || [50, 50];
           const fit = positionFit(entry.player.position, entry.slot);
@@ -269,13 +272,10 @@ export function openPlayer(world, club, player, slot = null) {
 
       slot ? rolePicker(world, club, player, slot) : null,
 
-      h('div', { class: 'grid cols-2' }, ...attrs.map((a) =>
-        h('div', null,
-          h('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: '4px' } },
-            h('span', { class: 'eyebrow' }, a),
-            h('span', { class: 'mono', style: { fontSize: '12px' } }, Math.round(player.attributes[a])),
-          ),
-          meter(player.attributes[a] / 99, player.attributes[a] >= 75 ? '' : player.attributes[a] < 45 ? 'danger' : 'warn'),
+      h('div', { class: 'attr-list grid cols-2' }, ...attrs.map((a) =>
+        h('div', { class: 'attr-row' },
+          h('span', { class: 'name' }, a),
+          attrBadge(player.attributes[a]),
         ),
       )),
     ),

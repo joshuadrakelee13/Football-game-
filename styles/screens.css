@@ -111,8 +111,8 @@
   background: var(--surface-3);
   flex: none;
 }
-.result-row .score.W { background: rgba(91, 228, 155, 0.16); color: var(--pitch); }
-.result-row .score.L { background: rgba(255, 90, 90, 0.14); color: var(--danger); }
+.result-row .score.W { background: rgba(123, 219, 86, 0.16); color: var(--pitch); }
+.result-row .score.L { background: rgba(255, 93, 108, 0.14); color: var(--danger); }
 .result-row .opponent { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .result-row .comp { font-size: 10.5px; color: var(--text-faint); flex: none; }
 
@@ -244,8 +244,8 @@
 .commentary-line.goal .text { font-weight: 600; }
 .commentary-line.goal.ours .text { color: var(--pitch); }
 .commentary-line.goal.theirs .text { color: var(--text); }
-.commentary-line.goal.theirs { background: rgba(255, 90, 90, 0.045); }
-.commentary-line.goal.ours { background: rgba(91, 228, 155, 0.05); }
+.commentary-line.goal.theirs { background: rgba(255, 93, 108, 0.045); }
+.commentary-line.goal.ours { background: rgba(123, 219, 86, 0.05); }
 .commentary-line.penalty_missed.ours .text { color: var(--danger); }
 .commentary-line.penalty_missed.theirs .text { color: var(--pitch); }
 .commentary-line.red_card .text, .commentary-line.penalty_missed .text { color: var(--danger); }
@@ -311,11 +311,18 @@
 
 /* ---- Squad --------------------------------------------------------------- */
 
+/* A real grass pitch, mown-stripe bands and all — FM's tactics screen is one of
+   its most recognisable shots precisely because the pitch itself looks like a
+   pitch, not an abstract dark panel. */
 .pitch-view {
   position: relative;
   background:
-    linear-gradient(180deg, rgba(91, 228, 155, 0.03), transparent),
-    var(--surface);
+    repeating-linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.09) 0, rgba(0, 0, 0, 0.09) 11.11%,
+      transparent 11.11%, transparent 22.22%
+    ),
+    linear-gradient(180deg, #2E7D42, #256A38);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   aspect-ratio: 3 / 4;
@@ -325,16 +332,15 @@
 .pitch-lines {
   position: absolute;
   inset: 14px;
-  border: 1px solid var(--line-strong);
+  border: 1.5px solid rgba(255, 255, 255, 0.55);
   border-radius: 2px;
   pointer-events: none;
-  opacity: 0.65;
 }
 .pitch-lines::before {
   content: '';
   position: absolute;
   left: 0; right: 0; top: 50%;
-  border-top: 1px solid var(--line-strong);
+  border-top: 1.5px solid rgba(255, 255, 255, 0.55);
 }
 .pitch-lines::after {
   content: '';
@@ -342,9 +348,19 @@
   left: 50%; top: 50%;
   width: 84px; height: 84px;
   transform: translate(-50%, -50%);
-  border: 1px solid var(--line-strong);
+  border: 1.5px solid rgba(255, 255, 255, 0.55);
   border-radius: 50%;
 }
+.pitch-lines .box {
+  position: absolute;
+  left: 50%;
+  width: 58%;
+  height: 15%;
+  transform: translateX(-50%);
+  border: 1.5px solid rgba(255, 255, 255, 0.55);
+}
+.pitch-lines .box.top { top: -1.5px; border-top: none; }
+.pitch-lines .box.bottom { bottom: -1.5px; border-bottom: none; }
 .pitch-slot {
   position: absolute;
   transform: translate(-50%, -50%);
@@ -358,24 +374,28 @@
   inset: 34px 10px 30px;
 }
 .pitch-slot .shirt {
-  width: 34px; height: 34px;
+  width: 32px; height: 32px;
   margin: 0 auto 4px;
-  border-radius: 3px;
-  background: var(--surface-3);
-  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--side-active);
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-mono);
   font-size: 12px;
-  font-weight: 600;
-  transition: border-color var(--fast) var(--ease), background var(--fast) var(--ease);
+  font-weight: 700;
+  color: #fff;
+  transition: border-color var(--fast) var(--ease), background var(--fast) var(--ease), transform var(--fast) var(--ease);
 }
-.pitch-slot:hover .shirt { border-color: var(--pitch); background: var(--surface-3); }
+.pitch-slot:hover .shirt { border-color: var(--pitch); transform: scale(1.08); }
 .pitch-slot .pname {
   display: block;
   font-size: 10.5px;
-  color: var(--text-2);
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -384,14 +404,15 @@
 .pitch-slot .ppos {
   display: block;
   font-size: 9px;
-  color: var(--text-faint);
+  color: rgba(255, 255, 255, 0.75);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
   font-family: var(--font-display);
   letter-spacing: 0.1em;
   word-spacing: 0.2em;
   line-height: 1.2;
 }
-.pitch-slot.out-of-position .shirt { border-color: var(--warn); color: var(--warn); }
-.pitch-slot.injured .shirt { border-color: var(--danger); color: var(--danger); }
+.pitch-slot.out-of-position .shirt { border-color: var(--warn); }
+.pitch-slot.injured .shirt { border-color: var(--danger); }
 
 .formation-picker { display: flex; gap: var(--space-2); flex-wrap: wrap; }
 .formation-option {

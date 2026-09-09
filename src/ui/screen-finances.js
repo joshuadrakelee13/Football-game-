@@ -16,8 +16,8 @@ const CATEGORY_LABELS = {
 };
 
 const CATEGORY_COLOURS = {
-  matchday: '#5BE49B', sponsorship: '#6BA8E8', prize: '#E8B84B', transfers: '#C084FC',
-  wages: '#FF5A5A', stadium: '#E8853B', facilities: '#8A94A6', operations: '#6E7B75',
+  matchday: '#7BDB56', sponsorship: '#5AA7F5', prize: '#F0C24D', transfers: '#C084FC',
+  wages: '#FF5D6C', stadium: '#E8853B', facilities: '#8A94A6', operations: '#6E7B75',
   scouting: '#3BA55C', youth: '#4A6BF5',
 };
 

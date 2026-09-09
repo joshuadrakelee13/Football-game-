@@ -1,6 +1,6 @@
 // The application shell: the left rail, the HUD ticker, and the screen container.
 
-import { h, mount, clear, formGuide, animateNumber } from './dom.js';
+import { h, mount, clear, formGuide, animateNumber, visibleColours } from './dom.js';
 import { money, compact, ordinal, seasonLabel } from '../core/format.js';
 import { playerClub } from '../model/world.js';
 import { DIVISION_BY_TIER } from '../data/competitions.js';
@@ -42,9 +42,16 @@ function renderRail() {
   const you = playerClub(world);
   const div = DIVISION_BY_TIER[you.tier];
 
+  const kit = visibleColours(you.colors);
   mount(document.getElementById('rail-brand'),
-    h('span', { class: 'club' }, you.name),
-    h('span', { class: 'division' }, `${div.name} · ${seasonLabel(world.startYear)}`),
+    h('div', {
+      class: 'crest',
+      style: { background: `linear-gradient(155deg, ${kit.primary}, ${kit.secondary})` },
+    }, you.abbr || you.short?.slice(0, 3).toUpperCase() || ''),
+    h('div', { class: 'id' },
+      h('span', { class: 'club' }, you.name),
+      h('span', { class: 'division' }, `${div.name} · ${seasonLabel(world.startYear)}`),
+    ),
   );
 
   const nav = document.getElementById('rail-nav');

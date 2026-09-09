@@ -167,7 +167,7 @@ export const PLAYER_CLUB_TEMPLATE = {
   capacity: 2000,
   prestige: 10,
   tier: 3,
-  colors: { primary: '#5BE49B', secondary: '#0B0F0E' },
+  colors: { primary: '#7BDB56', secondary: '#14151F' },
   pattern: 'solid',
 };
 

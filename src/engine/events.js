@@ -8,6 +8,7 @@ import { renewalDemand } from './transfers.js';
 import { generateProspect, promoteProspect } from './youth.js';
 import { recordLedger } from './finance.js';
 import { STADIUM_TIERS } from './stadium.js';
+import { pushInboxEntry } from './inbox.js';
 
 function contractCandidates(club) {
   const bar = squadRating(club);
@@ -401,5 +402,11 @@ export function resolveEvent(world, choiceIndex) {
   world.pendingEvent = null;
   if (!choice) return null;
   const outcome = choice.apply();
+  pushInboxEntry(world, {
+    type: 'event',
+    tone: event.tone,
+    title: event.title,
+    body: `${choice.label} — ${outcome}`,
+  });
   return { title: event.title, choice: choice.label, outcome };
 }

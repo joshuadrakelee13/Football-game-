@@ -17,6 +17,7 @@ import {
   payMatchday, chargeWeeklyCosts, paySponsorship, payLeaguePrize, payParachute,
   recordLedger, setTransferBudget, setWageBudget, refreshSponsor,
 } from './finance.js';
+import { pushInboxEntry } from './inbox.js';
 
 const nameOf = (world) => (id) => anyClub(world, id)?.name || id;
 
@@ -197,6 +198,12 @@ function runCupMatchday(world, md, rng, digest) {
   if (cup.complete && cup.winner) {
     payCupPrizes(world, cup);
     digest.news.push({ type: 'cup_won', cupId: cup.id, clubId: cup.winner, text: `${anyClub(world, cup.winner).name} win the ${CUPS[cup.id].name}` });
+    if (cup.winner === world.playerClubId) {
+      pushInboxEntry(world, {
+        type: 'trophy', tone: 'gold', title: 'Trophy won!',
+        body: `You win the ${CUPS[cup.id].name}!`,
+      });
+    }
   } else {
     cup.currentTies = [];
     drawRound(world, cup, rng);
@@ -241,6 +248,12 @@ function runEuroMatchday(world, md, rng, digest) {
       advanceKnockout(comp, rng, nameOf(world));
       if (comp.complete && comp.winner) {
         digest.news.push({ type: 'euro_won', compId: key, clubId: comp.winner, text: `${anyClub(world, comp.winner).name} win the ${EURO_COMPS[key].name}` });
+        if (comp.winner === world.playerClubId) {
+          pushInboxEntry(world, {
+            type: 'trophy', tone: 'gold', title: 'European glory!',
+            body: `You win the ${EURO_COMPS[key].name}!`,
+          });
+        }
       }
     }
   }
@@ -329,6 +342,12 @@ function applySide(world, club, opponent, result, side, goalsFor, goalsAgainst, 
     player.injuredFor = inj.weeks;
     player.injuryType = inj.weeks >= 8 ? 'Serious injury' : inj.weeks >= 3 ? 'Muscle injury' : 'Knock';
     player.morale = clamp(player.morale - 6, 0, 100);
+    if (club.isPlayerClub) {
+      pushInboxEntry(world, {
+        type: 'injury', tone: 'bad', title: 'Injury update',
+        body: `${player.name} picked up ${player.injuryType.toLowerCase()} — out for ${inj.weeks} week${inj.weeks === 1 ? '' : 's'}.`,
+      });
+    }
   }
 
   // Squad morale follows results, weighted by how surprising the result was.
@@ -685,8 +704,16 @@ function ageAndDevelopSquads(world, rng) {
       // club spirals down the pyramid with no way back.
       p.morale = clamp(p.morale + (64 - p.morale) * 0.7, 30, 100);
 
-      if (p.age >= 35 && rng.chance(0.45)) retiring.push(p.id);
-      else if (p.age >= 38) retiring.push(p.id);
+      // p is only in scope here — retiring only tracks ids, and the filter that
+      // removes them from club.squad happens after this loop, by which point the
+      // full player object (name, career apps) is gone.
+      if (p.age >= 35 && rng.chance(0.45)) {
+        retiring.push(p.id);
+        if (club.isPlayerClub) pushRetirement(world, p);
+      } else if (p.age >= 38) {
+        retiring.push(p.id);
+        if (club.isPlayerClub) pushRetirement(world, p);
+      }
     }
 
     if (retiring.length) {
@@ -696,6 +723,13 @@ function ageAndDevelopSquads(world, rng) {
     if (!club.isPlayerClub) pickClubIdentity(rng, club);
     club.lineup = pickBestXI(club);
   }
+}
+
+function pushRetirement(world, player) {
+  pushInboxEntry(world, {
+    type: 'retirement', tone: 'neutral', title: 'Retirement',
+    body: `${player.name} has called time on his career after ${player.careerApps} appearances.`,
+  });
 }
 
 function applyGrowth(player, delta) {

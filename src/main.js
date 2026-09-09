@@ -1,6 +1,7 @@
 // Bootstrap, game state and routing.
 
 import { Rng } from './core/rng.js';
+import { money } from './core/format.js';
 import { buildWorld, playerClub } from './model/world.js';
 import { load, save, hasSave, clearSave, serialise, deserialise } from './model/save.js';
 import {
@@ -10,9 +11,10 @@ import {
 import { generateTransferMarket, generateFreeAgents, generateBids, runAiTransferWindow, processExpiringContracts } from './engine/transfers.js';
 import { applyTraining } from './engine/training.js';
 import { maybeFireEvent } from './engine/events.js';
-import { rollProspect } from './engine/youth.js';
+import { rollProspect, prospectGrade } from './engine/youth.js';
 import { setTransferBudget, setWageBudget } from './engine/finance.js';
-import { pickBestXI } from './model/club.js';
+import { pushInboxEntry } from './engine/inbox.js';
+import { pickBestXI, squadRating } from './model/club.js';
 
 import { renderShell, setActiveScreen } from './ui/shell.js';
 import { showMatch, showLiveMatch } from './ui/match-view.js';
@@ -215,6 +217,14 @@ function applyBetweenMatchday(world, digest) {
     if (prospect) {
       world.youthProspects = world.youthProspects || [];
       world.youthProspects.push(prospect);
+      const grade = prospectGrade(prospect);
+      pushInboxEntry(world, {
+        type: 'prospect',
+        tone: grade.tone === 'muted' ? 'neutral' : grade.tone,
+        title: 'Academy prospect',
+        body: `Scouts have flagged ${prospect.name}, a ${grade.label.toLowerCase()} ${prospect.position} (${prospect.age}yo).`,
+        action: { screen: 'youth' },
+      });
     }
   }
 
@@ -225,6 +235,15 @@ function applyBetweenMatchday(world, digest) {
     const bids = generateBids(world, game.rng);
     if (bids.length) {
       world.pendingBids = [...(world.pendingBids || []), ...bids].slice(-6);
+      for (const bid of bids) {
+        pushInboxEntry(world, {
+          type: 'bid',
+          tone: 'gold',
+          title: 'Transfer bid received',
+          body: `${bid.buyerName} have offered ${money(bid.offer)} for ${bid.playerName}.`,
+          action: { screen: 'transfers' },
+        });
+      }
     }
   }
 
@@ -262,14 +281,31 @@ async function finishSeason() {
 
   await showSeasonReview(summary, world);
 
-  processExpiringContracts(world, game.rng);
+  const departures = processExpiringContracts(world, game.rng);
+  const you = playerClub(world);
+  for (const { clubId, player } of departures) {
+    if (clubId !== world.playerClubId) continue;
+    pushInboxEntry(world, {
+      type: 'departure',
+      tone: player.overall >= squadRating(you) ? 'bad' : 'neutral',
+      title: 'Contract expired',
+      body: `${player.name}'s contract has run out — he leaves on a free transfer.`,
+    });
+  }
+
   runAiTransferWindow(world, game.rng);
-  setTransferBudget(playerClub(world));
-  setWageBudget(playerClub(world));
+  setTransferBudget(you);
+  setWageBudget(you);
   nextSeason(world, game.rng);
   refreshMarket();
   world.pendingBids = [];
   world.youthProspects = [];
+
+  pushInboxEntry(world, {
+    type: 'season', tone: 'neutral', title: 'New season',
+    body: `${world.startYear}/${String((world.startYear + 1) % 100).padStart(2, '0')} is under way.`,
+    action: { screen: 'club' },
+  });
 
   game.screen = 'overview';
   persist();

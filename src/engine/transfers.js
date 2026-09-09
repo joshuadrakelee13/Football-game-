@@ -5,6 +5,7 @@ import { generatePlayer, valueOf, wageOf, refreshDerived, isAvailable } from '..
 import { ratingForPrestige, weeklyWages, squadRating, pickBestXI } from '../model/club.js';
 import { spendTransferFee, receiveTransferFee, transferBudget, canAffordWage } from './finance.js';
 import { DIVISION_BY_TIER } from '../data/competitions.js';
+import { pushInboxEntry } from './inbox.js';
 
 export const MARKET_SIZE = 34;
 export const FREE_AGENT_SIZE = 10;
@@ -295,10 +296,20 @@ export function generateBids(world, rng) {
 
 // AI clubs spend their allowance on the positions they are weakest in, which is what
 // keeps every division competitive as the player climbs.
+// A season's worth of same-tier AI activity alone runs into the hundreds of
+// signings (~20 clubs x up to 4 each) — nowhere near "news," just squad depth.
+// Capping the inbox's take keeps rival transfer news to a skimmable handful
+// per season rather than swamping every other kind of entry.
+const MAX_RIVAL_SIGNING_NEWS = 6;
+
 export function runAiTransferWindow(world, rng) {
+  const you = world.clubs[world.playerClubId];
+  let rivalNewsLogged = 0;
   for (const club of Object.values(world.clubs)) {
     if (club.isPlayerClub) continue;
 
+    // News-worthy only from the player's direct rivals, and only up to the cap above.
+    const relevant = club.tier === you.tier;
     const target = ratingForPrestige(club.reputation);
     let budget = transferBudget(club);
     let signings = 0;
@@ -322,6 +333,13 @@ export function runAiTransferWindow(world, rng) {
       club.squad = club.squad.filter((p) => p.id !== weakest.id);
       club.squad.push(recruit);
       spendTransferFee(club, fee, world.seasonNumber, `Signed ${recruit.name}`);
+      if (relevant && rivalNewsLogged < MAX_RIVAL_SIGNING_NEWS) {
+        rivalNewsLogged++;
+        pushInboxEntry(world, {
+          type: 'rival_signing', tone: 'neutral', title: 'Transfer news',
+          body: `${club.name} have signed ${recruit.name} (${recruit.position}).`,
+        });
+      }
       budget -= fee;
       signings++;
     }

@@ -482,6 +482,40 @@
 .finance-bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: var(--surface-3); }
 .finance-bar i { display: block; height: 100%; }
 
+/* ---- Inbox ----------------------------------------------------------------
+   Read entries fade to a neutral border once seen; unread ones keep a tone-
+   coloured accent so a first glance still tells good news from bad. */
+
+.inbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding: 11px var(--space-4);
+  border-bottom: 1px solid var(--line-faint);
+  border-left: 2px solid transparent;
+  transition: background var(--fast) var(--ease);
+}
+.inbox-row:last-child { border-bottom: none; }
+.inbox-row:hover { background: var(--surface-2); }
+.inbox-row .when {
+  flex: none;
+  width: 78px;
+  padding-top: 2px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-faint);
+}
+.inbox-row .content { flex: 1; min-width: 0; }
+.inbox-row .title { font-size: 13px; font-weight: 500; color: var(--text-2); }
+.inbox-row .body { font-size: 12.5px; color: var(--text-3); margin-top: 2px; }
+.inbox-row .btn { flex: none; align-self: center; }
+.inbox-row.unread { border-left-color: var(--text-faint); }
+.inbox-row.unread .title { color: var(--text); font-weight: 600; }
+.inbox-row.unread .body { color: var(--text-2); }
+.inbox-row.tone-good.unread { border-left-color: var(--pitch); }
+.inbox-row.tone-bad.unread { border-left-color: var(--danger); }
+.inbox-row.tone-gold.unread { border-left-color: var(--gold); }
+
 /* ---- Season review ------------------------------------------------------- */
 
 .review-banner {

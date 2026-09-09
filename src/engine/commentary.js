@@ -63,23 +63,31 @@ export function minuteLabel(minute) {
   return raw.endsWith("'") ? raw : raw + "'";
 }
 
-export function buildCommentary(result, rng, homeClub, awayClub) {
-  const choose = makeChooser(rng);
-  const lines = [];
-  const context = {
+function contextFor(result, homeClub, awayClub) {
+  return {
     home: homeClub.short,
     away: awayClub.short,
     venue: result.neutralVenue ? 'a neutral venue' : homeClub.stadium,
   };
+}
 
-  let lastMinute = -10;
-  let homeGoals = 0;
-  let awayGoals = 0;
+// Persistent state across a match's commentary — the chooser's repetition memory and
+// the running goal tally — so buildCommentaryDelta can be called once per live
+// checkpoint and still read like one continuous commentary rather than restarting
+// itself every 15 minutes.
+export function createCommentaryState(rng) {
+  return { choose: makeChooser(rng), homeGoals: 0, awayGoals: 0 };
+}
 
-  for (const event of result.events) {
+// The actual event -> line conversion, shared by buildCommentary (the whole match at
+// once) and buildCommentaryDelta (one live checkpoint's worth of new events) so the
+// bucket/chooser/goal-tally logic exists in exactly one place.
+function eventsToLines(events, rng, homeClub, awayClub, context, state) {
+  const lines = [];
+  for (const event of events) {
     const isHome = event.clubId === homeClub.id;
     if (event.type === 'goal') {
-      if (isHome) homeGoals++; else awayGoals++;
+      if (isHome) state.homeGoals++; else state.awayGoals++;
     }
 
     let show = ALWAYS_SHOW.has(event.type);
@@ -92,23 +100,38 @@ export function buildCommentary(result, rng, homeClub, awayClub) {
     const templates = COMMENTARY[bucket];
     if (!templates) continue;
 
-    const data = { ...context, ...event, homeGoals, awayGoals };
+    const data = { ...context, ...event, homeGoals: state.homeGoals, awayGoals: state.awayGoals };
     lines.push({
       minute: event.minute,
       type: event.type,
       clubId: event.clubId ?? null,
       isHome,
-      text: fill(choose(bucket, templates), data),
-      homeGoals,
-      awayGoals,
+      text: fill(state.choose(bucket, templates), data),
+      homeGoals: state.homeGoals,
+      awayGoals: state.awayGoals,
       major: event.type === 'goal' || event.type === 'red_card' || event.type === 'full_time',
     });
-
-    lastMinute = typeof event.minute === 'number' ? event.minute : lastMinute;
   }
+  return lines;
+}
+
+export function buildCommentary(result, rng, homeClub, awayClub) {
+  const state = createCommentaryState(rng);
+  const context = contextFor(result, homeClub, awayClub);
+  const lines = eventsToLines(result.events, rng, homeClub, awayClub, context, state);
 
   // Drop a little colour into any long gap so the feed never stalls.
-  return padQuietSpells(lines, rng, context, result, choose);
+  return padQuietSpells(lines, rng, context, result, state.choose);
+}
+
+// One live checkpoint's worth of new events, continuing a state created by
+// createCommentaryState. No quiet-spell padding here — that pass looks ahead to the
+// next line's minute across the *whole* match, which a partial, still-unfolding
+// event list can't do correctly, and a live match's checkpoint cadence already paces
+// the feed, so nothing needs filling in.
+export function buildCommentaryDelta(events, rng, homeClub, awayClub, result, state) {
+  const context = contextFor(result, homeClub, awayClub);
+  return eventsToLines(events, rng, homeClub, awayClub, context, state);
 }
 
 function padQuietSpells(lines, rng, context, result, choose) {

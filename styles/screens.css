@@ -297,6 +297,11 @@
   background: var(--bg-raised);
 }
 
+/* The live pause/half-time panel reuses .modal-backdrop's look, but it is nested
+   inside .match-overlay (z-index 600) rather than mounted straight to #overlays like
+   every other modal, so it needs its own stacking context to actually sit on top. */
+.match-overlay .modal-backdrop.live-pause { z-index: 601; }
+
 @media (max-width: 900px) {
   .match-body { grid-template-columns: minmax(0, 1fr); }
   .match-stats { border-left: none; border-top: 1px solid var(--line); }

@@ -6,7 +6,7 @@ import { DIVISIONS, DIVISION_BY_TIER, REPUTATION, EURO_COMPS, CUPS, PARACHUTE } 
 import { pickBestXI, weeklyWages, overallStrength, squadRating, pickClubIdentity } from '../model/club.js';
 import { refreshDerived, generatePlayer, isAvailable } from '../model/player.js';
 import { startSeason, playerClub, fixtureForClubOnMatchday, pickSponsor, sponsorValue } from '../model/world.js';
-import { simulateMatch } from './match.js';
+import { simulateMatch, createMatchSession } from './match.js';
 import { applyResult, standings, snapshotPositions } from './league.js';
 import { createCup, drawRound, resolveTie, completeRound, cupPrizeFor } from './cups.js';
 import {
@@ -37,7 +37,14 @@ export function playerFixture(world) {
 
 // Process the next matchday in full. Returns a digest the UI can show, including the
 // player's own match (with its complete event stream) when they have a fixture.
-export function advanceMatchday(world, rng) {
+//
+// options.liveSession lets a league fixture involving the player's club come back
+// unresolved (as digest.pendingSession) instead of already-simulated, so the live
+// match UI can drive it minute by minute and let the player genuinely react at half
+// time or a pause — see runLeagueMatchday and resolvePlayerMatchSession below. Every
+// other fixture that matchday, and every non-league matchday, resolves exactly as
+// it always has regardless of this option.
+export function advanceMatchday(world, rng, options = {}) {
   const md = currentMatchday(world);
   if (!md) return { finished: true };
 
@@ -47,16 +54,32 @@ export function advanceMatchday(world, rng) {
     matchday: md,
     playerMatch: null,
     playerFixture: null,
+    pendingSession: null,
     results: [],
     news: [],
     seasonEnded: false,
+    deferred: false,
   };
 
-  if (md.type === 'league') runLeagueMatchday(world, md, rng, digest);
+  if (md.type === 'league') runLeagueMatchday(world, md, rng, digest, options);
   else if (md.type === 'cup') runCupMatchday(world, md, rng, digest);
   else if (md.type === 'euro') runEuroMatchday(world, md, rng, digest);
 
-  // Weekly running costs are charged as calendar time passes, not per match.
+  // A pending live session leaves the rest of this matchday's bookkeeping (weekly
+  // costs, recovery, the calendar advance) for resolvePlayerMatchSession to run once
+  // the live match actually concludes — see finishMatchdayTail.
+  if (digest.deferred) return digest;
+
+  finishMatchdayTail(world, md, digest, rng);
+  return digest;
+}
+
+// Weekly running costs, fitness/injury recovery between matchdays, and moving the
+// calendar pointer on. Split out from advanceMatchday so a deferred live match can
+// run exactly the same tail, once it actually finishes, via resolvePlayerMatchSession
+// — this reflects time passing *after* the matchday's results, so it must wait for
+// the real result rather than running while the player's own match is still pending.
+function finishMatchdayTail(world, md, digest, rng) {
   const nextMd = world.calendar[world.matchdayIndex + 1];
   const daysElapsed = nextMd ? nextMd.day - md.day : 7;
   const weeks = Math.max(0, daysElapsed / 7);
@@ -71,6 +94,29 @@ export function advanceMatchday(world, rng) {
   if (world.matchdayIndex >= world.calendar.length) {
     digest.seasonEnded = true;
   }
+}
+
+// Completes a live player match session once the UI has driven it to full time:
+// applies the result exactly the way the synchronous path in runLeagueMatchday
+// would have for any other fixture, then runs the deferred end-of-matchday tail.
+export function resolvePlayerMatchSession(world, digest, result) {
+  const { session, fixture } = digest.pendingSession;
+  const home = session.home.club;
+  const away = session.away.club;
+  const rng = session.rng;
+
+  applyMatchOutcome(world, home, away, result, 'LEAGUE', rng);
+  applyResult(world.tables[fixture.tier], fixture.home, fixture.away, result.homeGoals, result.awayGoals);
+
+  const record = summariseResult(world, fixture, result, 'LEAGUE');
+  digest.results.push(record);
+  world.results.push(record);
+  digest.playerMatch = result;
+  digest.playerFixture = fixture;
+  digest.pendingSession = null;
+
+  finishMatchdayTail(world, digest.matchday, digest, rng);
+  digest.deferred = false;
   return digest;
 }
 
@@ -84,7 +130,7 @@ function ensureCompetitionsForMatchday(world, md, rng) {
   }
 }
 
-function runLeagueMatchday(world, md, rng, digest) {
+function runLeagueMatchday(world, md, rng, digest, options = {}) {
   const fixtures = world.leagueFixtures[md.leagueRound] || [];
   for (const tier of Object.keys(world.tables)) snapshotPositions(world.tables[tier], nameOf(world));
 
@@ -94,6 +140,17 @@ function runLeagueMatchday(world, md, rng, digest) {
     if (!home || !away) continue;
 
     const isPlayerMatch = home.isPlayerClub || away.isPlayerClub;
+
+    // The player's own fixture, live: hand back a session for the UI to drive
+    // minute-by-minute instead of resolving it here and now. Every other fixture
+    // this matchday still resolves in this same loop, in the same order, exactly as
+    // it always has — including the player's own fixture in every other mode.
+    if (isPlayerMatch && options.liveSession) {
+      digest.pendingSession = { session: createMatchSession(home, away, rng, { competition: 'LEAGUE' }), fixture };
+      digest.deferred = true;
+      continue;
+    }
+
     const result = simulateMatch(home, away, rng, { competition: 'LEAGUE' });
     applyMatchOutcome(world, home, away, result, 'LEAGUE', rng);
     applyResult(world.tables[fixture.tier], fixture.home, fixture.away, result.homeGoals, result.awayGoals);

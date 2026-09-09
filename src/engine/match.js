@@ -456,6 +456,33 @@ export function syncSideTactics(side) {
   side.ratings = ratings;
 }
 
+// Edits role/duty for a player currently on the pitch, mid-match — the live pause
+// modal calls this for the player's own side, then syncSideTactics to make the
+// change real for teamRatings, exactly like a dial edit. Patches the onPitch entry
+// (so pickWeighted's duty-based scorer/assist weighting picks it up for the rest of
+// the match) and the matching club.lineup slot entry (so the following
+// syncSideTactics call, which reads ratings via teamRatings from club.lineup, sees
+// it too) plus club.playerTactics (so it's still set next match). Deliberately never
+// calls pickBestXI: reselecting the XI mid-match could silently swap in a different
+// player than whoever is actually standing on the pitch right now.
+export function setLiveRoleDuty(side, playerId, patch) {
+  const entry = side.onPitch.find((e) => e.player.id === playerId);
+  if (!entry) return false;
+
+  if (patch.role !== undefined) entry.role = patch.role;
+  if (patch.duty !== undefined && entry.slot !== 'GK') entry.duty = patch.duty;
+
+  side.club.playerTactics[playerId] = { ...side.club.playerTactics[playerId], role: entry.role, duty: entry.duty };
+
+  const lineupEntry = side.club.lineup.find((e) => e.slot === entry.slot);
+  if (lineupEntry) {
+    lineupEntry.playerId = playerId;
+    lineupEntry.role = entry.role;
+    lineupEntry.duty = entry.duty;
+  }
+  return true;
+}
+
 function applyHalfTime(home, away, rng, push, aiHalfTimeReactions = true) {
   for (const side of [home, away]) {
     for (const entry of side.onPitch) entry.matchFitness = Math.min(100, entry.matchFitness + 3);
@@ -485,7 +512,10 @@ function considerSubs(minute, side, rng, push) {
   makeSub(minute, side, rng, push, tired, false);
 }
 
-function makeSub(minute, side, rng, push, outEntry, forced) {
+// Exported so the live-match UI can trigger a player-initiated substitution directly
+// (bypassing considerSubs's own tiredness/randomness heuristic, which only ever
+// decides *automatic* subs) — capped at 5 by the same subsUsed check either path uses.
+export function makeSub(minute, side, rng, push, outEntry, forced) {
   if (side.subsUsed >= 5 || !side.bench.length) return;
   const candidates = side.bench.filter((p) => p.position !== 'GK' || outEntry.slot === 'GK');
   const pool = candidates.length ? candidates : side.bench;
@@ -500,9 +530,32 @@ function makeSub(minute, side, rng, push, outEntry, forced) {
   side.bench = side.bench.filter((p) => p.id !== best.id);
   outEntry.minutesPlayed = minute;
   side.onPitch = side.onPitch.filter((e) => e.player.id !== outEntry.player.id);
-  side.onPitch.push({ slot: outEntry.slot, player: best, matchFitness: best.fitness, minutesPlayed: 90 - minute, cameOn: minute });
+
+  // A substitute inherits their configured role/duty like anyone else in the XI —
+  // without this they silently read as duty undefined for the rest of the match
+  // (a neutral no-op via dutyInvolvement's ?? 1 fallback, not a crash, but not what
+  // was configured either).
+  const pt = side.club.playerTactics?.[best.id];
+  const role = pt?.role ?? null;
+  const duty = outEntry.slot !== 'GK' ? (pt?.duty ?? 'support') : 'support';
+  side.onPitch.push({ slot: outEntry.slot, player: best, matchFitness: best.fitness, minutesPlayed: 90 - minute, cameOn: minute, role, duty });
   side.subsUsed++;
   side.subs.push({ off: outEntry.player.id, on: best.id, minute, forced });
+
+  // Keep club.lineup's slot entry pointing at whoever is actually on the pitch, but
+  // only for the player's own club — it's what syncSideTactics reads (via
+  // teamRatings) if the live pause modal edits a mid-match role/duty. AI clubs never
+  // need this: their one mid-match read of club.lineup (the half-time reaction) always
+  // lands at minute 45, before the earliest an automatic substitution can happen (55).
+  if (side.club.isPlayerClub) {
+    const lineupEntry = side.club.lineup.find((e) => e.slot === outEntry.slot);
+    if (lineupEntry) {
+      lineupEntry.playerId = best.id;
+      lineupEntry.role = role;
+      lineupEntry.duty = duty;
+    }
+  }
+
   push(String(minute), 'substitution', {
     club: side.club.short, clubId: side.club.id,
     off: outEntry.player.name, on: best.name, forced,

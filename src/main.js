@@ -5,6 +5,7 @@ import { buildWorld, playerClub } from './model/world.js';
 import { load, save, hasSave, clearSave, serialise, deserialise } from './model/save.js';
 import {
   advanceMatchday, endSeason, nextSeason, currentMatchday, playerFixture,
+  resolvePlayerMatchSession,
 } from './engine/season.js';
 import { generateTransferMarket, generateFreeAgents, generateBids, runAiTransferWindow, processExpiringContracts } from './engine/transfers.js';
 import { applyTraining } from './engine/training.js';
@@ -14,7 +15,7 @@ import { setTransferBudget, setWageBudget } from './engine/finance.js';
 import { pickBestXI } from './model/club.js';
 
 import { renderShell, setActiveScreen } from './ui/shell.js';
-import { showMatch } from './ui/match-view.js';
+import { showMatch, showLiveMatch } from './ui/match-view.js';
 import { showSeasonReview } from './ui/season-review.js';
 import { showEvent } from './ui/event-view.js';
 import { renderSetup } from './ui/setup.js';
@@ -113,6 +114,13 @@ export function goTo(screen) {
 // ---------------------------------------------------------------------------
 
 // Advance one matchday. `mode` decides how the player's own match is presented.
+//
+// 'live' on a league fixture gets a genuinely pausable match: advanceMatchday hands
+// back a pendingSession instead of an already-resolved result, showLiveMatch drives
+// it minute by minute and lets the player adjust tactics at a real pause, and
+// resolvePlayerMatchSession applies the result once it's actually over. Every other
+// case (quick-sim, or a live cup/euro fixture, which keeps today's animated-replay-
+// of-an-already-simulated-match presentation) is untouched.
 export async function advance(mode = 'quick') {
   if (game.busy || !game.world) return;
   const world = game.world;
@@ -120,14 +128,18 @@ export async function advance(mode = 'quick') {
 
   game.busy = true;
   try {
-    const digest = advanceMatchday(world, game.rng);
-    applyBetweenMatchday(world, digest);
+    const digest = advanceMatchday(world, game.rng, mode === 'live' ? { liveSession: true } : {});
 
-    if (digest.playerMatch && mode === 'live') {
+    if (digest.pendingSession) {
+      const result = await showLiveMatch(digest.pendingSession, world);
+      resolvePlayerMatchSession(world, digest, result);
+    } else if (digest.playerMatch && mode === 'live') {
       await showMatch(digest, world);
     } else if (digest.playerMatch && mode === 'quick') {
       await showMatch(digest, world, { instant: true });
     }
+
+    applyBetweenMatchday(world, digest);
 
     persist();
     render();

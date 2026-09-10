@@ -4,9 +4,9 @@
 import { clamp } from '../core/rng.js';
 import { money } from '../core/format.js';
 import { squadRating, weeklyWages, pickBestXI } from '../model/club.js';
-import { renewalDemand } from './transfers.js';
+import { renewalDemand, sellPlayer } from './transfers.js';
 import { generateProspect, promoteProspect } from './youth.js';
-import { recordLedger } from './finance.js';
+import { recordLedger, receiveTransferFee } from './finance.js';
 import { STADIUM_TIERS } from './stadium.js';
 import { pushInboxEntry } from './inbox.js';
 
@@ -64,11 +64,8 @@ const EVENT_POOL = [
             apply: () => {
               const p = club.squad.find((x) => x.id === player.id);
               if (!p) return 'He has already left.';
-              if (club.squad.length <= 17) return 'The squad is too thin to sell anyone.';
-              club.squad = club.squad.filter((x) => x.id !== p.id);
-              club.transferBudget += p.value;
-              recordLedger(club, world.seasonNumber, 'transfers', `Sold ${p.name}`, p.value);
-              club.lineup = pickBestXI(club);
+              const result = sellPlayer(world, club, p.id, p.value);
+              if (!result.ok) return result.reasons[0];
               return `${p.name} is sold for ${money(p.value)}.`;
             },
           },
@@ -137,8 +134,7 @@ const EVENT_POOL = [
             detail: `${money(Math.round(prospect.value * 1.3))} up front`,
             apply: () => {
               const fee = Math.round(prospect.value * 1.3);
-              club.transferBudget += fee;
-              recordLedger(club, world.seasonNumber, 'transfers', `Sold academy player ${prospect.name}`, fee);
+              receiveTransferFee(club, fee, world.seasonNumber, `Sold academy player ${prospect.name}`);
               return `${prospect.name} is sold for ${money(fee)}. You may regret that.`;
             },
           },
@@ -230,12 +226,9 @@ const EVENT_POOL = [
             apply: () => {
               const p = club.squad.find((x) => x.id === player.id);
               if (!p) return 'He has already gone.';
-              if (club.squad.length <= 17) return 'The squad is too thin to sell anyone.';
-              club.squad = club.squad.filter((x) => x.id !== p.id);
-              club.transferBudget += offer;
-              recordLedger(club, world.seasonNumber, 'transfers', `Sold ${p.name}`, offer);
+              const result = sellPlayer(world, club, p.id, offer, buyer?.id ?? null);
+              if (!result.ok) return result.reasons[0];
               for (const other of club.squad) other.morale = clamp(other.morale - 4, 5, 100);
-              club.lineup = pickBestXI(club);
               return `${p.name} is sold for ${money(offer)}.`;
             },
           },

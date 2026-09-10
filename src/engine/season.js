@@ -18,6 +18,7 @@ import {
   recordLedger, setTransferBudget, setWageBudget, refreshSponsor,
 } from './finance.js';
 import { pushInboxEntry } from './inbox.js';
+import { recordAppearanceForObligations, checkPromotionRiseClauses } from './obligations.js';
 
 const nameOf = (world) => (id) => anyClub(world, id)?.name || id;
 
@@ -310,6 +311,7 @@ function applySide(world, club, opponent, result, side, goalsFor, goalsAgainst, 
     player.apps++;
     player.seasonApps++;
     player.careerApps++;
+    recordAppearanceForObligations(world, club, player);
     const minutes = clamp(entry.minutes ?? 90, 1, 120);
     player.fitness = clamp(player.fitness - (6 + (minutes / 90) * 12) * (1 + rng.next() * 0.3), 25, 100);
   }
@@ -487,6 +489,7 @@ export function endSeason(world, rng) {
   const movement = applyPromotionAndRelegation(world, summary);
   summary.promoted = movement.promoted;
   summary.relegated = movement.relegated;
+  checkPromotionRiseClauses(world, movement.promoted.map((m) => m.clubId));
 
   summary.player = buildPlayerSummary(world, summary);
 

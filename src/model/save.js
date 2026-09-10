@@ -64,6 +64,11 @@ export function deserialise(json) {
   world.clubs = unpackClubs(world.clubs || {});
   if (world.europeClubs) world.europeClubs = unpackClubs(world.europeClubs);
   world.pendingEvent = null;
+  // Backfilled rather than a SAVE_VERSION bump: purely additive fields, safe defaults
+  // for any save written before the negotiation system existed.
+  world.sellOnClauses = world.sellOnClauses || [];
+  world.installmentSchedules = world.installmentSchedules || [];
+  world.riseClauses = world.riseClauses || [];
   return { world, savedAt: data.savedAt };
 }
 

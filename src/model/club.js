@@ -13,6 +13,12 @@ const PRESTIGE_CURVE = [
   [60, 68], [70, 73], [80, 77], [90, 81], [96, 84],
 ];
 
+// The manager's starting finances — exported so setup.js can display the same
+// numbers rather than duplicating them as independent literals.
+export const PLAYER_CLUB_STARTING_BALANCE = 100_000;
+export const PLAYER_CLUB_STARTING_TRANSFER_BUDGET = 100_000;
+export const PLAYER_CLUB_STARTING_WAGE_BUDGET = 10_000;
+
 export function ratingForPrestige(prestige) {
   const pts = PRESTIGE_CURVE;
   if (prestige <= pts[0][0]) return pts[0][1];
@@ -86,9 +92,9 @@ export function createClub(rng, base, { isPlayerClub = false, ratingTarget = nul
 
   const wageBill = weeklyWages(club);
   if (isPlayerClub) {
-    club.balance = 100_000;
-    club.transferBudget = 100_000;
-    club.wageBudget = 10_000;
+    club.balance = PLAYER_CLUB_STARTING_BALANCE;
+    club.transferBudget = PLAYER_CLUB_STARTING_TRANSFER_BUDGET;
+    club.wageBudget = PLAYER_CLUB_STARTING_WAGE_BUDGET;
     club.stadiumCapacity = 2000;
     club.fans = 1000;
   } else {

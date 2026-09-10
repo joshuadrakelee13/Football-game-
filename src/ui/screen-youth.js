@@ -5,7 +5,7 @@ import { money } from '../core/format.js';
 import { playerClub } from '../model/world.js';
 import { promoteProspect, prospectGrade, academyLevelInfo } from '../engine/youth.js';
 import { facilityInfo } from '../engine/training.js';
-import { recordLedger } from '../engine/finance.js';
+import { receiveTransferFee } from '../engine/finance.js';
 import { facilityPanel } from './screen-training.js';
 import { persist, render } from '../main.js';
 import { toast } from './toast.js';
@@ -92,8 +92,7 @@ function prospectRow(world, you, prospect) {
       h('button', {
         class: 'btn sm',
         onclick: () => {
-          you.transferBudget += fee;
-          recordLedger(you, world.seasonNumber, 'transfers', `Sold academy player ${prospect.name}`, fee);
+          receiveTransferFee(you, fee, world.seasonNumber, `Sold academy player ${prospect.name}`);
           world.youthProspects = world.youthProspects.filter((p) => p !== prospect);
           toast('Sold', `${prospect.name} leaves for ${money(fee)}.`, { tone: 'gold' });
           persist(); render();

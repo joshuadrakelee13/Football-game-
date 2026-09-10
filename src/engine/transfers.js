@@ -6,6 +6,7 @@ import { ratingForPrestige, weeklyWages, squadRating, pickBestXI } from '../mode
 import { spendTransferFee, receiveTransferFee, transferBudget, canAffordWage } from './finance.js';
 import { DIVISION_BY_TIER } from '../data/competitions.js';
 import { pushInboxEntry } from './inbox.js';
+import { fireSellOnClauses, dischargePlayerObligations } from './obligations.js';
 
 export const MARKET_SIZE = 34;
 export const FREE_AGENT_SIZE = 10;
@@ -104,12 +105,17 @@ export function divisionStrength(world, tier) {
   return average;
 }
 
-export function canSign(world, club, player) {
-  const fee = player.askingPrice ?? player.value;
+// `overrides` lets a negotiated fee/wage be checked against this same logic instead
+// of the listing's sticker price — a discount agreed through haggling can be
+// affordable even when the sticker price wasn't. Every existing call site omits it
+// and gets exactly the behaviour this always had.
+export function canSign(world, club, player, overrides = {}) {
+  const fee = overrides.fee ?? (player.askingPrice ?? player.value);
+  const wage = overrides.wage ?? player.wage;
   const reasons = [];
   if (club.squad.length >= 30) reasons.push('Squad is full (30 players)');
   if (fee > transferBudget(club)) reasons.push('Transfer budget too low');
-  if (!canAffordWage(club, player.wage)) reasons.push('Wage budget too low');
+  if (!canAffordWage(club, wage)) reasons.push('Wage budget too low');
 
   // What a player will accept is driven by the division as much as by the club: people
   // sign for a Championship club because it is a Championship club. Judging purely on
@@ -124,18 +130,25 @@ export function canSign(world, club, player) {
   return { ok: reasons.length === 0, reasons, fee };
 }
 
-export function signPlayer(world, club, player, rng) {
-  const check = canSign(world, club, player);
+// `overrides` (fee/wage/years) come from a completed negotiation — all optional, and
+// every existing call site (including tools/balance-test.mjs) omits them entirely and
+// gets exactly today's behaviour: fee/wage taken from the listing, contract years
+// randomised only when the incoming player had none.
+export function signPlayer(world, club, player, rng, overrides = {}) {
+  const check = canSign(world, club, player, overrides);
   if (!check.ok) return { ok: false, reasons: check.reasons };
 
   const signed = { ...player };
   signed.askingPrice = undefined;
   signed.freeAgent = undefined;
-  signed.contractYears = signed.contractYears > 0 ? signed.contractYears : rng.int(2, 4);
+  signed.contractYears = overrides.years ?? (signed.contractYears > 0 ? signed.contractYears : rng.int(2, 4));
   signed.morale = clamp(72 + rng.int(-6, 12), 30, 100);
   signed.fitness = clamp(signed.fitness, 70, 100);
   signed.joinedFrom = player.fromClub ? world.clubs[player.fromClub]?.short : 'Free agent';
   refreshDerived(signed);
+  // refreshDerived recomputes wage from the pure formula, so a negotiated wage is
+  // applied after it, not before, or it would be silently clobbered.
+  if (overrides.wage !== undefined) signed.wage = overrides.wage;
 
   club.squad.push(signed);
   club.transfersIn.push({ playerId: signed.id, name: signed.name, fee: check.fee, season: world.seasonNumber });
@@ -145,6 +158,7 @@ export function signPlayer(world, club, player, rng) {
     const seller = player.fromClub ? world.clubs[player.fromClub] : null;
     if (seller) {
       receiveTransferFee(seller, check.fee, world.seasonNumber, `Sold ${signed.name}`);
+      fireSellOnClauses(world, player.id, signed.name, check.fee, seller.id);
       seller.squad = seller.squad.filter((p) => p.id !== player.id);
       seller.lineup = pickBestXI(seller);
     }
@@ -162,6 +176,7 @@ export function sellPlayer(world, club, playerId, fee, buyerId = null) {
   club.squad = club.squad.filter((p) => p.id !== playerId);
   club.transfersOut.push({ playerId, name: player.name, fee, season: world.seasonNumber });
   receiveTransferFee(club, fee, world.seasonNumber, `Sold ${player.name}`);
+  if (fee > 0) fireSellOnClauses(world, playerId, player.name, fee, club.id);
 
   const buyer = buyerId ? world.clubs[buyerId] : null;
   if (buyer) {
@@ -234,6 +249,7 @@ export function processExpiringContracts(world, rng) {
         continue;
       }
       club.squad = club.squad.filter((p) => p.id !== player.id);
+      dischargePlayerObligations(world, player.id);
       departures.push({ clubId: club.id, player });
     }
     club.lineup = pickBestXI(club);

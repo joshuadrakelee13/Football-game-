@@ -42,6 +42,10 @@ export function buildWorld({ seed = Date.now(), clubName = 'Riverside FC', manag
     finished: false,
     inbox: [],
     inboxSeq: 0,
+    sellOnClauses: [],
+    installmentSchedules: [],
+    riseClauses: [],
+    obligationSeq: 0,
   };
 
   // The player's club takes a League Two place; one real club steps aside for the save.

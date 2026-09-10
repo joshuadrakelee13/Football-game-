@@ -5,13 +5,14 @@ import { money, compact, ordinal, seasonLabel } from '../core/format.js';
 import { playerClub } from '../model/world.js';
 import { DIVISION_BY_TIER } from '../data/competitions.js';
 import { weeklyWages, squadRating, squadMorale } from '../model/club.js';
+import { transferBudget } from '../engine/finance.js';
 import { standings } from '../engine/league.js';
 import { SCREENS, SCREEN_ORDER } from './screens.js';
 import { game, goTo, newGame, continueGame, persist, exportSave, importSave, abandonGame } from '../main.js';
 import { openModal, closeModal, confirmDialog } from './modal.js';
 import { toast } from './toast.js';
 
-let lastBalance = null;
+let lastTransferBudget = null;
 
 export function renderShell(root) {
   if (root.dataset.shell === '1') { renderHud(); renderRail(); return; }
@@ -92,15 +93,14 @@ export function renderHud() {
   const hud = document.getElementById('hud');
   clear(hud);
 
-  const balanceEl = h('span', { class: 'v money' }, money(you.balance));
+  const transferBudgetEl = h('span', { class: 'v money' }, money(transferBudget(you)));
 
   hud.appendChild(h('div', { class: 'hud-stats' },
     stat('Position', position ? ordinal(position) : '—', { sub: div.short }),
     h('div', { class: 'hud-stat' },
-      h('span', { class: 'k' }, 'Balance'),
-      balanceEl,
+      h('span', { class: 'k' }, 'Transfer budget'),
+      transferBudgetEl,
     ),
-    stat('Transfer budget', money(you.transferBudget || 0), { tone: 'money' }),
     stat('Wages', `${money(wages)}/wk`, { tone: wageRatio > 1 ? 'bad' : wageRatio > 0.92 ? '' : 'good' }),
     stat('Fans', compact(you.fans)),
     stat('Reputation', Math.round(you.reputation)),
@@ -116,11 +116,12 @@ export function renderHud() {
     h('button', { class: 'btn primary', onclick: () => goTo('overview') }, 'Matchday'),
   ));
 
-  // Money counts up rather than snapping, so a transfer or a gate receipt registers.
-  if (lastBalance !== null && lastBalance !== you.balance) {
-    animateNumber(balanceEl, lastBalance, you.balance, money);
+  // Counts up rather than snapping, so a signing or a sale registers.
+  const currentBudget = transferBudget(you);
+  if (lastTransferBudget !== null && lastTransferBudget !== currentBudget) {
+    animateNumber(transferBudgetEl, lastTransferBudget, currentBudget, money);
   }
-  lastBalance = you.balance;
+  lastTransferBudget = currentBudget;
 }
 
 function stat(label, value, { tone = '', sub = null } = {}) {

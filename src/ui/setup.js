@@ -3,6 +3,7 @@
 import { h, mount } from './dom.js';
 import { money } from '../core/format.js';
 import { newGame, continueGame } from '../main.js';
+import { PLAYER_CLUB_STARTING_TRANSFER_BUDGET, PLAYER_CLUB_STARTING_WAGE_BUDGET } from '../model/club.js';
 
 export function renderSetup(root, { hasSave }) {
   root.dataset.shell = '';
@@ -46,8 +47,8 @@ export function renderSetup(root, { hasSave }) {
               fact('Stadium', '2,000 seats'),
               fact('Fans', '1,000'),
               fact('Reputation', '10 / 100'),
-              fact('Transfer budget', money(100000)),
-              fact('Wage budget', money(10000) + '/wk'),
+              fact('Transfer budget', money(PLAYER_CLUB_STARTING_TRANSFER_BUDGET)),
+              fact('Wage budget', money(PLAYER_CLUB_STARTING_WAGE_BUDGET) + '/wk'),
             ),
 
             h('button', { class: 'btn primary block lg', onclick: start }, 'Start a new save'),

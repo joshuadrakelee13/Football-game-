@@ -4,11 +4,13 @@ import { h, clubChip, ratingPill, panel, emptyState } from './dom.js';
 import { money, num } from '../core/format.js';
 import { playerClub } from '../model/world.js';
 import { squadRating, weeklyWages } from '../model/club.js';
-import { canSign, signPlayer, sellPlayer } from '../engine/transfers.js';
+import { sellPlayer } from '../engine/transfers.js';
+import { canOpenNegotiation } from '../engine/negotiation.js';
 import { visiblePotential, scoutPlayer, scoutCost, marketSizeBonus } from '../engine/scouting.js';
 import { transferBudget } from '../engine/finance.js';
 import { persist, render, game } from '../main.js';
 import { openModal, closeModal, confirmDialog } from './modal.js';
+import { openBuyNegotiation, openSellNegotiation } from './negotiation-modal.js';
 import { toast } from './toast.js';
 
 let tab = 'market';
@@ -88,7 +90,7 @@ function playerTable(world, you, list, mode) {
         h('th', null, ''),
       )),
       h('tbody', null, ...list.map((p) => {
-        const check = canSign(world, you, p);
+        const check = canOpenNegotiation(world, you, p);
         const pot = visiblePotential(you, p);
         return h('tr', { class: 'clickable', onclick: () => openTarget(world, you, p) },
           h('td', { class: 'strong' },
@@ -124,7 +126,7 @@ function shortReason(reason) {
 // ---------------------------------------------------------------------------
 
 function openTarget(world, you, player) {
-  const check = canSign(world, you, player);
+  const check = canOpenNegotiation(world, you, player);
   const pot = visiblePotential(you, player);
   const cost = scoutCost(you, player);
   const attrs = ['pace', 'finishing', 'passing', 'tackling', 'physical', 'technique'];
@@ -167,18 +169,12 @@ function openTarget(world, you, player) {
         class: 'btn primary',
         disabled: !check.ok,
         onclick: () => {
-          const result = signPlayer(world, you, player, game.rng);
           closeModal();
-          if (result.ok) {
-            world.transferMarket = world.transferMarket.filter((p) => p.id !== player.id);
-            world.freeAgents = (world.freeAgents || []).filter((p) => p.id !== player.id);
-            toast('Signed', `${player.name} joins for ${result.fee ? money(result.fee) : 'nothing'}`, { tone: 'gold' });
-          } else {
-            toast('Could not sign', result.reasons[0], { tone: 'danger' });
-          }
-          persist(); render();
+          openBuyNegotiation(world, you, player);
         },
-      }, player.askingPrice ? `Sign for ${money(player.askingPrice)}` : 'Sign on a free'),
+      }, !player.askingPrice ? 'Discuss personal terms'
+        : player.fromClub ? `Negotiate · asking ${money(player.askingPrice)}`
+        : `Sign for ${money(player.askingPrice)}`),
     ],
   });
 }
@@ -228,6 +224,14 @@ function bidsPanel(world, you, bids) {
               premium > 0 ? h('span', { style: { color: 'var(--text-3)', fontSize: '11px' } }, ` +${premium}%`) : null),
             h('td', null,
               h('div', { style: { display: 'flex', gap: '6px', justifyContent: 'flex-end' } },
+                h('button', {
+                  class: 'btn sm',
+                  onclick: (e) => {
+                    e.stopPropagation();
+                    if (!player) return;
+                    openSellNegotiation(world, you, bid);
+                  },
+                }, 'Negotiate'),
                 h('button', {
                   class: 'btn sm primary',
                   onclick: async (e) => {

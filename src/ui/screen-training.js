@@ -64,6 +64,7 @@ export function renderTraining(world) {
       ),
 
       h('div', { class: 'grid', style: { gap: 'var(--space-4)' } },
+        focusGainsPanel(focus),
         facilityPanel(world, you, 'training', 'Training ground'),
         h('div', { class: 'grid cols-2' },
           statTile('Development rate', '×' + trainingMultiplier(you.facilities.training).toFixed(2),
@@ -72,6 +73,31 @@ export function renderTraining(world) {
         ),
       ),
     ),
+  );
+}
+
+// What the active focus actually trades off, reusing meter() unmodified for both
+// directions (a positive gain, or the trade-off a heavy focus quietly costs elsewhere).
+function focusGainsPanel(focus) {
+  const entries = Object.entries(focus.gains).filter(([, rate]) => rate !== 0);
+  const maxAbs = Math.max(0.1, ...entries.map(([, rate]) => Math.abs(rate)));
+  const gains = entries.filter(([, rate]) => rate > 0).sort((a, b) => b[1] - a[1]);
+  const costs = entries.filter(([, rate]) => rate < 0).sort((a, b) => a[1] - b[1]);
+
+  return panel('What this focus trains',
+    h('div', { class: 'panel-body', style: { display: 'grid', gap: '6px' } },
+      h('div', { class: 'eyebrow' }, 'Improving'),
+      ...gains.map(([attr, rate]) => gainRow(attr, rate, maxAbs)),
+      costs.length ? h('div', { class: 'eyebrow', style: { marginTop: '6px' } }, 'Trade-off') : null,
+      ...costs.map(([attr, rate]) => gainRow(attr, rate, maxAbs)),
+    ),
+  );
+}
+
+function gainRow(attr, rate, maxAbs) {
+  return h('div', { style: { display: 'flex', alignItems: 'center', gap: 'var(--space-3)' } },
+    h('span', { style: { flex: 'none', width: '76px', fontSize: '12px', color: 'var(--text-2)', textTransform: 'capitalize' } }, attr),
+    h('div', { style: { flex: 1 } }, meter(Math.abs(rate) / maxAbs, rate >= 0 ? '' : 'danger')),
   );
 }
 

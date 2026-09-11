@@ -109,6 +109,19 @@ export function render() {
   setActiveScreen(game.screen);
 }
 
+// A short crossfade where the browser supports it and the viewer hasn't asked for
+// reduced motion, and a plain swap otherwise. Used for genuine full-content swaps
+// (a screen change, or a context push/pop) — NOT for setContextTab, where the
+// context bar and tab strip are visually identical before/after, so a full-page
+// crossfade would just flicker unchanged chrome rather than animate anything.
+function withTransition(fn) {
+  if (document.startViewTransition && !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+    document.startViewTransition(fn);
+  } else {
+    fn();
+  }
+}
+
 export function goTo(screen) {
   if (!SCREENS[screen]) return;
   game.screen = screen;
@@ -117,13 +130,7 @@ export function goTo(screen) {
   // from. This is also what makes a breadcrumb's root crumb correct with no
   // special case: it just calls goTo(game.screen).
   game.contextStack = [];
-  // A short crossfade between screens where the browser supports it, and a plain
-  // swap where it does not.
-  if (document.startViewTransition && !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
-    document.startViewTransition(() => setActiveScreen(screen));
-  } else {
-    setActiveScreen(screen);
-  }
+  withTransition(() => setActiveScreen(screen));
 }
 
 // ---------------------------------------------------------------------------
@@ -145,7 +152,7 @@ export function goTo(screen) {
 export function openContext(type, entryFields) {
   if (!CONTEXTS[type]) return;
   game.contextStack.push({ type, ...entryFields, tab: entryFields.tab ?? null });
-  setActiveScreen(game.screen);
+  withTransition(() => setActiveScreen(game.screen));
 }
 
 // Safe to call unconditionally — a no-op fallthrough to the plain screen render
@@ -153,13 +160,13 @@ export function openContext(type, entryFields) {
 // invoked from inside an open context or from a menu with no context open.
 export function goBack() {
   game.contextStack.pop();
-  setActiveScreen(game.screen);
+  withTransition(() => setActiveScreen(game.screen));
 }
 
 // Breadcrumb click-to-jump: truncate to a given depth (0-based) in the stack.
 export function jumpToContextDepth(index) {
   game.contextStack = game.contextStack.slice(0, index + 1);
-  setActiveScreen(game.screen);
+  withTransition(() => setActiveScreen(game.screen));
 }
 
 export function setContextTab(tab) {

@@ -12,5 +12,6 @@
 // have finished initialising.
 
 import { playerContext } from './context-player.js';
+import { clubContext } from './context-club.js';
 
-export const CONTEXTS = { player: playerContext };
+export const CONTEXTS = { player: playerContext, club: clubContext };

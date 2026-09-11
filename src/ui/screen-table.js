@@ -5,7 +5,7 @@ import { playerClub } from '../model/world.js';
 import { DIVISIONS, DIVISION_BY_TIER } from '../data/competitions.js';
 import { standings } from '../engine/league.js';
 import { zoneClass, signedNum } from './screen-overview.js';
-import { render } from '../main.js';
+import { render, openContext } from '../main.js';
 
 let viewTier = null;
 
@@ -44,7 +44,10 @@ export function renderTable(world) {
             const club = world.clubs[row.clubId];
             const pos = i + 1;
             const moved = row.lastPosition ? row.lastPosition - pos : 0;
-            return h('tr', { class: (club.isPlayerClub ? 'you ' : '') + zoneClass(pos, div, table.length) },
+            return h('tr', {
+              class: 'clickable ' + (club.isPlayerClub ? 'you ' : '') + zoneClass(pos, div, table.length),
+              onclick: () => openContext('club', { clubId: club.id }),
+            },
               h('td', { class: 'pos num' }, pos),
               h('td', null, h('span', { class: 'move ' + (moved > 0 ? 'up' : moved < 0 ? 'down' : 'same') },
                 moved > 0 ? '▲' : moved < 0 ? '▼' : '·')),

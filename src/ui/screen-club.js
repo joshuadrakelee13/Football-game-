@@ -1,6 +1,6 @@
 // Club: objectives, honours, history and the state of the institution.
 
-import { h, panel, meter, statTile, emptyState, clubChip } from './dom.js';
+import { h, panel, meter, statTile, emptyState, clubCrest } from './dom.js';
 import { money, num, seasonLabel, ordinal } from '../core/format.js';
 import { playerClub } from '../model/world.js';
 import { DIVISION_BY_TIER } from '../data/competitions.js';
@@ -16,9 +16,12 @@ export function renderClub(world) {
   const done = objectives.filter((o) => o.complete).length;
 
   return h('div', { class: 'stagger' },
-    h('div', { class: 'screen-title' },
-      h('h1', null, you.name),
-      h('span', { class: 'sub' }, `${div.name} · managed by ${world.managerName}`),
+    h('div', { class: 'screen-title', style: { display: 'flex', alignItems: 'center', gap: 'var(--space-4)' } },
+      clubCrest(you, { size: 'lg' }),
+      h('div', null,
+        h('h1', null, you.name),
+        h('span', { class: 'sub' }, `${div.name} · managed by ${world.managerName}`),
+      ),
     ),
 
     h('div', { class: 'grid cols-4' },

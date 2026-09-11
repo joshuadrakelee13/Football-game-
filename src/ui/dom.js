@@ -120,6 +120,19 @@ export function clubChip(club, { short = true, you = false } = {}) {
   );
 }
 
+// Club identity crest: a colour-gradient swatch with the club's abbreviation, drawn
+// from its real kit colours. size: 'sm' (default — the rail's 34px) or 'lg' (64px, for
+// a screen-title-level placement).
+export function clubCrest(club, { size = 'sm' } = {}) {
+  const cls = 'crest' + (size === 'lg' ? ' lg' : '');
+  if (!club) return h('div', { class: cls });
+  const kit = visibleColours(club.colors);
+  return h('div', {
+    class: cls,
+    style: { background: `linear-gradient(155deg, ${kit.primary}, ${kit.secondary})` },
+  }, club.abbr || club.short?.slice(0, 3).toUpperCase() || '');
+}
+
 // Rating pill, banded so quality is readable at a glance without reading digits.
 export function ratingPill(value, { context = 60 } = {}) {
   const v = Math.round(value);

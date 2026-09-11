@@ -1,7 +1,7 @@
 // Finances: what came in, what went out, and what you can actually spend.
 
-import { h, panel, meter, statTile, emptyState } from './dom.js';
-import { money, moneyFull, num } from '../core/format.js';
+import { h, panel, meter, statTile, emptyState, animateNumber } from './dom.js';
+import { money, moneyFull, num, seasonLabel } from '../core/format.js';
 import { playerClub } from '../model/world.js';
 import { DIVISION_BY_TIER, leaguePrize } from '../data/competitions.js';
 import { seasonSummary, weeklyRunningCost, transferBudget } from '../engine/finance.js';
@@ -21,12 +21,19 @@ const CATEGORY_COLOURS = {
   scouting: '#3BA55C', youth: '#4A6BF5',
 };
 
+// Module-level so a value persists across the full DOM remount every render does —
+// the same pattern shell.js's HUD uses for its transfer-budget count-up.
+let lastBalance = null;
+let lastTransferBudget = null;
+let lastWages = null;
+
 export function renderFinances(world) {
   const you = playerClub(world);
   const div = DIVISION_BY_TIER[you.tier];
   const summary = seasonSummary(you, world.seasonNumber);
   const cost = weeklyRunningCost(you);
-  const wageRatio = weeklyWages(you) / Math.max(1, you.wageBudget);
+  const wages = weeklyWages(you);
+  const wageRatio = wages / Math.max(1, you.wageBudget);
 
   const table = standings(world.tables[you.tier], (id) => world.clubs[id]?.name || id);
   const position = table.findIndex((r) => r.clubId === you.id) + 1;
@@ -36,15 +43,25 @@ export function renderFinances(world) {
   const expenseRows = Object.entries(summary.groups).filter(([, g]) => g.expense > 0);
   const ledger = (you.ledger || []).filter((l) => l.season === world.seasonNumber).slice(-40).reverse();
 
-  return h('div', { class: 'stagger' },
+  // Hand-rolled rather than statTile() for these two, so the value node can be
+  // captured and handed to animateNumber below — statTile() itself is untouched,
+  // it has plenty of other call sites that don't need this.
+  const currentBudget = transferBudget(you);
+  const balanceEl = h('div', { class: 'v ' + (you.balance < 0 ? 'bad' : 'money') }, money(you.balance));
+  const transferBudgetEl = h('div', { class: 'v money' }, money(currentBudget));
+  const wagesEl = h('span', { class: 'mono', style: { fontSize: '15px' } }, money(wages));
+
+  const tree = h('div', { class: 'stagger' },
     h('div', { class: 'screen-title' },
       h('h1', null, 'Finances'),
       h('span', { class: 'sub' }, `Season ${world.seasonNumber} · ${div.name}`),
     ),
 
     h('div', { class: 'grid cols-4' },
-      statTile('Bank balance', money(you.balance), { tone: you.balance < 0 ? 'bad' : 'money' }),
-      statTile('Transfer budget', money(transferBudget(you)), { tone: 'money', note: 'Board allowance' }),
+      h('div', { class: 'stat-tile' }, h('div', { class: 'k' }, 'Bank balance'), balanceEl),
+      h('div', { class: 'stat-tile' },
+        h('div', { class: 'k' }, 'Transfer budget'), transferBudgetEl,
+        h('div', { class: 'note' }, 'Board allowance')),
       statTile('Running cost', money(cost.total) + '/wk', { note: `${money(cost.total * 52)} a year` }),
       statTile('Season so far', (summary.net >= 0 ? '+' : '') + money(summary.net),
         { tone: summary.net >= 0 ? 'good' : 'bad', note: `${money(summary.income)} in, ${money(summary.expense)} out` }),
@@ -54,6 +71,10 @@ export function renderFinances(world) {
       h('div', { class: 'grid', style: { gap: 'var(--space-4)' } },
         panel('Income and expenditure',
           h('div', { class: 'panel-body' },
+            seasonTrend(you) ? h('div', { style: { marginBottom: '18px' } },
+              h('div', { class: 'eyebrow', style: { marginBottom: '4px' } }, 'Season by season (net)'),
+              seasonTrend(you),
+            ) : null,
             h('div', { class: 'eyebrow', style: { marginBottom: '8px' } }, 'Income'),
             h('div', { class: 'finance-bar', style: { marginBottom: '12px' } },
               ...incomeRows.map(([cat, g]) => h('i', {
@@ -91,14 +112,14 @@ export function renderFinances(world) {
         panel('Wage budget',
           h('div', { class: 'panel-body' },
             h('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: '6px' } },
-              h('span', { class: 'mono', style: { fontSize: '15px' } }, money(weeklyWages(you))),
+              wagesEl,
               h('span', { class: 'mono', style: { fontSize: '13px', color: 'var(--text-3)' } }, 'of ' + money(you.wageBudget)),
             ),
             meter(wageRatio, wageRatio > 1 ? 'danger' : wageRatio > 0.92 ? 'warn' : ''),
             h('p', { style: { color: 'var(--text-3)', fontSize: '12.5px', margin: '10px 0 0' } },
               wageRatio > 1
                 ? 'You are over budget. The board will not sanction more signings until wages come down.'
-                : `${money(Math.max(0, you.wageBudget - weeklyWages(you)))} a week of room for new signings.`),
+                : `${money(Math.max(0, you.wageBudget - wages))} a week of room for new signings.`),
           ),
         ),
 
@@ -128,6 +149,42 @@ export function renderFinances(world) {
       ),
     ),
   );
+
+  // Counts up rather than snapping, mirroring the HUD's transfer-budget treatment —
+  // this screen only re-renders while you're actually on it, so in practice this
+  // usually plays as a reveal from your last visit's numbers rather than a live
+  // in-screen delta, which is still the right call here.
+  if (lastBalance !== null && lastBalance !== you.balance) animateNumber(balanceEl, lastBalance, you.balance, money);
+  lastBalance = you.balance;
+  if (lastTransferBudget !== null && lastTransferBudget !== currentBudget) animateNumber(transferBudgetEl, lastTransferBudget, currentBudget, money);
+  lastTransferBudget = currentBudget;
+  if (lastWages !== null && lastWages !== wages) animateNumber(wagesEl, lastWages, wages, money);
+  lastWages = wages;
+
+  return tree;
+}
+
+// A per-season net trend, reusing the exact bar-array markup screen-stadium.js's
+// occupancy chart uses. Only the ledger's rolling window (capped at 600 rows
+// elsewhere) is available, so this can under-represent a very old club — that's
+// an honest reflection of what data exists, not a bug to work around.
+function seasonTrend(you) {
+  const bySeasonNet = {};
+  for (const row of you.ledger || []) {
+    bySeasonNet[row.season] = (bySeasonNet[row.season] || 0) + row.amount;
+  }
+  const seasons = Object.keys(bySeasonNet).map(Number).sort((a, b) => a - b);
+  if (seasons.length < 2) return null;
+  const maxAbs = Math.max(1, ...seasons.map((s) => Math.abs(bySeasonNet[s])));
+  return h('div', { class: 'capacity-visual' }, ...seasons.map((s) => {
+    const net = bySeasonNet[s];
+    const share = Math.abs(net) / maxAbs;
+    return h('i', {
+      class: net >= 0 ? 'filled' : 'negative',
+      style: { height: (14 + share * 86) + '%' },
+      title: `${seasonLabel(s)}: ${net >= 0 ? '+' : ''}${money(net)}`,
+    });
+  }));
 }
 
 function breakdownRow(category, amount, total, direction) {

@@ -1,6 +1,6 @@
 // Stadium: capacity, the expansion track, and what a bigger ground actually buys you.
 
-import { h, panel, meter, statTile } from './dom.js';
+import { h, panel, meter, statTile, animateNumber } from './dom.js';
 import { money, num } from '../core/format.js';
 import { playerClub } from '../model/world.js';
 import { DIVISION_BY_TIER } from '../data/competitions.js';
@@ -11,6 +11,10 @@ import { persist, render } from '../main.js';
 import { confirmDialog } from './modal.js';
 import { toast } from './toast.js';
 
+// Module-level so a value persists across the full DOM remount every render does —
+// the same pattern shell.js's HUD uses for its transfer-budget count-up.
+let lastFans = null;
+
 export function renderStadium(world) {
   const you = playerClub(world);
   const div = DIVISION_BY_TIER[you.tier];
@@ -19,7 +23,11 @@ export function renderStadium(world) {
   const perGame = gate.attendance * div.ticketPrice + gate.attendance * 6.5;
   const fill = you.fans / Math.max(1, you.stadiumCapacity);
 
-  return h('div', { class: 'stagger' },
+  // Hand-rolled rather than statTile(), so the value node can be captured and
+  // handed to animateNumber below.
+  const fansEl = h('div', { class: 'v' }, num(you.fans));
+
+  const tree = h('div', { class: 'stagger' },
     h('div', { class: 'screen-title' },
       h('h1', null, 'Stadium'),
       h('span', { class: 'sub' }, you.stadium),
@@ -27,7 +35,9 @@ export function renderStadium(world) {
 
     h('div', { class: 'grid cols-4' },
       statTile('Capacity', num(you.stadiumCapacity)),
-      statTile('Supporters', num(you.fans), { note: fill >= 0.95 ? 'Selling out' : `${Math.round(fill * 100)}% of capacity` }),
+      h('div', { class: 'stat-tile' },
+        h('div', { class: 'k' }, 'Supporters'), fansEl,
+        h('div', { class: 'note' }, fill >= 0.95 ? 'Selling out' : `${Math.round(fill * 100)}% of capacity`)),
       statTile('Typical gate', money(Math.round(perGame)), { tone: 'money', note: `${num(gate.attendance)} through the turnstiles` }),
       statTile('Upkeep', money(stadiumUpkeep(you)) + '/yr', { note: 'Rises with every expansion' }),
     ),
@@ -94,6 +104,11 @@ export function renderStadium(world) {
       ),
     ),
   );
+
+  if (lastFans !== null && lastFans !== you.fans) animateNumber(fansEl, lastFans, you.fans, num);
+  lastFans = you.fans;
+
+  return tree;
 }
 
 async function expand(world, you, tier) {

@@ -24,7 +24,8 @@ export function renderYouth(world) {
     h('div', { class: 'grid cols-3' },
       statTile('Prospects waiting', prospects.length, { tone: prospects.length ? 'good' : '' }),
       statTile('Graduates in the squad', graduates.length),
-      statTile('Discovery rate', Math.round(info.chance * 100) + '%', { note: 'Chance every six weeks' }),
+      statTile('Discovery rate', Math.round(info.chance * 100) + '%',
+        { note: `Every 6wk · +${info.potentialBonus + info.spread[0]}–${info.potentialBonus + info.spread[1]} ceiling` }),
     ),
 
     h('div', { class: 'grid split', style: { marginTop: 'var(--space-4)' } },

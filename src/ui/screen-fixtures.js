@@ -4,10 +4,16 @@ import { h, clubChip, panel, emptyState } from './dom.js';
 import { matchDate, seasonLabel } from '../core/format.js';
 import { playerClub, upcomingFixtures } from '../model/world.js';
 import { DIVISION_BY_TIER } from '../data/competitions.js';
+import { openContext } from '../main.js';
 
 const COMP_NAMES = {
   LEAGUE: 'League', FA: 'FA Cup', EFL: 'Carabao Cup',
   UCL: 'Champions League', UEL: 'Europa League', UECL: 'Conference League',
+};
+
+const COMP_COLOURS = {
+  LEAGUE: '#7BDB56', FA: '#F0C24D', EFL: '#E8853B',
+  UCL: '#C084FC', UEL: '#5AA7F5', UECL: '#4A6BF5',
 };
 
 export function renderFixtures(world) {
@@ -20,6 +26,8 @@ export function renderFixtures(world) {
       h('h1', null, 'Fixtures'),
       h('span', { class: 'sub' }, `${seasonLabel(world.startYear)} · ${DIVISION_BY_TIER[you.tier].name}`),
     ),
+
+    upcoming.length ? h('div', { class: 'rhythm-strip' }, ...upcoming.slice(0, 8).map((entry) => rhythmChip(world, you, entry))) : null,
 
     h('div', { class: 'grid split' },
       panel('Results',
@@ -36,7 +44,10 @@ export function renderFixtures(world) {
               const gf = isHome ? r.homeGoals : r.awayGoals;
               const ga = isHome ? r.awayGoals : r.homeGoals;
               const outcome = gf > ga ? 'W' : gf === ga ? 'D' : 'L';
-              return h('tr', null,
+              return h('tr', {
+                class: opponent ? 'clickable' : null,
+                onclick: opponent ? () => openContext('club', { clubId: opponent.id }) : null,
+              },
                 h('td', null, h('span', { style: { fontSize: '11.5px', color: 'var(--text-3)' } },
                   r.label || COMP_NAMES[r.competition] || r.competition)),
                 h('td', { class: 'strong' }, clubChip(opponent, { short: false })),
@@ -56,7 +67,11 @@ export function renderFixtures(world) {
           const isHome = entry.home === you.id;
           const opponentId = isHome ? entry.away : entry.home;
           const opponent = world.clubs[opponentId] || world.europeClubs?.[opponentId];
-          return h('div', { class: 'result-row' },
+          return h('div', {
+            class: 'result-row',
+            style: opponent ? { cursor: 'pointer' } : null,
+            onclick: opponent ? () => openContext('club', { clubId: opponent.id }) : null,
+          },
             h('span', { class: 'mono', style: { fontSize: '11px', color: 'var(--text-faint)', width: '74px', flex: 'none' } },
               matchDate(entry.matchday.day, world.startYear)),
             h('span', { class: 'opponent' },
@@ -66,5 +81,23 @@ export function renderFixtures(world) {
         })) : emptyState('No fixtures left this season.'),
       ),
     ),
+  );
+}
+
+// A compact "what's coming" rhythm strip above the full Results/Coming-up tables —
+// same upcoming fixtures, just a glanceable overview rather than the detailed list.
+function rhythmChip(world, you, entry) {
+  const isHome = entry.home === you.id;
+  const opponentId = isHome ? entry.away : entry.home;
+  const opponent = world.clubs[opponentId] || world.europeClubs?.[opponentId];
+  const color = COMP_COLOURS[entry.competition] || 'var(--text-3)';
+  return h('div', {
+    class: 'rhythm-chip',
+    style: opponent ? { cursor: 'pointer' } : null,
+    onclick: opponent ? () => openContext('club', { clubId: opponent.id }) : null,
+    title: entry.roundLabel || COMP_NAMES[entry.competition] || entry.competition,
+  },
+    h('i', { class: 'dot', style: { background: color } }),
+    h('span', null, isHome ? 'v ' : 'at ', opponent?.short || 'TBC'),
   );
 }

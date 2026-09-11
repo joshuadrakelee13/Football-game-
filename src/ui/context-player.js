@@ -8,6 +8,7 @@ import { money } from '../core/format.js';
 import { playerClub } from '../model/world.js';
 import { isAvailable } from '../model/player.js';
 import { visiblePotential, scoutCost } from '../engine/scouting.js';
+import { anyClub } from '../engine/europe.js';
 import { renewalDemand } from '../engine/transfers.js';
 import { canOpenNegotiation } from '../engine/negotiation.js';
 import { renewPlayer, sellSquadPlayer, scoutTarget, negotiateFor, promoteYouthProspect, sellYouthProspect, releaseYouthProspect, toggleShortlist } from './player-actions.js';
@@ -15,7 +16,7 @@ import { renewPlayer, sellSquadPlayer, scoutTarget, negotiateFor, promoteYouthPr
 function resolve(world, entry) {
   const { source, playerId } = entry;
   if (!source) return null;
-  if (source.kind === 'squad') return world.clubs[source.clubId]?.squad.find((p) => p.id === playerId) || null;
+  if (source.kind === 'squad') return anyClub(world, source.clubId)?.squad.find((p) => p.id === playerId) || null;
   if (source.kind === 'market') return (world.transferMarket || []).find((p) => p.id === playerId) || null;
   if (source.kind === 'freeAgents') return (world.freeAgents || []).find((p) => p.id === playerId) || null;
   if (source.kind === 'prospect') return (world.youthProspects || []).find((p) => p.id === playerId) || null;

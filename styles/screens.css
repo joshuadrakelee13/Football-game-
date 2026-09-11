@@ -100,8 +100,10 @@
   padding: 7px var(--space-4);
   border-bottom: 1px solid var(--line-faint);
   font-size: 13px;
+  transition: background var(--fast) var(--ease);
 }
 .result-row:last-child { border-bottom: none; }
+.result-row:hover { background: var(--surface-2); }
 .result-row .score {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
@@ -115,6 +117,29 @@
 .result-row .score.L { background: rgba(255, 93, 108, 0.14); color: var(--danger); }
 .result-row .opponent { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .result-row .comp { font-size: 10.5px; color: var(--text-faint); flex: none; }
+
+.rhythm-strip {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  margin-bottom: var(--space-4);
+}
+.rhythm-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-size: 11.5px;
+  white-space: nowrap;
+  transition: border-color var(--fast) var(--ease), background var(--fast) var(--ease);
+}
+.rhythm-chip:hover { border-color: var(--line-strong); background: var(--surface-2); }
+.rhythm-chip .dot { width: 6px; height: 6px; border-radius: 50%; flex: none; }
 
 /* ---- Match overlay ------------------------------------------------------- */
 
@@ -498,6 +523,7 @@
   border-left: 2px solid var(--line);
   transition: background var(--fast) var(--ease);
 }
+.track-step:hover { background: var(--surface-2); }
 .track-step.done { border-left-color: var(--pitch-dim); }
 .track-step.current { border-left-color: var(--pitch); background: var(--surface-2); }
 .track-step.locked { opacity: 0.52; }
@@ -521,6 +547,7 @@
 }
 .capacity-visual i.filled { background: var(--pitch); }
 .capacity-visual i.current { background: var(--gold); }
+.capacity-visual i.negative { background: var(--danger); }
 
 /* ---- Finances ------------------------------------------------------------ */
 
@@ -531,8 +558,10 @@
   padding: 6px var(--space-4);
   border-bottom: 1px solid var(--line-faint);
   font-size: 12.5px;
+  transition: background var(--fast) var(--ease);
 }
 .ledger-row:last-child { border-bottom: none; }
+.ledger-row:hover { background: var(--surface-2); }
 .ledger-row .desc { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-2); }
 .ledger-row .amt { font-family: var(--font-mono); font-variant-numeric: tabular-nums; flex: none; }
 .ledger-row .amt.in { color: var(--pitch); }

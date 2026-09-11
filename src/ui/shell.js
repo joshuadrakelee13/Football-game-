@@ -1,6 +1,6 @@
 // The application shell: the left rail, the HUD ticker, and the screen container.
 
-import { h, mount, clear, formGuide, animateNumber, visibleColours } from './dom.js';
+import { h, mount, clear, formGuide, animateNumber, clubCrest } from './dom.js';
 import { money, compact, ordinal, seasonLabel } from '../core/format.js';
 import { playerClub } from '../model/world.js';
 import { DIVISION_BY_TIER } from '../data/competitions.js';
@@ -48,12 +48,8 @@ function renderRail() {
   const you = playerClub(world);
   const div = DIVISION_BY_TIER[you.tier];
 
-  const kit = visibleColours(you.colors);
   mount(document.getElementById('rail-brand'),
-    h('div', {
-      class: 'crest',
-      style: { background: `linear-gradient(155deg, ${kit.primary}, ${kit.secondary})` },
-    }, you.abbr || you.short?.slice(0, 3).toUpperCase() || ''),
+    clubCrest(you),
     h('div', { class: 'id' },
       h('span', { class: 'club' }, you.name),
       h('span', { class: 'division' }, `${div.name} · ${seasonLabel(world.startYear)}`),
@@ -174,7 +170,11 @@ function renderContextView(world, stack) {
   // render pass has freshly read.
   if (!top.tab) top.tab = tabs[0]?.key ?? null;
 
-  return h('div', null,
+  // .stagger's incremental rise+fade (already used by every plain screen) replays on
+  // every remount, which is what gives a same-context tab switch a subtle entrance —
+  // deliberately not a startViewTransition crossfade, since the bar/tab chrome here is
+  // visually identical before and after a tab switch.
+  return h('div', { class: 'stagger' },
     contextBar(world, stack, def),
     tabs.length > 1 ? tabStrip(tabs, top.tab) : null,
     def.render(world, top),

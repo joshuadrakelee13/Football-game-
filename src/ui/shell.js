@@ -14,6 +14,7 @@ import {
   goBack, jumpToContextDepth, setContextTab,
 } from '../main.js';
 import { openModal, closeModal, confirmDialog } from './modal.js';
+import { openContextMenu } from './context-menu.js';
 import { toast } from './toast.js';
 
 let lastTransferBudget = null;
@@ -182,6 +183,7 @@ function renderContextView(world, stack) {
 
 function contextBar(world, stack, def) {
   const top = stack.at(-1);
+  const items = def.actionItems ? def.actionItems(world, top) : [];
   return h('div', { class: 'context-bar' },
     h('button', { class: 'context-back', onclick: () => goBack() }, '← Back'),
     h('div', { class: 'context-crumbs' },
@@ -193,6 +195,10 @@ function contextBar(world, stack, def) {
           : h('button', { class: 'context-crumb', onclick: () => jumpToContextDepth(i) }, CONTEXTS[entry.type]?.title(world, entry) ?? ''),
       ]),
     ),
+    items.length ? h('button', {
+      class: 'btn sm ghost context-actions',
+      onclick: (e) => openContextMenu(e.currentTarget, items),
+    }, 'Actions ▾') : null,
   );
 }
 

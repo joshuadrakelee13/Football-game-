@@ -6,10 +6,12 @@ import { playerClub } from '../model/world.js';
 import { squadRating, weeklyWages } from '../model/club.js';
 import { sellPlayer } from '../engine/transfers.js';
 import { canOpenNegotiation } from '../engine/negotiation.js';
-import { visiblePotential } from '../engine/scouting.js';
+import { visiblePotential, scoutCost } from '../engine/scouting.js';
 import { transferBudget } from '../engine/finance.js';
 import { persist, render, game, openContext } from '../main.js';
 import { confirmDialog } from './modal.js';
+import { openContextMenu } from './context-menu.js';
+import { scoutTarget, negotiateFor, toggleShortlist } from './player-actions.js';
 import { openSellNegotiation } from './negotiation-modal.js';
 import { toast } from './toast.js';
 
@@ -30,11 +32,13 @@ export function renderTransfers(world) {
     h('div', { class: 'formation-picker', style: { marginBottom: 'var(--space-4)' } },
       tabButton('market', 'Transfer market'),
       tabButton('free', `Free agents (${(world.freeAgents || []).length})`),
+      tabButton('shortlist', `Shortlist (${(world.shortlist || []).length})`),
       tabButton('bids', `Offers received (${bids.length})`),
     ),
 
     tab === 'market' ? marketPanel(world, you)
       : tab === 'free' ? freeAgentPanel(world, you)
+      : tab === 'shortlist' ? shortlistPanel(world, you)
       : bidsPanel(world, you, bids),
   );
 }
@@ -78,6 +82,24 @@ function freeAgentPanel(world, you) {
   );
 }
 
+function shortlistPanel(world, you) {
+  const ids = new Set(world.shortlist || []);
+  const marketHits = (world.transferMarket || []).filter((p) => ids.has(p.id));
+  const freeHits = (world.freeAgents || []).filter((p) => ids.has(p.id));
+  const staleCount = ids.size - marketHits.length - freeHits.length;
+
+  if (!marketHits.length && !freeHits.length) {
+    return panel('Shortlist', emptyState('Nothing shortlisted yet — use the ⋯ menu or Actions on a market or free-agent listing.'));
+  }
+
+  return h('div', { class: 'grid', style: { gap: 'var(--space-4)' } },
+    marketHits.length ? panel('Shortlisted — transfer market', playerTable(world, you, marketHits, 'buy')) : null,
+    freeHits.length ? panel('Shortlisted — free agents', playerTable(world, you, freeHits, 'free')) : null,
+    staleCount > 0 ? h('p', { style: { color: 'var(--text-3)', fontSize: '12px' } },
+      `${staleCount} shortlisted player${staleCount === 1 ? '' : 's'} no longer available.`) : null,
+  );
+}
+
 function playerTable(world, you, list, mode) {
   const avg = squadRating(you);
   return h('div', { class: 'table-scroll' },
@@ -108,13 +130,37 @@ function playerTable(world, you, list, mode) {
           h('td', null, h('span', { style: { fontSize: '11.5px', color: 'var(--text-3)' } }, p.archetype)),
           h('td', { class: 'num' }, p.askingPrice ? money(p.askingPrice) : 'Free'),
           h('td', { class: 'num' }, money(p.wage)),
-          h('td', null, check.ok
-            ? h('span', { class: 'tag pitch' }, 'Available')
-            : h('span', { class: 'tag muted', title: check.reasons.join('; ') }, shortReason(check.reasons[0]))),
+          h('td', null, h('div', { style: { display: 'flex', gap: '6px', alignItems: 'center', justifyContent: 'flex-end' } },
+            check.ok
+              ? h('span', { class: 'tag pitch' }, 'Available')
+              : h('span', { class: 'tag muted', title: check.reasons.join('; ') }, shortReason(check.reasons[0])),
+            h('button', {
+              class: 'btn sm ghost',
+              onclick: (e) => { e.stopPropagation(); openContextMenu(e.currentTarget, targetRowMenu(world, you, p, mode)); },
+            }, '⋯'),
+          )),
         );
       })),
     ),
   );
+}
+
+function targetRowMenu(world, you, player, mode) {
+  const source = { kind: mode === 'free' ? 'freeAgents' : 'market' };
+  const items = [
+    { label: 'View profile', onClick: () => openContext('player', { playerId: player.id, source }) },
+  ];
+  if (!player.scouted) {
+    items.push({ divider: true }, { label: `Scout · ${money(scoutCost(you, player))}`, onClick: () => scoutTarget(world, you, player) });
+  }
+  if (canOpenNegotiation(world, you, player).ok) {
+    items.push({ divider: true }, { label: 'Negotiate', onClick: () => negotiateFor(world, you, player) });
+  }
+  items.push({ divider: true }, {
+    label: (world.shortlist || []).includes(player.id) ? 'Remove from shortlist' : 'Add to shortlist',
+    onClick: () => toggleShortlist(world, player.id),
+  });
+  return items;
 }
 
 function shortReason(reason) {

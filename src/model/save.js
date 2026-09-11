@@ -69,6 +69,7 @@ export function deserialise(json) {
   world.sellOnClauses = world.sellOnClauses || [];
   world.installmentSchedules = world.installmentSchedules || [];
   world.riseClauses = world.riseClauses || [];
+  world.shortlist = world.shortlist || [];
   return { world, savedAt: data.savedAt };
 }
 

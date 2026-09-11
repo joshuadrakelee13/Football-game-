@@ -3,12 +3,11 @@
 import { h, panel, emptyState, meter, statTile } from './dom.js';
 import { money } from '../core/format.js';
 import { playerClub } from '../model/world.js';
-import { promoteProspect, prospectGrade, academyLevelInfo } from '../engine/youth.js';
+import { prospectGrade, academyLevelInfo } from '../engine/youth.js';
 import { facilityInfo } from '../engine/training.js';
-import { receiveTransferFee } from '../engine/finance.js';
 import { facilityPanel } from './screen-training.js';
-import { persist, render } from '../main.js';
-import { toast } from './toast.js';
+import { openContext } from '../main.js';
+import { promoteYouthProspect, sellYouthProspect, releaseYouthProspect } from './player-actions.js';
 
 export function renderYouth(world) {
   const you = playerClub(world);
@@ -61,10 +60,12 @@ function prospectRow(world, you, prospect) {
   const fee = Math.round(prospect.value * 1.3);
 
   return h('div', {
+    class: 'clickable',
     style: {
       padding: 'var(--space-4)', borderBottom: '1px solid var(--line-faint)',
-      display: 'flex', gap: 'var(--space-4)', alignItems: 'center', flexWrap: 'wrap',
+      display: 'flex', gap: 'var(--space-4)', alignItems: 'center', flexWrap: 'wrap', cursor: 'pointer',
     },
+    onclick: () => openContext('player', { playerId: prospect.id, source: { kind: 'prospect' } }),
   },
     h('div', { style: { flex: 1, minWidth: '180px' } },
       h('div', { style: { fontWeight: 600 } }, prospect.name,
@@ -81,29 +82,15 @@ function prospectRow(world, you, prospect) {
     h('div', { style: { display: 'flex', gap: '6px', flexWrap: 'wrap' } },
       h('button', {
         class: 'btn sm primary',
-        onclick: () => {
-          const result = promoteProspect(you, prospect);
-          if (!result.ok) { toast('Cannot promote', result.reason, { tone: 'danger' }); return; }
-          world.youthProspects = world.youthProspects.filter((p) => p !== prospect);
-          toast('Promoted', `${prospect.name} joins the senior squad.`);
-          persist(); render();
-        },
+        onclick: (e) => { e.stopPropagation(); promoteYouthProspect(world, prospect); },
       }, 'Promote'),
       h('button', {
         class: 'btn sm',
-        onclick: () => {
-          receiveTransferFee(you, fee, world.seasonNumber, `Sold academy player ${prospect.name}`);
-          world.youthProspects = world.youthProspects.filter((p) => p !== prospect);
-          toast('Sold', `${prospect.name} leaves for ${money(fee)}.`, { tone: 'gold' });
-          persist(); render();
-        },
+        onclick: (e) => { e.stopPropagation(); sellYouthProspect(world, prospect); },
       }, `Sell · ${money(fee)}`),
       h('button', {
         class: 'btn sm ghost',
-        onclick: () => {
-          world.youthProspects = world.youthProspects.filter((p) => p !== prospect);
-          persist(); render();
-        },
+        onclick: (e) => { e.stopPropagation(); releaseYouthProspect(world, prospect); },
       }, 'Release'),
     ),
   );

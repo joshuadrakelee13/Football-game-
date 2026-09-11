@@ -10,7 +10,7 @@ import { isAvailable } from '../model/player.js';
 import { visiblePotential, scoutCost } from '../engine/scouting.js';
 import { renewalDemand } from '../engine/transfers.js';
 import { canOpenNegotiation } from '../engine/negotiation.js';
-import { renewPlayer, sellSquadPlayer, scoutTarget, negotiateFor } from './player-actions.js';
+import { renewPlayer, sellSquadPlayer, scoutTarget, negotiateFor, promoteYouthProspect, sellYouthProspect, releaseYouthProspect, toggleShortlist } from './player-actions.js';
 
 function resolve(world, entry) {
   const { source, playerId } = entry;
@@ -40,6 +40,14 @@ export const playerContext = {
         { key: 'medical', label: 'Medical' },
       ];
     }
+    if (entry.source.kind === 'prospect') {
+      // No Reports tab — a prospect is already yours, there's nothing to scout.
+      return [
+        { key: 'profile', label: 'Profile' },
+        { key: 'attributes', label: 'Attributes' },
+        { key: 'contract', label: 'Contract' },
+      ];
+    }
     return [
       { key: 'profile', label: 'Profile' },
       { key: 'attributes', label: 'Attributes' },
@@ -62,7 +70,46 @@ export const playerContext = {
     }
   },
 
-  actionItems() { return []; }, // wired once context-menu.js exists
+  // For the in-context "Actions" button — omits "View profile" since you're
+  // already looking at it. Row-level context menus (squadTable, playerTable,
+  // prospectRow) build their own similarly-shaped list that DOES include it,
+  // but both call into the exact same player-actions.js functions underneath.
+  actionItems(world, entry) {
+    const player = resolve(world, entry);
+    if (!player) return [];
+
+    if (entry.source.kind === 'squad') {
+      if (entry.source.clubId !== world.playerClubId) return [];
+      const club = world.clubs[entry.source.clubId];
+      const demand = renewalDemand(player);
+      return [
+        { label: `Renew · ${money(demand.wage)}/wk`, onClick: () => renewPlayer(club, player) },
+        { label: 'Sell', tone: 'danger', onClick: () => sellSquadPlayer(world, club, player) },
+      ];
+    }
+
+    if (entry.source.kind === 'market' || entry.source.kind === 'freeAgents') {
+      const you = playerClub(world);
+      const items = [];
+      if (!player.scouted) items.push({ label: `Scout · ${money(scoutCost(you, player))}`, onClick: () => scoutTarget(world, you, player) });
+      if (canOpenNegotiation(world, you, player).ok) items.push({ label: 'Negotiate', onClick: () => negotiateFor(world, you, player) });
+      items.push({
+        label: (world.shortlist || []).includes(player.id) ? 'Remove from shortlist' : 'Add to shortlist',
+        onClick: () => toggleShortlist(world, player.id),
+      });
+      return items;
+    }
+
+    if (entry.source.kind === 'prospect') {
+      return [
+        { label: 'Promote to senior squad', onClick: () => promoteYouthProspect(world, player) },
+        { label: 'Sell', onClick: () => sellYouthProspect(world, player) },
+        { label: 'Release', tone: 'danger', onClick: () => releaseYouthProspect(world, player) },
+      ];
+    }
+
+    return [];
+  },
 };
 
 function goneView() {
@@ -157,8 +204,21 @@ function contractTab(world, entry, player) {
     );
   }
 
-  // Prospect contract content (Promote/Sell/Release) arrives with the Youth
-  // migration phase.
+  if (entry.source.kind === 'prospect') {
+    const fee = Math.round(player.value * 1.3);
+    return h('div', null,
+      h('div', { style: { display: 'flex', gap: 'var(--space-4)', flexWrap: 'wrap', marginBottom: 'var(--space-4)' } },
+        pill('Wage', money(player.wage) + '/wk'),
+        pill('Sell for', money(fee)),
+      ),
+      h('div', { style: { display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' } },
+        h('button', { class: 'btn primary', onclick: () => promoteYouthProspect(world, player) }, 'Promote to senior squad'),
+        h('button', { class: 'btn', onclick: () => sellYouthProspect(world, player) }, `Sell · ${money(fee)}`),
+        h('button', { class: 'btn ghost', onclick: () => releaseYouthProspect(world, player) }, 'Release'),
+      ),
+    );
+  }
+
   return emptyState('Nothing to show yet.');
 }
 

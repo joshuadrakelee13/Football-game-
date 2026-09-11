@@ -10,6 +10,8 @@ import { visiblePotential } from '../engine/scouting.js';
 import { DIAL_KEYS, DIAL_LABELS, dialLevelLabel } from '../data/tactics.js';
 import { persist, render, openContext } from '../main.js';
 import { openRoleDutyPopover } from './role-duty.js';
+import { openContextMenu } from './context-menu.js';
+import { renewPlayer, sellSquadPlayer } from './player-actions.js';
 import { toast } from './toast.js';
 
 // Where each formation slot sits on the pitch, as percentages.
@@ -192,7 +194,7 @@ function squadTable(world, you) {
           h('th', { class: 'num' }, 'Age'), h('th', { class: 'num' }, 'OVR'), h('th', null, 'POT'),
           h('th', null, 'Fit'), h('th', null, 'Morale'),
           h('th', { class: 'num' }, 'G'), h('th', { class: 'num' }, 'A'),
-          h('th', { class: 'num' }, 'Wage'), h('th', { class: 'num' }, 'Contract'),
+          h('th', { class: 'num' }, 'Wage'), h('th', { class: 'num' }, 'Contract'), h('th', null, ''),
         )),
         h('tbody', null, ...squad.map((p) => {
           const pot = visiblePotential(you, p);
@@ -220,11 +222,24 @@ function squadTable(world, you) {
             h('td', { class: 'num' }, money(p.wage)),
             h('td', { class: 'num' }, p.contractYears <= 0 ? h('span', { class: 'tag danger' }, 'Expired')
               : p.contractYears === 1 ? h('span', { class: 'tag' }, '1 yr') : `${p.contractYears} yrs`),
+            h('td', null, h('button', {
+              class: 'btn sm ghost',
+              onclick: (e) => { e.stopPropagation(); openContextMenu(e.currentTarget, squadRowMenu(world, you, p)); },
+            }, '⋯')),
           );
         })),
       ),
     ),
   );
+}
+
+function squadRowMenu(world, you, player) {
+  return [
+    { label: 'View profile', onClick: () => openContext('player', { playerId: player.id, source: { kind: 'squad', clubId: you.id } }) },
+    { divider: true },
+    { label: 'Renew contract', onClick: () => renewPlayer(you, player) },
+    { label: 'Sell', tone: 'danger', onClick: () => sellSquadPlayer(world, you, player) },
+  ];
 }
 
 function conditionDot(fitness) {

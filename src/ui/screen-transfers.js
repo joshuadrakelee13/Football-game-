@@ -6,11 +6,11 @@ import { playerClub } from '../model/world.js';
 import { squadRating, weeklyWages } from '../model/club.js';
 import { sellPlayer } from '../engine/transfers.js';
 import { canOpenNegotiation } from '../engine/negotiation.js';
-import { visiblePotential, scoutPlayer, scoutCost, marketSizeBonus } from '../engine/scouting.js';
+import { visiblePotential } from '../engine/scouting.js';
 import { transferBudget } from '../engine/finance.js';
-import { persist, render, game } from '../main.js';
-import { openModal, closeModal, confirmDialog } from './modal.js';
-import { openBuyNegotiation, openSellNegotiation } from './negotiation-modal.js';
+import { persist, render, game, openContext } from '../main.js';
+import { confirmDialog } from './modal.js';
+import { openSellNegotiation } from './negotiation-modal.js';
 import { toast } from './toast.js';
 
 let tab = 'market';
@@ -92,7 +92,10 @@ function playerTable(world, you, list, mode) {
       h('tbody', null, ...list.map((p) => {
         const check = canOpenNegotiation(world, you, p);
         const pot = visiblePotential(you, p);
-        return h('tr', { class: 'clickable', onclick: () => openTarget(world, you, p) },
+        return h('tr', {
+          class: 'clickable',
+          onclick: () => openContext('player', { playerId: p.id, source: { kind: mode === 'free' ? 'freeAgents' : 'market' } }),
+        },
           h('td', { class: 'strong' },
             p.name,
             p.fromClub ? h('span', { class: 'tag muted', style: { marginLeft: '6px' } }, world.clubs[p.fromClub]?.abbr || '') : null,
@@ -121,77 +124,6 @@ function shortReason(reason) {
   if (reason.includes('Not interested')) return 'Won’t come';
   if (reason.includes('Squad is full')) return 'Squad full';
   return reason;
-}
-
-// ---------------------------------------------------------------------------
-
-function openTarget(world, you, player) {
-  const check = canOpenNegotiation(world, you, player);
-  const pot = visiblePotential(you, player);
-  const cost = scoutCost(you, player);
-  const attrs = ['pace', 'finishing', 'passing', 'tackling', 'physical', 'technique'];
-
-  openModal({
-    title: player.name,
-    wide: true,
-    body: h('div', null,
-      h('div', { style: { display: 'flex', gap: 'var(--space-4)', flexWrap: 'wrap', marginBottom: 'var(--space-4)' } },
-        info('Position', player.position),
-        info('Age', player.age),
-        info('Overall', Math.round(player.overall)),
-        info('Potential', pot.exact ? pot.min : `${pot.min}–${pot.max}`),
-        info('Fee', player.askingPrice ? money(player.askingPrice) : 'Free'),
-        info('Wage', money(player.wage) + '/wk'),
-      ),
-      h('p', { style: { color: 'var(--text-2)', fontSize: '13px', margin: '0 0 16px' } },
-        `${player.archetype}. `,
-        player.fromClub ? `Currently at ${world.clubs[player.fromClub]?.name}. ` : '',
-        pot.exact ? 'Fully scouted.' : `Your scouts put his ceiling somewhere between ${pot.min} and ${pot.max}.`,
-      ),
-      h('div', { class: 'grid cols-2' }, ...attrs.map((a) => attrRow(a, player.attributes[a]))),
-      !check.ok
-        ? h('div', { style: { marginTop: '16px', padding: '10px 12px', border: '1px solid var(--danger-dim)', borderRadius: 'var(--radius)', color: 'var(--danger)', fontSize: '12.5px' } },
-            check.reasons.join(' · '))
-        : null,
-    ),
-    actions: [
-      !player.scouted ? h('button', {
-        class: 'btn ghost',
-        onclick: () => {
-          const result = scoutPlayer(world, you, player);
-          closeModal();
-          if (result.ok) toast('Scout report', `${player.name}'s ceiling is ${result.potential}.`);
-          else toast('Cannot scout', result.reason, { tone: 'danger' });
-          persist(); render();
-        },
-      }, `Scout · ${money(cost)}`) : null,
-      h('button', {
-        class: 'btn primary',
-        disabled: !check.ok,
-        onclick: () => {
-          closeModal();
-          openBuyNegotiation(world, you, player);
-        },
-      }, !player.askingPrice ? 'Discuss personal terms'
-        : player.fromClub ? `Negotiate · asking ${money(player.askingPrice)}`
-        : `Sign for ${money(player.askingPrice)}`),
-    ],
-  });
-}
-
-function attrRow(name, value) {
-  const tone = value >= 75 ? 'var(--pitch)' : value >= 55 ? 'var(--text)' : value >= 40 ? 'var(--warn)' : 'var(--danger)';
-  return h('div', null,
-    h('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: '4px' } },
-      h('span', { class: 'eyebrow' }, name),
-      h('span', { class: 'mono', style: { fontSize: '12px', color: tone } }, Math.round(value)),
-    ),
-    h('div', { class: 'meter' }, h('i', { style: { width: (value / 99 * 100) + '%', background: tone } })),
-  );
-}
-
-function info(k, v) {
-  return h('div', null, h('div', { class: 'eyebrow' }, k), h('div', { class: 'mono', style: { fontSize: '15px' } }, v));
 }
 
 // ---------------------------------------------------------------------------

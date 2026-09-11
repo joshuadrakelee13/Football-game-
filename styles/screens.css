@@ -414,6 +414,65 @@
 .pitch-slot.out-of-position .shirt { border-color: var(--warn); }
 .pitch-slot.injured .shirt { border-color: var(--danger); }
 
+/* ---- Object context: breadcrumb bar + tab strip --------------------------
+   Deliberately its own component, not another job for .formation-picker (which
+   already covers real tabs, an entity switcher, a filter, and repeated discrete
+   pickers) — a tab strip's semantics are different again: one tab IS the current
+   view's whole identity, not a toggle or a filter. */
+
+.context-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+}
+.context-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--text-2);
+  font-size: 12.5px;
+  transition: border-color var(--fast) var(--ease), color var(--fast) var(--ease);
+}
+.context-back:hover { border-color: var(--line-strong); color: var(--text); }
+
+.context-crumbs { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0; }
+.context-crumb {
+  color: var(--text-3);
+  font-size: 12.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+.context-crumb:not(.current):hover { color: var(--text); }
+.context-crumb.current { color: var(--text-2); cursor: default; }
+.context-crumb-sep { color: var(--text-faint); font-size: 12px; }
+
+.context-actions { margin-left: auto; }
+
+.context-tabs {
+  display: flex;
+  gap: var(--space-1);
+  border-bottom: 1px solid var(--line);
+  margin-bottom: var(--space-5);
+  flex-wrap: wrap;
+}
+.context-tab {
+  padding: 9px var(--space-3) 10px;
+  font-size: 13px;
+  color: var(--text-3);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color var(--fast) var(--ease), border-color var(--fast) var(--ease);
+}
+.context-tab:hover { color: var(--text-2); }
+.context-tab.active { color: var(--text); border-color: var(--pitch); font-weight: 600; }
+
 .formation-picker { display: flex; gap: var(--space-2); flex-wrap: wrap; }
 .formation-option {
   padding: 6px 11px;

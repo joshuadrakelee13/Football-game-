@@ -8,7 +8,11 @@ import { weeklyWages, squadRating, squadMorale } from '../model/club.js';
 import { transferBudget } from '../engine/finance.js';
 import { standings } from '../engine/league.js';
 import { SCREENS, SCREEN_ORDER } from './screens.js';
-import { game, goTo, newGame, continueGame, persist, exportSave, importSave, abandonGame } from '../main.js';
+import { CONTEXTS } from './contexts.js';
+import {
+  game, goTo, newGame, continueGame, persist, exportSave, importSave, abandonGame,
+  goBack, jumpToContextDepth, setContextTab,
+} from '../main.js';
 import { openModal, closeModal, confirmDialog } from './modal.js';
 import { toast } from './toast.js';
 
@@ -147,9 +151,58 @@ export function setActiveScreen(key) {
   const host = document.getElementById('screen');
   if (!host) return;
   host.scrollTop = 0;
-  mount(host, screen.render(game.world));
+  mount(host, game.contextStack.length ? renderContextView(game.world, game.contextStack) : screen.render(game.world));
   renderRail();
   renderHud();
+}
+
+// ---------------------------------------------------------------------------
+// Object contexts — the drilled-into view, replacing the screen's own content
+// exactly the way FM's main area changes for whatever you're looking at while
+// the shell around it stays put. See ui/contexts.js for the per-type registry.
+// ---------------------------------------------------------------------------
+
+function renderContextView(world, stack) {
+  const top = stack.at(-1);
+  const def = CONTEXTS[top.type];
+  if (!def) return null;
+
+  const tabs = def.tabs(world, top);
+  // Resolved lazily and memoised onto the entry on first render, rather than at
+  // openContext() time, since tabs() can depend on world state that only the
+  // render pass has freshly read.
+  if (!top.tab) top.tab = tabs[0]?.key ?? null;
+
+  return h('div', null,
+    contextBar(world, stack, def),
+    tabs.length > 1 ? tabStrip(tabs, top.tab) : null,
+    def.render(world, top),
+  );
+}
+
+function contextBar(world, stack, def) {
+  const top = stack.at(-1);
+  return h('div', { class: 'context-bar' },
+    h('button', { class: 'context-back', onclick: () => goBack() }, '← Back'),
+    h('div', { class: 'context-crumbs' },
+      h('button', { class: 'context-crumb', onclick: () => goTo(game.screen) }, SCREENS[game.screen]?.name ?? ''),
+      ...stack.flatMap((entry, i) => [
+        h('span', { class: 'context-crumb-sep' }, '›'),
+        i === stack.length - 1
+          ? h('span', { class: 'context-crumb current' }, def.title(world, top))
+          : h('button', { class: 'context-crumb', onclick: () => jumpToContextDepth(i) }, CONTEXTS[entry.type]?.title(world, entry) ?? ''),
+      ]),
+    ),
+  );
+}
+
+function tabStrip(tabs, activeKey) {
+  return h('div', { class: 'context-tabs' }, ...tabs.map((t) =>
+    h('button', {
+      class: 'context-tab' + (t.key === activeKey ? ' active' : ''),
+      onclick: () => setContextTab(t.key),
+    }, t.label),
+  ));
 }
 
 // ---------------------------------------------------------------------------

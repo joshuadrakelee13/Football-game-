@@ -11,7 +11,7 @@ import {
   finalizeSigning, MAX_FEE_ROUNDS, MAX_PERSONAL_ROUNDS,
 } from '../engine/negotiation.js';
 import { openModal, closeModal } from './modal.js';
-import { persist, render, game } from '../main.js';
+import { persist, render, game, retargetPlayerContext } from '../main.js';
 import { toast } from './toast.js';
 
 const SELL_ON_OPTIONS = [0, 10, 20, 30];
@@ -285,6 +285,11 @@ function completeDeal(world, session) {
     world.transferMarket = (world.transferMarket || []).filter((p) => p.id !== session.playerId);
     world.freeAgents = (world.freeAgents || []).filter((p) => p.id !== session.playerId);
     toast('Signed', `${result.player.name} joins for ${result.fee ? money(result.fee) : 'nothing'}`, { tone: 'gold' });
+    // If a Player context is still open on this exact player (opened him, then
+    // negotiated from inside that context), it was pointing at a market/free-agent
+    // listing that no longer exists — retarget it to where he actually lives now,
+    // rather than resolving to "no longer available" on the very next render.
+    retargetPlayerContext(session.playerId, { kind: 'squad', clubId: playerClub(world).id });
   } else {
     world.pendingBids = (world.pendingBids || []).filter((b) => b !== session.originalBid);
     toast('Sold', `${session.playerSnapshot.name} leaves for ${money(result.fee)}`, { tone: 'gold' });

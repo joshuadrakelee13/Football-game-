@@ -23,6 +23,7 @@ import { showEvent } from './ui/event-view.js';
 import { renderSetup } from './ui/setup.js';
 import { toast } from './ui/toast.js';
 import { SCREENS } from './ui/screens.js';
+import { CONTEXTS } from './ui/contexts.js';
 
 export const game = {
   world: null,
@@ -30,6 +31,11 @@ export const game = {
   screen: 'overview',
   busy: false,
   pendingBids: [],
+  // A stack of drilled-into object contexts (players, later agents/clubs/etc.),
+  // rendered over the current screen rather than as a separate page — see goTo,
+  // openContext, goBack below. Reset on every full-world swap and every top-level
+  // nav click, since either one invalidates whatever was being drilled into.
+  contextStack: [],
 };
 
 // ---------------------------------------------------------------------------
@@ -43,6 +49,7 @@ export function newGame({ clubName, managerName }) {
   game.world.rngState = game.rng.toJSON();
   refreshMarket();
   game.screen = 'overview';
+  game.contextStack = [];
   persist();
   render();
 }
@@ -53,6 +60,7 @@ export function continueGame() {
   game.world = loaded.world;
   game.rng = Rng.fromJSON(game.world.rngState);
   game.screen = 'overview';
+  game.contextStack = [];
   render();
   return true;
 }
@@ -61,6 +69,7 @@ export function abandonGame() {
   clearSave();
   game.world = null;
   game.rng = null;
+  game.contextStack = [];
   render();
 }
 
@@ -81,6 +90,7 @@ export function importSave(json) {
   game.world = loaded.world;
   game.rng = Rng.fromJSON(game.world.rngState);
   game.screen = 'overview';
+  game.contextStack = [];
   persist();
   render();
 }
@@ -102,6 +112,11 @@ export function render() {
 export function goTo(screen) {
   if (!SCREENS[screen]) return;
   game.screen = screen;
+  // A top-level nav click is a fresh context switch — whatever object you had
+  // drilled into no longer applies once you've left the screen you drilled in
+  // from. This is also what makes a breadcrumb's root crumb correct with no
+  // special case: it just calls goTo(game.screen).
+  game.contextStack = [];
   // A short crossfade between screens where the browser supports it, and a plain
   // swap where it does not.
   if (document.startViewTransition && !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
@@ -109,6 +124,57 @@ export function goTo(screen) {
   } else {
     setActiveScreen(screen);
   }
+}
+
+// ---------------------------------------------------------------------------
+// Object contexts — drilling into a player (later: agent, club, ...) without
+// leaving the screen you were on. See ui/contexts.js for the per-type registry
+// and ui/shell.js for how the top of the stack actually renders.
+//
+// Nothing that can invalidate an open context (market rotation, contract expiry,
+// AI transfer windows) is reachable while one is open: those all fire from a
+// button on a *screen*, and no screen's DOM exists while a context sits on top
+// of it — reaching a different screen requires goTo(), which clears the stack
+// first. The real hazard is an action reachable from *inside* the context that
+// removes the very object being viewed (Sell, in particular) — those handlers
+// must call goBack() rather than a bare render(), so the object-is-gone case
+// stays unreachable through normal play rather than something the UI has to
+// paper over.
+// ---------------------------------------------------------------------------
+
+export function openContext(type, entryFields) {
+  if (!CONTEXTS[type]) return;
+  game.contextStack.push({ type, ...entryFields, tab: entryFields.tab ?? null });
+  setActiveScreen(game.screen);
+}
+
+// Safe to call unconditionally — a no-op fallthrough to the plain screen render
+// when the stack is already empty, so the same handler works whether it was
+// invoked from inside an open context or from a menu with no context open.
+export function goBack() {
+  game.contextStack.pop();
+  setActiveScreen(game.screen);
+}
+
+// Breadcrumb click-to-jump: truncate to a given depth (0-based) in the stack.
+export function jumpToContextDepth(index) {
+  game.contextStack = game.contextStack.slice(0, index + 1);
+  setActiveScreen(game.screen);
+}
+
+export function setContextTab(tab) {
+  const top = game.contextStack.at(-1);
+  if (top) top.tab = tab;
+  setActiveScreen(game.screen);
+}
+
+// Swaps an open context's source after the object it's showing has genuinely
+// moved (e.g. a market listing that just got signed is now a squad player with
+// the same id) — used by negotiation-modal.js's completeDeal on a successful
+// buy, never on a walk-away/reject.
+export function retargetPlayerContext(playerId, newSource) {
+  const entry = game.contextStack.find((e) => e.type === 'player' && e.playerId === playerId);
+  if (entry) { entry.source = newSource; entry.tab = null; }
 }
 
 // ---------------------------------------------------------------------------

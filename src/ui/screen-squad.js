@@ -1,16 +1,15 @@
 // Squad: the starting XI on a pitch, the formation picker, and the full squad list.
 
-import { h, clubChip, ratingPill, meter, attrBadge, panel, emptyState } from './dom.js';
+import { h, clubChip, ratingPill, meter, panel, emptyState } from './dom.js';
 import { money, num } from '../core/format.js';
 import { playerClub } from '../model/world.js';
-import { FORMATIONS, FORMATION_KEYS, positionFit, ROLE_OPTIONS, ROLE_LABELS, DUTY_OPTIONS } from '../data/positions.js';
+import { FORMATIONS, FORMATION_KEYS, positionFit } from '../data/positions.js';
 import { pickBestXI, lineupPlayers, benchPlayers, squadRating, weeklyWages, teamRatings } from '../model/club.js';
 import { moraleLabel, isAvailable, effectiveRating } from '../model/player.js';
-import { renewalDemand, renewContract, sellPlayer } from '../engine/transfers.js';
 import { visiblePotential } from '../engine/scouting.js';
 import { DIAL_KEYS, DIAL_LABELS, dialLevelLabel } from '../data/tactics.js';
-import { persist, render } from '../main.js';
-import { openModal, closeModal, confirmDialog } from './modal.js';
+import { persist, render, openContext } from '../main.js';
+import { openRoleDutyPopover } from './role-duty.js';
 import { toast } from './toast.js';
 
 // Where each formation slot sits on the pitch, as percentages.
@@ -93,7 +92,8 @@ function pitchPanel(world, you) {
             class: classes.join(' '),
             style: { left: x + '%', top: y + '%' },
             title: `${entry.player.name} — ${entry.player.position} in a ${entry.slot} role`,
-            onclick: () => openPlayer(world, you, entry.player, entry.slot),
+            'data-pitch-slot': i,
+            onclick: () => openRoleDutyPopover(i, world, you, entry.player, entry.slot),
           },
             h('span', { class: 'shirt' }, Math.round(entry.player.overall)),
             h('span', { class: 'pname' }, entry.player.last),
@@ -200,7 +200,7 @@ function squadTable(world, you) {
           const slot = starting ? you.lineup.find((l) => l.playerId === p.id)?.slot : null;
           return h('tr', {
             class: 'clickable' + (starting ? ' you' : ''),
-            onclick: () => openPlayer(world, you, p, slot),
+            onclick: () => openContext('player', { playerId: p.id, source: { kind: 'squad', clubId: you.id } }),
           },
             h('td', null, starting ? h('span', { class: 'tag pitch' }, 'XI') : ''),
             h('td', { class: 'strong' },
@@ -241,118 +241,3 @@ function moraleColour(m) {
   return 'var(--danger)';
 }
 
-// ---------------------------------------------------------------------------
-
-export function openPlayer(world, club, player, slot = null) {
-  const pot = visiblePotential(club, player);
-  const demand = renewalDemand(player);
-  const attrs = ['pace', 'finishing', 'passing', 'tackling', 'physical', 'technique'];
-  if (player.position === 'GK') attrs.push('handling', 'reflexes');
-
-  openModal({
-    title: player.name,
-    wide: true,
-    body: h('div', null,
-      h('div', { style: { display: 'flex', gap: 'var(--space-4)', flexWrap: 'wrap', marginBottom: 'var(--space-4)' } },
-        pill('Position', player.position),
-        pill('Age', player.age),
-        pill('Overall', Math.round(player.overall)),
-        pill('Potential', pot.exact ? pot.min : `${pot.min}–${pot.max}`),
-        pill('Value', money(player.value)),
-        pill('Wage', money(player.wage) + '/wk'),
-        pill('Contract', player.contractYears <= 0 ? 'Expired' : `${player.contractYears} yr`),
-      ),
-
-      h('p', { style: { color: 'var(--text-2)', fontSize: '13px', margin: '0 0 16px' } },
-        `${player.archetype}. `,
-        player.joinedFrom ? `Joined from ${player.joinedFrom}. ` : '',
-        `${player.seasonApps} appearances this season, ${player.seasonGoals} goals and ${player.seasonAssists} assists.`,
-        !isAvailable(player) ? ` Currently out for ${player.injuredFor} weeks (${player.injuryType}).` : '',
-      ),
-
-      slot ? rolePicker(world, club, player, slot) : null,
-
-      h('div', { class: 'attr-list grid cols-2' }, ...attrs.map((a) =>
-        h('div', { class: 'attr-row' },
-          h('span', { class: 'name' }, a),
-          attrBadge(player.attributes[a]),
-        ),
-      )),
-    ),
-    actions: [
-      h('button', {
-        class: 'btn',
-        onclick: () => {
-          const result = renewContract(club, player.id, demand.wage, demand.years);
-          closeModal();
-          if (result.ok) toast('Contract renewed', `${player.name} signs for ${money(demand.wage)}/wk`);
-          else toast('Renewal failed', result.reasons[0], { tone: 'danger' });
-          persist(); render();
-        },
-      }, `Renew · ${money(demand.wage)}/wk`),
-      h('button', {
-        class: 'btn danger',
-        onclick: async () => {
-          closeModal();
-          const ok = await confirmDialog('Sell player?',
-            `Sell ${player.name} for around ${money(player.value)}? Your squad will drop to ${club.squad.length - 1} players.`,
-            'Sell');
-          if (!ok) return;
-          const result = sellPlayer(world, club, player.id, player.value);
-          if (result.ok) toast('Player sold', `${player.name} leaves for ${money(player.value)}`, { tone: 'gold' });
-          else toast('Cannot sell', result.reasons[0], { tone: 'danger' });
-          persist(); render();
-        },
-      }, 'Sell'),
-    ],
-  });
-}
-
-// Only shown for a player currently in the starting XI — role/duty are meaningful
-// relative to the slot he's actually playing, and ROLE_OPTIONS is keyed by slot.
-function rolePicker(world, club, player, slot) {
-  const roles = ROLE_OPTIONS[slot] || [];
-  const current = club.playerTactics[player.id] || { role: null, duty: 'support' };
-
-  const apply = (patch) => {
-    club.playerTactics[player.id] = { ...current, ...patch };
-    club.lineup = pickBestXI(club);
-    persist();
-    render();
-    openPlayer(world, club, player, slot); // refresh the modal in place with the new state
-  };
-
-  return h('div', { style: { marginBottom: 'var(--space-4)', display: 'grid', gap: '12px' } },
-    h('div', null,
-      h('div', { class: 'eyebrow', style: { marginBottom: '6px' } }, 'Role'),
-      h('div', { class: 'formation-picker' },
-        h('button', {
-          class: 'formation-option' + (!current.role ? ' active' : ''),
-          onclick: () => apply({ role: null }),
-        }, 'Natural'),
-        ...roles.map((role) => h('button', {
-          class: 'formation-option' + (current.role === role ? ' active' : ''),
-          onclick: () => apply({ role }),
-        }, ROLE_LABELS[role])),
-      ),
-    ),
-    // A goalkeeper's duty is a structural no-op (see ADJACENT_LINE in positions.js) —
-    // omitted rather than shown as buttons that would silently do nothing.
-    slot !== 'GK' ? h('div', null,
-      h('div', { class: 'eyebrow', style: { marginBottom: '6px' } }, 'Duty'),
-      h('div', { class: 'formation-picker' },
-        ...DUTY_OPTIONS.map((duty) => h('button', {
-          class: 'formation-option' + (current.duty === duty ? ' active' : ''),
-          onclick: () => apply({ duty }),
-        }, duty[0].toUpperCase() + duty.slice(1))),
-      ),
-    ) : null,
-  );
-}
-
-function pill(k, v) {
-  return h('div', null,
-    h('div', { class: 'eyebrow' }, k),
-    h('div', { class: 'mono', style: { fontSize: '15px' } }, v),
-  );
-}

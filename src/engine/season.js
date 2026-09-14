@@ -5,6 +5,7 @@ import { clamp } from '../core/rng.js';
 import { DIVISIONS, DIVISION_BY_TIER, REPUTATION, EURO_COMPS, CUPS, PARACHUTE } from '../data/competitions.js';
 import { pickBestXI, weeklyWages, overallStrength, squadRating, pickClubIdentity } from '../model/club.js';
 import { refreshDerived, generatePlayer, isAvailable } from '../model/player.js';
+import { ATTR_SCALE } from '../data/positions.js';
 import { startSeason, playerClub, fixtureForClubOnMatchday, pickSponsor, sponsorValue } from '../model/world.js';
 import { simulateMatch, createMatchSession } from './match.js';
 import { applyResult, standings, snapshotPositions } from './league.js';
@@ -738,7 +739,10 @@ function pushRetirement(world, player) {
 function applyGrowth(player, delta) {
   const keys = Object.keys(player.attributes);
   for (const key of keys) {
-    player.attributes[key] = clamp(Math.round(player.attributes[key] + delta), 6, 99);
+    // delta is in Overall points; round on that scale then convert, so growth keeps
+    // exactly the granularity it had before attributes moved to 1-20. Epic 5 replaces
+    // this flat all-attributes tick with a real development model.
+    player.attributes[key] = clamp(Math.round(player.attributes[key] * ATTR_SCALE + delta), 6, 99) / ATTR_SCALE;
   }
   refreshDerived(player);
   player.overall = Math.min(player.overall, Math.max(player.overall, player.potential));

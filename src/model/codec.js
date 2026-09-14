@@ -8,7 +8,7 @@
 // PLAYER_FIELDS is the single source of truth for the order. Add new fields at the
 // END only; decoding tolerates short arrays so older saves still load.
 
-import { overallFor } from '../data/positions.js';
+import { overallFor, ATTR_SCALE } from '../data/positions.js';
 import { valueOf, wageOf } from './player.js';
 
 const PLAYER_FIELDS = [
@@ -65,6 +65,28 @@ export function decodePlayer(row) {
   player.value = valueOf(player);
   player.wage = wageOf(player);
   return player;
+}
+
+// v1 saves stored attributes on the 0-99 scale, before they moved to FM's 1-20.
+// Rescaling the encoded row in place, before decode, means nothing downstream ever
+// sees a mixed-scale player.
+export function rescaleLegacySquad(rows) {
+  for (const row of rows) {
+    const attrs = row[PLAYER_FIELDS.length];
+    if (!Array.isArray(attrs)) continue;
+    for (let i = 0; i < attrs.length; i++) attrs[i] = (attrs[i] ?? 0) / ATTR_SCALE;
+  }
+  return rows;
+}
+
+// Same conversion for players stored as plain objects rather than encoded rows —
+// the transfer market, free agents and youth prospects ride in the save uncompressed.
+export function rescaleLegacyPlayers(players) {
+  for (const p of players) {
+    if (!p?.attributes) continue;
+    for (const key in p.attributes) p.attributes[key] = (p.attributes[key] ?? 0) / ATTR_SCALE;
+  }
+  return players;
 }
 
 export function encodeSquad(squad) {

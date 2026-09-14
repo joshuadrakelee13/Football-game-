@@ -153,7 +153,7 @@ const ATTR_STOPS = [
   [1.00, [53, 168, 91]],   // --attr-elite
 ];
 
-export function attrColor(value, max = 99) {
+export function attrColor(value, max = 20) {
   const t = Math.max(0, Math.min(1, value / max));
   let i = 0;
   while (i < ATTR_STOPS.length - 2 && t > ATTR_STOPS[i + 1][0]) i++;
@@ -165,7 +165,7 @@ export function attrColor(value, max = 99) {
 }
 
 // The small coloured number box next to every attribute in an FM player screen.
-export function attrBadge(value, max = 99) {
+export function attrBadge(value, max = 20) {
   return h('span', { class: 'attr-badge', style: { background: attrColor(value, max) } },
     Math.round(value));
 }

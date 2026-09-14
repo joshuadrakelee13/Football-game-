@@ -5,7 +5,7 @@
 // still rating 74 — and it means playing him at centre-back genuinely ruins him.
 
 import { clamp } from '../core/rng.js';
-import { POSITION_WEIGHTS, overallFor } from '../data/positions.js';
+import { POSITION_WEIGHTS, ATTRIBUTES, ATTR_SCALE, overallFor, blend } from '../data/positions.js';
 import { nationsForTier, firstNames, lastNames } from '../data/names.js';
 
 // Squad shape: how many of each position a club carries.
@@ -119,15 +119,26 @@ export function generatePlayer(rng, { tier = 3, position = 'CM', targetOverall =
   // Attributes the position does not care about drop away sharply. A striker is not
   // secretly a fine tackler just because he is a fine player; the penalty scales with
   // how little the position values that attribute.
-  for (const key of ['pace', 'finishing', 'passing', 'tackling', 'physical', 'technique', 'handling', 'reflexes']) {
+  //
+  // This still solves in 0-99 space and converts to the 1-20 attribute scale on the
+  // way out, deliberately: it makes the scale change the exact affine image of the
+  // old behaviour, so no generated player moves. Epic 1 phase 3 replaces the whole
+  // routine with a profile vector and a multiplicative solve, which is what the wider
+  // attribute set actually needs — a constant drift across 47 attributes would give
+  // every irrelevant one a free ride.
+  const raw = {};
+  for (const key of ATTRIBUTES) {
     const relevance = (weights[key] || 0) / topWeight;
     const penalty = (1 - relevance) * 26;
-    attributes[key] = ability - penalty + rng.normal(0, 5) + (archetype.mods[key] || 0);
+    raw[key] = ability - penalty + rng.normal(0, 5) + (archetype.mods[key] || 0);
   }
 
   // Nudge every attribute by a constant so the derived Overall lands on `ability`.
-  const drift = ability - overallFor(attributes, position);
-  for (const key in attributes) attributes[key] = clamp(Math.round(attributes[key] + drift), 8, 99);
+  // blend(), not overallFor(), because `raw` is still 0-99 here — but rounded the same
+  // way overallFor would have rounded it, or the drift lands up to half a point out
+  // and shifts a tenth of the world's players by one.
+  const drift = ability - Math.round(blend(raw, weights));
+  for (const key in raw) attributes[key] = clamp(Math.round(raw[key] + drift), 8, 99) / ATTR_SCALE;
 
   const overall = overallFor(attributes, position);
   const potential = rollPotential(rng, overall, age);

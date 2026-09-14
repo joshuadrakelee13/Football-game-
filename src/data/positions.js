@@ -6,6 +6,15 @@
 
 import { clamp } from '../core/rng.js';
 
+// Attributes live on FM's 1-20 scale; Overall stays on 0-99 and is this game's
+// Current Ability. Because every weight table below sums to 1, blend() is a convex
+// combination, so scaling an attribute set by a constant scales the blend by the same
+// constant — which is what makes the two scales interchangeable through this one
+// factor rather than through a conversion at every call site.
+export const ATTR_SCALE = 5;
+export const ATTR_MIN = 1;
+export const ATTR_MAX = 20;
+
 export const ATTRIBUTES = ['pace', 'finishing', 'passing', 'tackling', 'physical', 'technique', 'handling', 'reflexes'];
 
 export const ATTRIBUTE_LABELS = {
@@ -72,9 +81,23 @@ export function blend(attributes, weights) {
   return total;
 }
 
-// Overall rating from raw attributes, for a given position.
+// Weighted sum with each attribute lifted to the 0-99 scale *before* it is weighted.
+//
+// Scaling per term rather than once at the end looks redundant but is not: a weighted
+// sum of integers lands exactly on a .5 boundary often, and `5 * Σ(a/5 · w)` carries
+// about 1e-15 of float noise that tips Math.round the other way on roughly an eighth
+// of all players. Lifting each term first reproduces the pre-1-20 arithmetic exactly,
+// because (n/5)*5 === n holds for every integer in attribute range.
+function blend99(attributes, weights) {
+  let total = 0;
+  for (const key in weights) total += (attributes[key] || 0) * ATTR_SCALE * (weights[key] || 0);
+  return total;
+}
+
+// Overall rating from raw attributes, for a given position. Attributes are 1-20; the
+// result is this game's Current Ability, on 0-99.
 export function overallFor(attributes, position) {
-  return Math.round(blend(attributes, POSITION_WEIGHTS[position]));
+  return Math.round(blend99(attributes, POSITION_WEIGHTS[position]));
 }
 
 export const FORMATIONS = {

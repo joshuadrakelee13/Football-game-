@@ -2,6 +2,7 @@
 
 import { clamp } from '../core/rng.js';
 import { refreshDerived } from '../model/player.js';
+import { ATTR_SCALE, ATTR_MIN, ATTR_MAX } from '../data/positions.js';
 
 // Each focus pushes a different set of attributes. Nothing is free: a heavy attacking
 // focus quietly lets the defensive work slide.
@@ -98,17 +99,21 @@ export function applyTraining(club, weeks, rng) {
     let changed = false;
     for (const [attr, rate] of Object.entries(focus.gains)) {
       if (player.attributes[attr] === undefined) continue;
-      const delta = rate * multiplier * scale * rng.float(0.6, 1.4);
-      if (Math.abs(delta) < 0.001) continue;
-      player.attributes[attr] = clamp(player.attributes[attr] + delta, 6, 99);
+      // Gain rates are authored in Overall points; attributes are 1-20.
+      const delta = (rate * multiplier * scale * rng.float(0.6, 1.4)) / ATTR_SCALE;
+      if (Math.abs(delta) < 0.001 / ATTR_SCALE) continue;
+      player.attributes[attr] = clamp(player.attributes[attr] + delta, ATTR_MIN, ATTR_MAX);
       changed = true;
     }
     if (changed) {
       const before = player.overall;
       refreshDerived(player);
-      // Training cannot push a player beyond the potential he was born with.
+      // Training cannot push a player beyond the potential he was born with. The
+      // overshoot is measured in Overall points, so it has to be converted before it
+      // is taken off each attribute — subtracting it raw would strip five times too
+      // much and gut any squad that trains past its ceiling.
       if (player.overall > player.potential) {
-        const excess = player.overall - player.potential;
+        const excess = (player.overall - player.potential) / ATTR_SCALE;
         for (const attr in player.attributes) player.attributes[attr] -= excess;
         refreshDerived(player);
       }

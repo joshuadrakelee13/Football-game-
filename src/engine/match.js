@@ -9,7 +9,7 @@
 
 import { clamp } from '../core/rng.js';
 import { teamRatings, lineupPlayers, benchPlayers, pickOppositionFocusTarget } from '../model/club.js';
-import { positionFit } from '../data/positions.js';
+import { positionFit, ATTR_SCALE } from '../data/positions.js';
 import { isAvailable } from '../model/player.js';
 import {
   defaultTactics, pressingDefenceFactor, pressingFatigueFactor, pressingFoulFactor,
@@ -50,7 +50,7 @@ function pickWeighted(rng, entries, weightTable, attribute, exclude = null, side
   if (!pool.length) return null;
   const weights = pool.map((e) => {
     const positional = weightTable[e.slot] ?? 1;
-    const skill = attribute ? Math.pow(e.player.attributes[attribute] / 55, 1.6) : 1;
+    const skill = attribute ? Math.pow(e.player.attributes[attribute] * ATTR_SCALE / 55, 1.6) : 1;
     const tacticalFactor = side
       ? widthInvolvement(e.slot, side.tactics?.width ?? 0) * dutyInvolvement(e.duty)
       : 1;
@@ -348,7 +348,7 @@ function resolveChance(minute, side, opponent, rng, push, minuteLabel) {
   if (rng.chance(TUNING.penaltyChance)) {
     const taker = pickWeighted(rng, side.onPitch, SCORER_WEIGHT, 'finishing', null, side);
     if (taker) {
-      const converted = rng.chance(TUNING.penaltyConversion + (taker.attributes.finishing - 60) * 0.0022);
+      const converted = rng.chance(TUNING.penaltyConversion + (taker.attributes.finishing * ATTR_SCALE - 60) * 0.0022);
       if (converted) {
         side.onTarget++;
         recordGoal(minute, side, taker, null, rng, push, label, 'penalty');
@@ -580,7 +580,7 @@ function shootout(home, away, rng, push) {
 
   const kick = (side, taker, opponent) => {
     if (!taker) return rng.chance(0.5);
-    const p = clamp(0.7 + (taker.attributes.finishing - opponent.ratings.gk) * 0.004, 0.5, 0.92);
+    const p = clamp(0.7 + (taker.attributes.finishing * ATTR_SCALE - opponent.ratings.gk) * 0.004, 0.5, 0.92);
     return rng.chance(p);
   };
   const pickTaker = (list, i) => (list && list.length ? list[i % list.length] : null);

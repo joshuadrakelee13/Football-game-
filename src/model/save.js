@@ -1,12 +1,14 @@
 // Save and load. One autosave slot in localStorage, plus JSON export and import so a
 // save can be moved between browsers.
 
-import { encodeSquad, decodeSquad } from './codec.js';
+import { encodeSquad, decodeSquad, rescaleLegacySquad, rescaleLegacyPlayers } from './codec.js';
 import { pickBestXI } from './club.js';
 import { defaultTactics } from '../data/tactics.js';
 
 export const SAVE_KEY = 'fct.save.v1';
-export const SAVE_VERSION = 1;
+// v2: attributes moved from the 0-99 scale to FM's 1-20 (see data/positions.js's
+// ATTR_SCALE). Overall/potential are unchanged — they were, and remain, 0-99.
+export const SAVE_VERSION = 2;
 
 // The pending event carries closures, which cannot survive a round trip through JSON.
 // Squads are re-encoded compactly; everything else in the world is plain data.
@@ -46,6 +48,16 @@ function unpackClubs(clubs) {
   return out;
 }
 
+// Runs on the packed world, before unpackClubs, so squads are still encoded rows.
+// Squads ride compressed; the market, free agents and prospects ride as plain objects.
+function migrateV1toV2(world) {
+  for (const club of Object.values(world.clubs || {})) rescaleLegacySquad(club.squad || []);
+  for (const club of Object.values(world.europeClubs || {})) rescaleLegacySquad(club.squad || []);
+  rescaleLegacyPlayers(world.transferMarket || []);
+  rescaleLegacyPlayers(world.freeAgents || []);
+  rescaleLegacyPlayers(world.youthProspects || []);
+}
+
 export function serialise(world) {
   return JSON.stringify({
     version: SAVE_VERSION,
@@ -57,10 +69,11 @@ export function serialise(world) {
 export function deserialise(json) {
   const data = typeof json === 'string' ? JSON.parse(json) : json;
   if (!data || typeof data !== 'object') throw new Error('Save file is not readable');
-  if (data.version !== SAVE_VERSION) {
+  if (data.version !== SAVE_VERSION && data.version !== 1) {
     throw new Error(`Save was made by a different version of the game (v${data.version})`);
   }
   const world = data.world;
+  if (data.version === 1) migrateV1toV2(world);
   world.clubs = unpackClubs(world.clubs || {});
   if (world.europeClubs) world.europeClubs = unpackClubs(world.europeClubs);
   world.pendingEvent = null;

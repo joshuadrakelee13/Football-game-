@@ -6,12 +6,17 @@
 import { h, emptyState, attrBadge, meter } from './dom.js';
 import { money } from '../core/format.js';
 import { playerClub } from '../model/world.js';
-import { isAvailable } from '../model/player.js';
+import { isAvailable, personalityFor } from '../model/player.js';
 import { visiblePotential, scoutCost } from '../engine/scouting.js';
 import { anyClub } from '../engine/europe.js';
 import { renewalDemand } from '../engine/transfers.js';
 import { canOpenNegotiation } from '../engine/negotiation.js';
 import { renewPlayer, sellSquadPlayer, scoutTarget, negotiateFor, promoteYouthProspect, sellYouthProspect, releaseYouthProspect, toggleShortlist } from './player-actions.js';
+import { ROLE_OPTIONS, ROLE_LABELS } from '../data/positions.js';
+import {
+  VISIBLE_ATTRIBUTES, VISIBLE_ATTRIBUTE_LABELS, ATTRIBUTE_CATEGORY,
+  HIDDEN_ATTRIBUTES, HIDDEN_ATTRIBUTE_LABELS, TRAIT_LABELS, roleRating,
+} from '../data/attributes.js';
 
 function resolve(world, entry) {
   const { source, playerId } = entry;
@@ -61,7 +66,7 @@ export const playerContext = {
     const player = resolve(world, entry);
     if (!player) return goneView();
     switch (entry.tab) {
-      case 'attributes': return attributesTab(player);
+      case 'attributes': return attributesTab(world, player);
       case 'contract': return contractTab(world, entry, player);
       case 'development': return developmentTab(player);
       case 'medical': return medicalTab(player);
@@ -153,15 +158,103 @@ function reportsTab(world, player) {
   );
 }
 
-function attributesTab(player) {
-  const attrs = ['pace', 'finishing', 'passing', 'tackling', 'physical', 'technique'];
-  if (player.position === 'GK') attrs.push('handling', 'reflexes');
-  return h('div', { class: 'attr-list grid cols-2' }, ...attrs.map((a) =>
-    h('div', { class: 'attr-row' },
-      h('span', { class: 'name' }, a),
-      attrBadge(player.attributes[a]),
+// FM's own three-column grid: Technical / Mental / Physical, with a goalkeeper's
+// Technical column swapped for the goalkeeping-specific attributes plus the three
+// (first touch, passing, technique) FM treats as shared between outfield and keeper
+// play rather than duplicating — see data/attributes.js's own note on why those three
+// live in one group instead of two.
+const OUTFIELD_TECHNICAL_KEYS = VISIBLE_ATTRIBUTES.filter((a) => ATTRIBUTE_CATEGORY[a] === 'technical');
+const GK_TECHNICAL_KEYS = [
+  ...VISIBLE_ATTRIBUTES.filter((a) => ATTRIBUTE_CATEGORY[a] === 'goalkeeping'),
+  'firstTouch', 'passing', 'technique',
+];
+const MENTAL_KEYS = VISIBLE_ATTRIBUTES.filter((a) => ATTRIBUTE_CATEGORY[a] === 'mental');
+const PHYSICAL_KEYS = VISIBLE_ATTRIBUTES.filter((a) => ATTRIBUTE_CATEGORY[a] === 'physical');
+
+function attrColumn(title, keys, attributes) {
+  return h('div', null,
+    h('div', { class: 'eyebrow', style: { marginBottom: 'var(--space-2)' } }, title),
+    h('div', { class: 'attr-list' }, ...keys.map((a) =>
+      h('div', { class: 'attr-row' },
+        h('span', { class: 'name' }, VISIBLE_ATTRIBUTE_LABELS[a]),
+        attrBadge(attributes[a]),
+      ),
+    )),
+  );
+}
+
+function attributesTab(world, player) {
+  const isGk = player.position === 'GK';
+  return h('div', null,
+    h('div', { class: 'grid cols-3', style: { marginBottom: 'var(--space-5)' } },
+      attrColumn(isGk ? 'Goalkeeping' : 'Technical', isGk ? GK_TECHNICAL_KEYS : OUTFIELD_TECHNICAL_KEYS, player.attributes),
+      attrColumn('Mental', MENTAL_KEYS, player.attributes),
+      attrColumn('Physical', PHYSICAL_KEYS, player.attributes),
     ),
-  ));
+    roleSuitabilitySection(player),
+    personalitySection(world, player),
+  );
+}
+
+// The suitability circles FM's tactics screen shows, over this game's own two roles
+// per slot — reads the same roleRating() the tactics/lineup screens use, so a number
+// shown here means exactly the same thing there.
+function roleSuitabilitySection(player) {
+  const roles = ROLE_OPTIONS[player.position] || [];
+  if (!roles.length) return null;
+  return h('div', { style: { marginBottom: 'var(--space-5)' } },
+    h('div', { class: 'eyebrow', style: { marginBottom: 'var(--space-2)' } }, 'Role suitability'),
+    h('div', { class: 'attr-list' }, ...roles.map((roleKey) => {
+      const rating = roleRating(player, player.position, roleKey);
+      return h('div', { class: 'attr-row' },
+        h('span', { class: 'name' }, ROLE_LABELS[roleKey] || roleKey),
+        rating == null ? null : attrBadge(rating, 99),
+      );
+    })),
+  );
+}
+
+// Right/left strength (1-20 each) reduced to the same kind of plain-English label FM
+// itself shows rather than two raw numbers — "which foot, and does the other one let
+// him down" is the useful read, not the exact gap between them.
+function footLabel(foot) {
+  if (!foot) return 'Unknown';
+  const { left, right } = foot;
+  const weakerQuality = (v) => (v >= 16 ? 'strong' : v >= 11 ? 'capable' : v >= 6 ? 'reasonable' : 'weak');
+  if (Math.abs(right - left) <= 3) return `Two-footed (${weakerQuality(Math.min(left, right))} on either side)`;
+  const dominant = right > left ? 'Right' : 'Left';
+  return `${dominant}-footed (${weakerQuality(Math.min(left, right))} other foot)`;
+}
+
+// Personality is a derived read of the hidden set (see player.js's personalityFor),
+// so it's always shown — but the hidden values it's derived from, like potential,
+// stay fogged until this player is actually known: scouted individually, or your
+// scouting network is good enough to see everyone at a glance.
+function personalitySection(world, player) {
+  const you = playerClub(world);
+  const known = visiblePotential(you, player).exact;
+  const traits = (player.traits || []).map((id) => TRAIT_LABELS[id]).filter(Boolean);
+
+  return h('div', null,
+    h('div', { class: 'eyebrow', style: { marginBottom: 'var(--space-2)' } }, 'Personality & traits'),
+    h('div', { style: { display: 'flex', gap: 'var(--space-4)', flexWrap: 'wrap', marginBottom: 'var(--space-3)' } },
+      pill('Personality', personalityFor(player.hidden)),
+      pill('Preferred foot', footLabel(player.foot)),
+    ),
+    traits.length
+      ? h('div', { style: { display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: 'var(--space-4)' } },
+        ...traits.map((t) => h('span', { class: 'tag info' }, t)))
+      : h('p', { style: { color: 'var(--text-3)', fontSize: '12.5px', margin: '0 0 var(--space-4) 0' } }, 'No notable playing style traits.'),
+    h('div', { class: 'eyebrow', style: { marginBottom: 'var(--space-2)' } }, 'Hidden attributes'),
+    known
+      ? h('div', { class: 'attr-list grid cols-2' }, ...HIDDEN_ATTRIBUTES.map((key) =>
+        h('div', { class: 'attr-row' },
+          h('span', { class: 'name' }, HIDDEN_ATTRIBUTE_LABELS[key]),
+          attrBadge(player.hidden[key]),
+        ),
+      ))
+      : h('p', { style: { color: 'var(--text-3)', fontSize: '12.5px', margin: 0 } }, 'Scout this player to reveal his hidden attributes.'),
+  );
 }
 
 function contractTab(world, entry, player) {

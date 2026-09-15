@@ -15,7 +15,7 @@
 // every match.js call site keep working on real numbers, completely unchanged, while
 // this phase is entirely about how attributes.attributes gets filled in.
 
-import { clamp } from '../core/rng.js';
+import { clamp, Rng } from '../core/rng.js';
 import { overallFor, ATTR_SCALE, ATTR_MIN, ATTR_MAX } from '../data/positions.js';
 import { VISIBLE_ATTRIBUTES, HIDDEN_ATTRIBUTES, FULL_POSITION_WEIGHTS, TRAITS } from '../data/attributes.js';
 import { nationsForTier, firstNames, lastNames } from '../data/names.js';
@@ -148,7 +148,8 @@ function rollPotential(rng, overall, age) {
 
 // How much a position's own weight table cares about each attribute, 0-1 — the
 // position-driven half of a generation profile (the archetype supplies the other half).
-function positionRelevance(position) {
+// Exported for expandLegacyPlayer below, which reuses it rather than a second copy.
+export function positionRelevance(position) {
   const weights = FULL_POSITION_WEIGHTS[position];
   const maxWeight = Math.max(...Object.values(weights));
   const relevance = {};
@@ -337,6 +338,60 @@ export function generatePlayer(rng, { tier = 3, position = 'CM', targetOverall =
     joinedFrom: null,
   };
 
+  player.value = valueOf(player);
+  player.wage = wageOf(player);
+  return player;
+}
+
+// Expands a player who only has the original 8 attributes (a save from before this
+// epic) into the full set, in place. Used once, during load migration — see
+// model/save.js — never during ordinary play.
+//
+// Seeded from the player's own id rather than drawing from the caller's rng: this runs
+// deep inside deserialise(), long before a world has a live Rng to advance, and it
+// means the same v1/v2 player always expands to the same richer profile no matter how
+// many times a save is reloaded.
+//
+// Seven of the eight old names need no estimation at all — pace, finishing, passing,
+// tackling, technique, handling and reflexes are pinned to their exact stored values,
+// because they are literally the same measurement in both systems. "physical" has no
+// single successor, so it is split evenly across its four descendants — there is
+// nothing in an old save that could justify differentiating them, so an even split is
+// the honest answer, not a guess dressed up as one. Every other attribute has no
+// signal in the old save at all; those roll through the same profile shape a fresh
+// generation uses, scaled by the player's own real Overall rather than solved for,
+// because none of them carry any weight in overallFor's current 8-key formula — there
+// is nothing to solve against, and the player's Overall is therefore preserved exactly
+// regardless of what they roll to.
+export function expandLegacyPlayer(player) {
+  const legacy = player.attributes;
+  const rng = new Rng((player.id * 2654435761) >>> 0);
+  const archetype = rng.pick(ARCHETYPE_PROFILE[player.position] || ARCHETYPE_PROFILE.CM);
+  const relevance = positionRelevance(player.position);
+
+  const attributes = {
+    pace: legacy.pace, finishing: legacy.finishing, passing: legacy.passing,
+    tackling: legacy.tackling, technique: legacy.technique,
+    handling: legacy.handling, reflexes: legacy.reflexes,
+  };
+  for (const key of PHYSICAL_CONSTITUENTS) attributes[key] = legacy.physical;
+
+  const k = clamp((player.overall || 50) / 50, 0.3, 2.2);
+  for (const key of VISIBLE_ATTRIBUTES) {
+    if (key in attributes) continue;
+    const p = clamp((relevance[key] || 0) + (archetype.bias[key] || 0), 0, 1.4);
+    const noise = 0.6 + (1 - Math.min(1, p)) * 2.0;
+    attributes[key] = clamp(Math.max(0.5, 2 + 12 * p + rng.normal(0, noise)) * k, ATTR_MIN, ATTR_MAX);
+  }
+  attributes.physical = deriveLegacyPhysical(attributes);
+
+  player.attributes = attributes;
+  player.hidden = rollHiddenAttributes(rng);
+  player.foot = rollFoot(rng, player.position);
+  player.traits = rollTraits(rng, attributes, player.position);
+  player.archetype = archetype.name;
+
+  player.overall = overallFor(player.attributes, player.position);
   player.value = valueOf(player);
   player.wage = wageOf(player);
   return player;

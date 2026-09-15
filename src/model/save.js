@@ -1,14 +1,20 @@
 // Save and load. One autosave slot in localStorage, plus JSON export and import so a
 // save can be moved between browsers.
 
-import { encodeSquad, decodeSquad, rescaleLegacySquad, rescaleLegacyPlayers } from './codec.js';
+import {
+  encodeSquad, decodeSquad, rescaleLegacySquad, rescaleLegacyPlayers, decodeLegacyPlayerRow, encodePlayer,
+} from './codec.js';
+import { expandLegacyPlayer } from './player.js';
 import { pickBestXI } from './club.js';
 import { defaultTactics } from '../data/tactics.js';
 
 export const SAVE_KEY = 'fct.save.v1';
 // v2: attributes moved from the 0-99 scale to FM's 1-20 (see data/positions.js's
-// ATTR_SCALE). Overall/potential are unchanged — they were, and remain, 0-99.
-export const SAVE_VERSION = 2;
+// ATTR_SCALE). v3: the 8-attribute player expanded to the full FM set — 47 visible,
+// 13 hidden, preferred foot, traits (see data/attributes.js) — with the payload
+// packed rather than a plain JSON number array. Overall/potential were, and remain,
+// 0-99 throughout all three versions.
+export const SAVE_VERSION = 3;
 
 // The pending event carries closures, which cannot survive a round trip through JSON.
 // Squads are re-encoded compactly; everything else in the world is plain data.
@@ -50,12 +56,33 @@ function unpackClubs(clubs) {
 
 // Runs on the packed world, before unpackClubs, so squads are still encoded rows.
 // Squads ride compressed; the market, free agents and prospects ride as plain objects.
-function migrateV1toV2(world) {
+function rescaleV1(world) {
   for (const club of Object.values(world.clubs || {})) rescaleLegacySquad(club.squad || []);
   for (const club of Object.values(world.europeClubs || {})) rescaleLegacySquad(club.squad || []);
   rescaleLegacyPlayers(world.transferMarket || []);
   rescaleLegacyPlayers(world.freeAgents || []);
   rescaleLegacyPlayers(world.youthProspects || []);
+}
+
+// Runs after rescaleV1 (if this was a v1 save) so it only ever sees 8 attributes on
+// the correct 1-20 scale — v1 and v2 saves converge to the same expansion path from
+// here. Squad rows are decoded with the legacy (8-value-array) reader, expanded to the
+// full set, then re-encoded in the current packed format, so the ordinary
+// unpackClubs -> decodeSquad -> decodePlayer pipeline that runs right after this can
+// stay completely unaware that migration happened at all. Market/free-agent/prospect
+// players are plain objects throughout — expandLegacyPlayer runs on them directly.
+function expandToV3(world) {
+  for (const club of Object.values(world.clubs || {})) expandLegacySquadRows(club.squad || []);
+  for (const club of Object.values(world.europeClubs || {})) expandLegacySquadRows(club.squad || []);
+  if (world.transferMarket) world.transferMarket = world.transferMarket.map(expandLegacyPlayer);
+  if (world.freeAgents) world.freeAgents = world.freeAgents.map(expandLegacyPlayer);
+  if (world.youthProspects) world.youthProspects = world.youthProspects.map(expandLegacyPlayer);
+}
+
+function expandLegacySquadRows(rows) {
+  for (let i = 0; i < rows.length; i++) {
+    rows[i] = encodePlayer(expandLegacyPlayer(decodeLegacyPlayerRow(rows[i])));
+  }
 }
 
 export function serialise(world) {
@@ -69,11 +96,12 @@ export function serialise(world) {
 export function deserialise(json) {
   const data = typeof json === 'string' ? JSON.parse(json) : json;
   if (!data || typeof data !== 'object') throw new Error('Save file is not readable');
-  if (data.version !== SAVE_VERSION && data.version !== 1) {
+  if (![1, 2, SAVE_VERSION].includes(data.version)) {
     throw new Error(`Save was made by a different version of the game (v${data.version})`);
   }
   const world = data.world;
-  if (data.version === 1) migrateV1toV2(world);
+  if (data.version === 1) rescaleV1(world);
+  if (data.version === 1 || data.version === 2) expandToV3(world);
   world.clubs = unpackClubs(world.clubs || {});
   if (world.europeClubs) world.europeClubs = unpackClubs(world.europeClubs);
   world.pendingEvent = null;

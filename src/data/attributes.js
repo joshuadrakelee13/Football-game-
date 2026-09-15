@@ -2,14 +2,22 @@
 // per-role weight tables from small hand-authored profiles instead of 47-wide tables
 // hand-typed for 10 positions and 16 roles.
 //
-// Nothing here is wired into the live game yet. positions.js's own POSITION_WEIGHTS,
-// ROLE_WEIGHTS and overallFor are untouched — players still carry the original 8
-// attributes (see model/player.js), so FULL_POSITION_WEIGHTS/FULL_ROLE_WEIGHTS below
-// have nothing real to rate. This phase builds and proves the compiler; a later phase
-// generates players against the full set, and only then does overallFor switch over —
-// deliberately alone, since that is the one change that can move a balance number.
+// overallFor now lives here rather than in positions.js: it reads FULL_POSITION_WEIGHTS,
+// which this file builds, and positions.js's own roleFit/ROLE_WEIGHTS still deliberately
+// read the old 8-key table (a later phase migrates them) — so positions.js depends on
+// this file, not the other way round. POSITIONS and the attribute-scale constants live
+// here for the same reason: this module's own compilation step (below) needs them at
+// import time, and positions.js re-exports them so every existing call site importing
+// them from '../data/positions.js' keeps working unchanged.
 
-import { POSITIONS, ATTR_SCALE } from './positions.js';
+export const POSITIONS = ['GK', 'CB', 'LB', 'RB', 'CDM', 'CM', 'CAM', 'LW', 'RW', 'ST'];
+
+// Attributes live on FM's 1-20 scale; Overall stays on 0-99 and is this game's Current
+// Ability. Because every weight table here sums to 1, a weighted blend is a convex
+// combination, so this one factor is what makes the two scales interchangeable.
+export const ATTR_SCALE = 5;
+export const ATTR_MIN = 1;
+export const ATTR_MAX = 20;
 
 // ---------------------------------------------------------------------------
 // Visible attributes — 1-20, same scale and meaning as FM's own. 14 technical +
@@ -321,10 +329,26 @@ function blendFull(attributes, weights) {
 
 // How well a player suits a specific role in a specific slot, 0-99 — the full-set
 // analogue of overallFor, and what a role-suitability display consumes. Falls back to
-// the bare position rating when roleKey is null. Inert until a later phase gives
-// players the full attribute set to rate — nothing calls this yet.
+// the bare position rating when roleKey is null.
 export function roleRating(player, slot, roleKey) {
   const weights = roleKey ? FULL_ROLE_WEIGHTS[slot]?.[roleKey] : FULL_POSITION_WEIGHTS[slot];
   if (!weights || !player?.attributes) return null;
   return Math.round(blendFull(player.attributes, weights));
+}
+
+// Overall rating from raw attributes, for a given position — this game's Current
+// Ability, on 0-99. The one formula every player's displayed rating, value, wage and
+// transfer/scouting logic is ultimately anchored to.
+//
+// Reads the full 47-attribute weight table rather than the original 8-key
+// POSITION_WEIGHTS positions.js still carries — the one deliberately-isolated,
+// balance-moving step of the attribute foundation (see the epic plan's phase table).
+// Generation is unaffected by the switch: generatePlayer's bisection solver searches
+// for whatever scale factor makes *this* function land on its target ability, so it
+// self-corrects to the same target distribution regardless of which weight table is
+// live underneath — verified directly (see tools/attribute-test.mjs and the P5 commit)
+// rather than assumed, since that self-correction only holds if every profile weight
+// is non-negative and the raw draw is positive, both already true by construction.
+export function overallFor(attributes, position) {
+  return Math.round(blendFull(attributes, FULL_POSITION_WEIGHTS[position]));
 }

@@ -14,7 +14,7 @@
 // SAVE_VERSION instead — see model/save.js's migrator — because their *shape*, not
 // just their length, changed when this game moved from 8 attributes to the full set.
 
-import { overallFor, ATTR_SCALE, ATTR_MIN, ATTR_MAX } from '../data/positions.js';
+import { overallFor, legacyOverallFor, ATTR_SCALE, ATTR_MIN, ATTR_MAX } from '../data/positions.js';
 import { VISIBLE_ATTRIBUTES, HIDDEN_ATTRIBUTES } from '../data/attributes.js';
 import { valueOf, wageOf, deriveLegacyPhysical } from './player.js';
 
@@ -177,7 +177,11 @@ export function decodeLegacyPlayerRow(row) {
   LEGACY_ATTR_ORDER.forEach((a, i) => { player.attributes[a] = attrs[i] ?? 0; });
 
   player.name = `${player.first} ${player.last}`;
-  player.overall = overallFor(player.attributes, player.position);
+  // The live overallFor reads the full 47-key table; this object only has the 8 legacy
+  // values, so it needs the matching 8-key formula here — see legacyOverallFor's own
+  // comment. expandLegacyPlayer (the only caller) overwrites this with a real Overall
+  // once the full attribute set exists.
+  player.overall = legacyOverallFor(player.attributes, player.position);
   player.value = valueOf(player);
   player.wage = wageOf(player);
   return player;

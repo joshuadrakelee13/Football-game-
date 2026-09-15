@@ -11,13 +11,15 @@
 // new "pace" were always the same measurement, just one of three speed attributes
 // instead of the sole one. Only "physical" has no direct successor (split into
 // strength/stamina/balance/naturalFitness) and is genuinely derived — see
-// deriveLegacyPhysical below. That is what lets overallFor, every training preset and
-// every match.js call site keep working on real numbers, completely unchanged, while
-// this phase is entirely about how attributes.attributes gets filled in.
+// deriveLegacyPhysical below. That is what lets every training preset and every
+// match.js call site keep working on real numbers, completely unchanged, while this
+// phase is entirely about how player.attributes gets filled in. (overallFor itself has
+// since moved onto the full 47-key blend — see data/attributes.js — a later, separate
+// phase; it is unaffected by which 8 of the names above happen to be pinned here.)
 
 import { clamp, Rng } from '../core/rng.js';
 import { overallFor, ATTR_SCALE, ATTR_MIN, ATTR_MAX } from '../data/positions.js';
-import { VISIBLE_ATTRIBUTES, HIDDEN_ATTRIBUTES, FULL_POSITION_WEIGHTS, TRAITS } from '../data/attributes.js';
+import { VISIBLE_ATTRIBUTES, HIDDEN_ATTRIBUTES, FULL_POSITION_WEIGHTS, TRAITS, GROUPS } from '../data/attributes.js';
 import { nationsForTier, firstNames, lastNames } from '../data/names.js';
 
 // Squad shape: how many of each position a club carries.
@@ -107,14 +109,30 @@ export function deriveLegacyPhysical(attributes) {
   return PHYSICAL_CONSTITUENTS.reduce((s, k) => s + (attributes[k] || 0), 0) / PHYSICAL_CONSTITUENTS.length;
 }
 
-// `physical` is recomputed from scratch on every refreshDerived, so a direct write to
-// it would be silently overwritten on the very next refresh. Training's focus presets
-// still speak the old eight names (a later phase moves them onto real ones) — this is
-// what lets a "physical" gain keep doing something real in the meantime, by fanning the
-// delta out to the four attributes that actually carry it.
+// Which GROUPS entry each legacy name used to stand in for, on its own, before Overall
+// read the full 47. Now that overallFor (data/attributes.js) reads the full set, a delta
+// that only touches the one named attribute reaches a much smaller slice of a position's
+// weight table than it used to — measured directly against the old POSITION_WEIGHTS,
+// touching just the named attribute keeps only ~20-35% of its original weight share,
+// where fanning out to its whole group keeps ~70-100% (e.g. a striker's finishing: 0.38
+// of the old table alone, 0.13 as the one new attribute, 0.28 as the shooting group it
+// belongs to). Training's focus presets still speak the old eight names (a later phase
+// moves them onto real per-attribute granularity) — this is what keeps a training gain
+// worth roughly what it always was in the meantime, the same fan-out physical already
+// needed for the same reason.
+const LEGACY_ATTRIBUTE_GROUP = {
+  pace: 'speed', finishing: 'shooting', passing: 'creation', tackling: 'defending',
+  technique: 'ballControl', handling: 'gkStopping', reflexes: 'gkStopping',
+};
+
 export function applyLegacyAttributeDelta(attributes, key, delta) {
   if (key === 'physical') {
     for (const sub of PHYSICAL_CONSTITUENTS) attributes[sub] = clamp((attributes[sub] ?? 0) + delta, ATTR_MIN, ATTR_MAX);
+    return;
+  }
+  const group = LEGACY_ATTRIBUTE_GROUP[key];
+  if (group) {
+    for (const sub of GROUPS[group]) attributes[sub] = clamp((attributes[sub] ?? 0) + delta, ATTR_MIN, ATTR_MAX);
     return;
   }
   attributes[key] = clamp((attributes[key] ?? 0) + delta, ATTR_MIN, ATTR_MAX);
@@ -359,10 +377,17 @@ export function generatePlayer(rng, { tier = 3, position = 'CM', targetOverall =
 // nothing in an old save that could justify differentiating them, so an even split is
 // the honest answer, not a guess dressed up as one. Every other attribute has no
 // signal in the old save at all; those roll through the same profile shape a fresh
-// generation uses, scaled by the player's own real Overall rather than solved for,
-// because none of them carry any weight in overallFor's current 8-key formula — there
-// is nothing to solve against, and the player's Overall is therefore preserved exactly
-// regardless of what they roll to.
+// generation uses, scaled by the player's own pre-migration Overall (computed by
+// codec.js's decodeLegacyPlayerRow via the old 8-key formula) rather than solved for —
+// there is nothing to solve against a value that, unlike fresh generation, was never
+// a target in the first place.
+//
+// The player's stored Overall is NOT preserved through this: it is recomputed below
+// from the complete new attribute set via the live overallFor, exactly like every other
+// player's is, so a migrated player rates consistently against everyone else born after
+// this phase rather than carrying a frozen pre-migration number forward forever. The
+// scale factor above only keeps the freshly-rolled attributes in the right neighbourhood
+// for a player of that quality; it does not pin the outcome.
 export function expandLegacyPlayer(player) {
   const legacy = player.attributes;
   const rng = new Rng((player.id * 2654435761) >>> 0);

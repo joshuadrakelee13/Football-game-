@@ -3,17 +3,18 @@
 // A player's Overall is a position-weighted blend of their attributes, which is what
 // produces the brief's "striker with great finishing but poor passing": the same raw
 // attributes read very differently depending on where someone plays.
+//
+// POSITIONS and the attribute-scale constants are defined in data/attributes.js —
+// that module's own weight-table compilation needs them at import time, and this file
+// importing them back from here would cycle — and re-exported below unchanged, so
+// every existing `import { ATTR_SCALE } from '../data/positions.js'` elsewhere in the
+// game keeps working untouched. overallFor lives there too, for the same reason: it
+// reads attributes.js's full 47-key weight table now (see that file for why).
 
 import { clamp } from '../core/rng.js';
+import { POSITIONS, ATTR_SCALE, ATTR_MIN, ATTR_MAX, overallFor } from './attributes.js';
 
-// Attributes live on FM's 1-20 scale; Overall stays on 0-99 and is this game's
-// Current Ability. Because every weight table below sums to 1, blend() is a convex
-// combination, so scaling an attribute set by a constant scales the blend by the same
-// constant — which is what makes the two scales interchangeable through this one
-// factor rather than through a conversion at every call site.
-export const ATTR_SCALE = 5;
-export const ATTR_MIN = 1;
-export const ATTR_MAX = 20;
+export { POSITIONS, ATTR_SCALE, ATTR_MIN, ATTR_MAX, overallFor };
 
 export const ATTRIBUTES = ['pace', 'finishing', 'passing', 'tackling', 'physical', 'technique', 'handling', 'reflexes'];
 
@@ -27,8 +28,6 @@ export const ATTRIBUTE_LABELS = {
   handling: 'Handling',
   reflexes: 'Reflexes',
 };
-
-export const POSITIONS = ['GK', 'CB', 'LB', 'RB', 'CDM', 'CM', 'CAM', 'LW', 'RW', 'ST'];
 
 export const POSITION_GROUP = {
   GK: 'Goalkeeper',
@@ -94,9 +93,15 @@ function blend99(attributes, weights) {
   return total;
 }
 
-// Overall rating from raw attributes, for a given position. Attributes are 1-20; the
-// result is this game's Current Ability, on 0-99.
-export function overallFor(attributes, position) {
+// The pre-full-attribute-set Overall formula, over the original 8-key POSITION_WEIGHTS
+// below. The live Overall formula is attributes.js's full 47-key blend (re-exported
+// above as overallFor) — this survives only for codec.js's decodeLegacyPlayerRow,
+// which decodes a save row that genuinely only has 8 attribute values on it, so
+// weighing the other 39 in would not be "more accurate", it would be reading data that
+// was never written. Its result feeds nothing but the scale factor player.js's
+// migration expansion sizes the archetype-rolled remainder against — never shown to a
+// player, never the value stored as that player's actual Overall.
+export function legacyOverallFor(attributes, position) {
   return Math.round(blend99(attributes, POSITION_WEIGHTS[position]));
 }
 

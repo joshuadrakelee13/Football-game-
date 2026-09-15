@@ -57,6 +57,35 @@ export const VISIBLE_ATTRIBUTE_LABELS = {
 };
 
 // ---------------------------------------------------------------------------
+// Traits (PPMs) — a representative subset rather than FM's full ~60, gated on
+// attribute thresholds and (where it only makes football sense for some positions)
+// a position filter. Generation weights the roll so most players carry none.
+// ---------------------------------------------------------------------------
+
+export const TRAITS = [
+  { id: 'long-shots', label: 'Tries Long Range Shots', gate: (a) => a.longShots >= 14 },
+  { id: 'dives-into-tackles', label: 'Dives Into Tackles', gate: (a) => a.tackling >= 14 && a.aggression >= 13 },
+  { id: 'no-through-balls', label: 'Plays No Through Balls', gate: (a) => a.passing <= 9 },
+  { id: 'comes-deep', label: 'Comes Deep to Get the Ball', gate: (a) => a.vision >= 14,
+    positions: ['ST', 'LW', 'RW', 'CAM'] },
+  { id: 'gets-forward', label: 'Gets Into Opposition Area', gate: (a) => a.offTheBall >= 14,
+    positions: ['CM', 'CDM', 'LB', 'RB'] },
+  { id: 'arrives-late', label: 'Arrives Late in the Box', gate: (a) => a.offTheBall >= 15 && a.stamina >= 13,
+    positions: ['CM', 'CAM'] },
+  { id: 'long-throw', label: 'Long Throw Expert', gate: (a) => a.longThrows >= 15 },
+  { id: 'rounds-keeper', label: 'Likes to Round the Keeper', gate: (a) => a.composure >= 15 && a.finishing >= 14,
+    positions: ['ST', 'LW', 'RW', 'CAM'] },
+  { id: 'runs-with-ball', label: 'Runs With Ball Often', gate: (a) => a.dribbling >= 14 && a.flair >= 13 },
+  { id: 'plays-out-defence', label: 'Tries to Play Out of Defence', gate: (a) => a.passing >= 13,
+    positions: ['CB', 'LB', 'RB'] },
+  { id: 'sweeper-keeper-trait', label: 'Sweeps Up Behind the Defence', gate: (a) => a.rushingOut >= 14,
+    positions: ['GK'] },
+  { id: 'saves-with-feet', label: 'Likes to Save With Feet', gate: (a) => a.reflexes >= 13, positions: ['GK'] },
+];
+
+export const TRAIT_LABELS = Object.fromEntries(TRAITS.map((t) => [t.id, t.label]));
+
+// ---------------------------------------------------------------------------
 // Hidden attributes. Note for the record: the programme roadmap estimated "~20" —
 // the real, well-documented FM hidden/personality set is 13. Implemented as 13 here
 // deliberately, rather than padded to the round estimate with invented ones.

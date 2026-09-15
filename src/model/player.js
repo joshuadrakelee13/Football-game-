@@ -3,9 +3,21 @@
 // Attributes are generated first and Overall is derived from them, never the other way
 // round. That is what lets a striker have elite finishing and hopeless passing while
 // still rating 74 — and it means playing him at centre-back genuinely ruins him.
+//
+// Generation now targets the full FM-style attribute set (src/data/attributes.js) —
+// 47 visible, 13 hidden, preferred foot, traits — rather than the original 8. Seven of
+// those eight original names (pace, finishing, passing, tackling, technique, handling,
+// reflexes) survive completely unchanged as real members of the new 47: old "pace" and
+// new "pace" were always the same measurement, just one of three speed attributes
+// instead of the sole one. Only "physical" has no direct successor (split into
+// strength/stamina/balance/naturalFitness) and is genuinely derived — see
+// deriveLegacyPhysical below. That is what lets overallFor, every training preset and
+// every match.js call site keep working on real numbers, completely unchanged, while
+// this phase is entirely about how attributes.attributes gets filled in.
 
 import { clamp } from '../core/rng.js';
-import { POSITION_WEIGHTS, ATTRIBUTES, ATTR_SCALE, overallFor, blend } from '../data/positions.js';
+import { overallFor, ATTR_SCALE, ATTR_MIN, ATTR_MAX } from '../data/positions.js';
+import { VISIBLE_ATTRIBUTES, HIDDEN_ATTRIBUTES, FULL_POSITION_WEIGHTS, TRAITS } from '../data/attributes.js';
 import { nationsForTier, firstNames, lastNames } from '../data/names.js';
 
 // Squad shape: how many of each position a club carries.
@@ -19,60 +31,94 @@ export const SQUAD_TEMPLATE = [
   'ST', 'ST', 'ST',
 ];
 
-// Archetypes give players a recognisable shape rather than a flat stat line.
-const ARCHETYPES = {
+// ---------------------------------------------------------------------------
+// Archetypes give players a recognisable shape rather than a flat stat line — the
+// same names the tactics UI's role vocabulary deliberately echoes (see
+// data/positions.js's ROLE_OPTIONS), now expressed as a bias on the generation profile
+// rather than a flat point delta. Units are "relevance", the same 0-1-ish scale
+// positionRelevance() below produces: +0.35 is a true signature stat, +0.12 a modest
+// lean, and the position's own weight table already supplies the baseline every
+// archetype builds on.
+// ---------------------------------------------------------------------------
+
+const SIG = 0.36, STR = 0.22, MOD = 0.12, negMOD = -0.14, negSTR = -0.24;
+
+export const ARCHETYPE_PROFILE = {
   GK: [
-    { name: 'Shot-stopper', mods: { reflexes: 7, handling: 2, passing: -5 } },
-    { name: 'Sweeper keeper', mods: { passing: 9, reflexes: -3, physical: 2 } },
-    { name: 'Commanding', mods: { physical: 8, handling: 5, reflexes: -4 } },
+    { name: 'Shot-stopper', bias: { reflexes: SIG, agility: STR, oneOnOnes: MOD, kicking: negMOD, passing: negMOD } },
+    { name: 'Sweeper keeper', bias: { rushingOut: SIG, kicking: STR, passing: STR, pace: MOD, reflexes: negMOD } },
+    { name: 'Commanding', bias: { commandOfArea: SIG, aerialReach: STR, strength: STR, communication: MOD, agility: negMOD } },
   ],
   CB: [
-    { name: 'Ball-playing', mods: { passing: 10, technique: 8, physical: -6, tackling: -3 } },
-    { name: 'No-nonsense', mods: { tackling: 8, physical: 9, pace: -7, technique: -6 } },
-    { name: 'Quick recovery', mods: { pace: 11, physical: -5, tackling: -1 } },
+    { name: 'Ball-playing', bias: { passing: SIG, technique: STR, vision: MOD, firstTouch: MOD, tackling: negMOD, strength: negMOD } },
+    { name: 'No-nonsense', bias: { tackling: SIG, strength: STR, heading: STR, aggression: MOD, technique: negMOD, passing: negMOD } },
+    { name: 'Quick recovery', bias: { pace: SIG, acceleration: STR, anticipation: MOD, strength: negMOD } },
   ],
   LB: [
-    { name: 'Overlapping', mods: { pace: 9, passing: 5, tackling: -6 } },
-    { name: 'Defensive', mods: { tackling: 9, physical: 6, pace: -6, technique: -4 } },
-    { name: 'Inverted', mods: { passing: 9, technique: 8, pace: -5 } },
+    { name: 'Overlapping', bias: { pace: SIG, crossing: STR, stamina: MOD, tackling: negMOD } },
+    { name: 'Defensive', bias: { tackling: SIG, marking: STR, strength: MOD, pace: negMOD, technique: negMOD } },
+    { name: 'Inverted', bias: { passing: SIG, technique: STR, vision: MOD, pace: negMOD } },
   ],
   RB: [
-    { name: 'Overlapping', mods: { pace: 9, passing: 5, tackling: -6 } },
-    { name: 'Defensive', mods: { tackling: 9, physical: 6, pace: -6, technique: -4 } },
-    { name: 'Inverted', mods: { passing: 9, technique: 8, pace: -5 } },
+    { name: 'Overlapping', bias: { pace: SIG, crossing: STR, stamina: MOD, tackling: negMOD } },
+    { name: 'Defensive', bias: { tackling: SIG, marking: STR, strength: MOD, pace: negMOD, technique: negMOD } },
+    { name: 'Inverted', bias: { passing: SIG, technique: STR, vision: MOD, pace: negMOD } },
   ],
   CDM: [
-    { name: 'Destroyer', mods: { tackling: 10, physical: 8, technique: -8, passing: -4 } },
-    { name: 'Deep-lying playmaker', mods: { passing: 12, technique: 8, physical: -7, pace: -4 } },
-    { name: 'Anchor', mods: { physical: 9, tackling: 6, pace: -8 } },
+    { name: 'Destroyer', bias: { tackling: SIG, strength: STR, aggression: MOD, technique: negMOD, passing: negMOD } },
+    { name: 'Deep-lying playmaker', bias: { passing: SIG, vision: STR, technique: MOD, strength: negMOD, pace: negMOD } },
+    { name: 'Anchor', bias: { strength: SIG, positioning: STR, tackling: MOD, pace: negSTR } },
   ],
   CM: [
-    { name: 'Playmaker', mods: { passing: 11, technique: 9, pace: -6, tackling: -6 } },
-    { name: 'Box-to-box', mods: { physical: 8, pace: 7, technique: -4 } },
-    { name: 'Ball-winner', mods: { tackling: 10, physical: 6, technique: -7 } },
+    { name: 'Playmaker', bias: { passing: SIG, vision: STR, technique: MOD, pace: negMOD, tackling: negMOD } },
+    { name: 'Box-to-box', bias: { stamina: SIG, workRate: STR, pace: MOD, technique: negMOD } },
+    { name: 'Ball-winner', bias: { tackling: SIG, aggression: STR, strength: MOD, technique: negMOD } },
   ],
   CAM: [
-    { name: 'Creator', mods: { passing: 11, technique: 9, physical: -8 } },
-    { name: 'Shadow striker', mods: { finishing: 12, pace: 6, passing: -7 } },
-    { name: 'Dribbler', mods: { technique: 12, pace: 8, physical: -8, tackling: -4 } },
+    { name: 'Creator', bias: { passing: SIG, vision: STR, technique: MOD, strength: negMOD } },
+    { name: 'Shadow striker', bias: { finishing: SIG, offTheBall: STR, pace: MOD, passing: negMOD } },
+    { name: 'Dribbler', bias: { dribbling: SIG, flair: STR, pace: MOD, strength: negMOD, tackling: negMOD } },
   ],
   LW: [
-    { name: 'Flying winger', mods: { pace: 12, technique: 5, physical: -7, finishing: -4 } },
-    { name: 'Inside forward', mods: { finishing: 10, technique: 7, pace: -3 } },
-    { name: 'Creator', mods: { passing: 11, technique: 7, finishing: -6 } },
+    { name: 'Flying winger', bias: { pace: SIG, acceleration: STR, crossing: MOD, strength: negMOD, finishing: negMOD } },
+    { name: 'Inside forward', bias: { finishing: SIG, technique: STR, dribbling: MOD, pace: negMOD } },
+    { name: 'Creator', bias: { passing: SIG, crossing: STR, vision: MOD, finishing: negMOD } },
   ],
   RW: [
-    { name: 'Flying winger', mods: { pace: 12, technique: 5, physical: -7, finishing: -4 } },
-    { name: 'Inside forward', mods: { finishing: 10, technique: 7, pace: -3 } },
-    { name: 'Creator', mods: { passing: 11, technique: 7, finishing: -6 } },
+    { name: 'Flying winger', bias: { pace: SIG, acceleration: STR, crossing: MOD, strength: negMOD, finishing: negMOD } },
+    { name: 'Inside forward', bias: { finishing: SIG, technique: STR, dribbling: MOD, pace: negMOD } },
+    { name: 'Creator', bias: { passing: SIG, crossing: STR, vision: MOD, finishing: negMOD } },
   ],
   ST: [
-    { name: 'Poacher', mods: { finishing: 12, passing: -9, tackling: -6, physical: -2 } },
-    { name: 'Target man', mods: { physical: 13, finishing: 4, pace: -10, technique: -4 } },
-    { name: 'Pacey forward', mods: { pace: 13, finishing: 3, physical: -8 } },
-    { name: 'Complete forward', mods: { technique: 7, passing: 6, finishing: 4, pace: 2 } },
+    { name: 'Poacher', bias: { finishing: SIG, offTheBall: STR, composure: MOD, passing: negMOD, tackling: negMOD } },
+    { name: 'Target man', bias: { heading: SIG, strength: STR, jumping: STR, bravery: MOD, pace: negSTR, technique: negMOD } },
+    { name: 'Pacey forward', bias: { pace: SIG, acceleration: STR, finishing: MOD, strength: negMOD } },
+    { name: 'Complete forward', bias: { technique: MOD, passing: MOD, finishing: MOD, pace: MOD } },
   ],
 };
+
+// "physical" has no single successor in the 47 — it is the mean of the four attributes
+// that absorbed it. Every other legacy name (pace, finishing, passing, tackling,
+// technique, handling, reflexes) is a real member of VISIBLE_ATTRIBUTES and needs no
+// derivation at all.
+const PHYSICAL_CONSTITUENTS = ['strength', 'stamina', 'balance', 'naturalFitness'];
+
+export function deriveLegacyPhysical(attributes) {
+  return PHYSICAL_CONSTITUENTS.reduce((s, k) => s + (attributes[k] || 0), 0) / PHYSICAL_CONSTITUENTS.length;
+}
+
+// `physical` is recomputed from scratch on every refreshDerived, so a direct write to
+// it would be silently overwritten on the very next refresh. Training's focus presets
+// still speak the old eight names (a later phase moves them onto real ones) — this is
+// what lets a "physical" gain keep doing something real in the meantime, by fanning the
+// delta out to the four attributes that actually carry it.
+export function applyLegacyAttributeDelta(attributes, key, delta) {
+  if (key === 'physical') {
+    for (const sub of PHYSICAL_CONSTITUENTS) attributes[sub] = clamp((attributes[sub] ?? 0) + delta, ATTR_MIN, ATTR_MAX);
+    return;
+  }
+  attributes[key] = clamp((attributes[key] ?? 0) + delta, ATTR_MIN, ATTR_MAX);
+}
 
 let nextPlayerId = 1;
 export function resetPlayerIds() { nextPlayerId = 1; }
@@ -100,6 +146,102 @@ function rollPotential(rng, overall, age) {
   return clamp(overall + headroom, overall, 95);
 }
 
+// How much a position's own weight table cares about each attribute, 0-1 — the
+// position-driven half of a generation profile (the archetype supplies the other half).
+function positionRelevance(position) {
+  const weights = FULL_POSITION_WEIGHTS[position];
+  const maxWeight = Math.max(...Object.values(weights));
+  const relevance = {};
+  for (const key of VISIBLE_ATTRIBUTES) relevance[key] = (weights[key] || 0) / maxWeight;
+  return relevance;
+}
+
+// Finds k such that evalFn(k) lands on target. evalFn must be monotone non-decreasing
+// in k — true here because every weight is non-negative and clamp() is itself
+// monotone, so a componentwise scale-then-clamp can only move the blend one way.
+//
+// A fixed bisection bracket is not safe here: how large k needs to be depends on how
+// "thin" a given random profile draw is — a raw vector with several near-zero-relevance
+// attributes needs a much larger k to drag its high-relevance attributes up to the same
+// derived Overall than one that rolled tighter to begin with, and a fixed upper bound
+// tuned for the common case silently truncates the rare wide one (verified: this
+// produced players up to 21 points below their target before the fix). Doubling `hi`
+// until it actually brackets the target — standard exponential-then-bisect — removes
+// the guess entirely.
+//
+// Falls back to the closest k found rather than demanding an exact hit: at the extreme
+// ends of the ability range enough attributes are saturated against ATTR_MIN/ATTR_MAX
+// that no k lands exactly on target, and "off by a fraction of a point" is a fine
+// outcome there — closer than a caller has any way to notice.
+function solveScale(evalFn, target, { lo = 0.02, initialHi = 3, iterations = 50 } = {}) {
+  let hi = initialHi;
+  while (evalFn(hi) < target && hi < 1e5) hi *= 2;
+
+  let bestK = lo, bestDiff = Math.abs(evalFn(lo) - target);
+  for (let i = 0; i < iterations; i++) {
+    const mid = (lo + hi) / 2;
+    const value = evalFn(mid);
+    const diff = Math.abs(value - target);
+    if (diff < bestDiff) { bestDiff = diff; bestK = mid; }
+    if (value === target) return mid;
+    if (value < target) lo = mid; else hi = mid;
+  }
+  return bestK;
+}
+
+// Hidden attributes roll independently of the player's ability or position — a League
+// Two journeyman can have 18 Determination, and that is the entire point. Excluded from
+// every weight table in attributes.js by construction (GROUPS only partitions the 47
+// visible ones), and stored on a separate player.hidden object rather than merged into
+// player.attributes so nothing here is ever touched by attribute-indexed code (training
+// gains, age development) that means only the visible set.
+function rollHiddenAttributes(rng) {
+  const hidden = {};
+  for (const key of HIDDEN_ATTRIBUTES) hidden[key] = clamp(Math.round(rng.normal(11, 4)), ATTR_MIN, ATTR_MAX);
+  return hidden;
+}
+
+// Preferred foot, biased by position (a left-back is disproportionately left-footed,
+// not because the position requires it but because that is who ends up playing there).
+function rollFoot(rng, position) {
+  let rightBias = 0.78;
+  if (position === 'LB' || position === 'LW') rightBias = 0.35;
+  else if (position === 'RB' || position === 'RW') rightBias = 0.88;
+  const dominantRight = rng.chance(rightBias);
+  const twoFooted = rng.chance(0.08);
+  const strong = clamp(Math.round(rng.normal(16, 2)), 10, 20);
+  const weak = twoFooted ? clamp(Math.round(rng.normal(14, 2)), 8, 20) : clamp(Math.round(rng.normal(7, 3)), 1, 14);
+  return dominantRight ? { right: strong, left: weak } : { right: weak, left: strong };
+}
+
+// Traits (PPMs): most players carry none, most of the rest carry one. Gated on the
+// player's actual finished attributes (and position, where a trait only makes football
+// sense for some), not on the profile — a trait describes what a player visibly does,
+// which only exists once generation has actually finished.
+function rollTraits(rng, attributes, position) {
+  const eligible = TRAITS.filter((t) => (!t.positions || t.positions.includes(position)) && t.gate(attributes));
+  if (!eligible.length || !rng.chance(0.55)) return [];
+  const count = rng.chance(0.72) ? 1 : 2;
+  return rng.shuffle(eligible).slice(0, count).map((t) => t.id);
+}
+
+// Personality is derived from the hidden set, never stored, the same "one number,
+// banded into a label" shape as MORALE_LABELS below. A coarse composite deliberately —
+// FM's own personality types are a richer read of the same handful of attributes, and
+// the point here is a readable label, not a simulation of FM's exact classifier.
+export const PERSONALITY_LADDER = [
+  [82, 'Model professional'], [68, 'Professional'], [54, 'Fairly professional'],
+  [40, 'Balanced'], [26, 'Unprofessional'], [0, 'Temperamental'],
+];
+
+export function personalityFor(hidden) {
+  const score = clamp(Math.round(
+    (hidden.professionalism * 0.45 + hidden.ambition * 0.2 + hidden.consistency * 0.2 + hidden.sportsmanship * 0.15) * 5,
+  ), 0, 100);
+  for (const [floor, label] of PERSONALITY_LADDER) if (score >= floor) return label;
+  return PERSONALITY_LADDER[PERSONALITY_LADDER.length - 1][1];
+}
+
 export function generatePlayer(rng, { tier = 3, position = 'CM', targetOverall = 55, ageBias = null, nationOverride = null } = {}) {
   const age = rollAge(rng, ageBias);
 
@@ -111,37 +253,46 @@ export function generatePlayer(rng, { tier = 3, position = 'CM', targetOverall =
   else if (age >= 33) ability -= rng.int(1, 5);
   ability = clamp(Math.round(ability + rng.normal(0, 2)), 20, 94);
 
-  const archetype = rng.pick(ARCHETYPES[position]);
-  const attributes = {};
-  const weights = POSITION_WEIGHTS[position];
-  const topWeight = Math.max(...Object.values(weights));
+  const archetype = rng.pick(ARCHETYPE_PROFILE[position]);
+  const relevance = positionRelevance(position);
 
-  // Attributes the position does not care about drop away sharply. A striker is not
-  // secretly a fine tackler just because he is a fine player; the penalty scales with
-  // how little the position values that attribute.
-  //
-  // This still solves in 0-99 space and converts to the 1-20 attribute scale on the
-  // way out, deliberately: it makes the scale change the exact affine image of the
-  // old behaviour, so no generated player moves. Epic 1 phase 3 replaces the whole
-  // routine with a profile vector and a multiplicative solve, which is what the wider
-  // attribute set actually needs — a constant drift across 47 attributes would give
-  // every irrelevant one a free ride.
+  // The generation profile: position relevance plus the archetype's signature bumps.
+  // Noise is tighter on signature attributes (they track quality closely) and looser on
+  // incidental ones — a below-average passer can still be a fine tackler.
   const raw = {};
-  for (const key of ATTRIBUTES) {
-    const relevance = (weights[key] || 0) / topWeight;
-    const penalty = (1 - relevance) * 26;
-    raw[key] = ability - penalty + rng.normal(0, 5) + (archetype.mods[key] || 0);
+  for (const key of VISIBLE_ATTRIBUTES) {
+    const p = clamp((relevance[key] || 0) + (archetype.bias[key] || 0), 0, 1.4);
+    const noise = 0.6 + (1 - Math.min(1, p)) * 2.0;
+    // Floored well above zero, deliberately: scaling by k can only ever push a value
+    // further in the direction it already has. A raw value that lands at or below zero
+    // is stuck at ATTR_MIN for every k from here to infinity — not a rare edge case,
+    // since a wide noise draw on a low-relevance attribute crosses zero often — and
+    // just one such attribute with real weight in the position's table puts a hard,
+    // silent ceiling under the target ability no amount of scaling can reach.
+    raw[key] = Math.max(0.5, 2 + 12 * p + rng.normal(0, noise));
   }
 
-  // Nudge every attribute by a constant so the derived Overall lands on `ability`.
-  // blend(), not overallFor(), because `raw` is still 0-99 here — but rounded the same
-  // way overallFor would have rounded it, or the drift lands up to half a point out
-  // and shifts a tenth of the world's players by one.
-  const drift = ability - Math.round(blend(raw, weights));
-  for (const key in raw) attributes[key] = clamp(Math.round(raw[key] + drift), 8, 99) / ATTR_SCALE;
+  // Scale the whole vector by one factor until the derived Overall lands on `ability` —
+  // multiplicative, not the old constant-drift, so shape survives the solve: a
+  // signature 18 Finishing moves with the player's quality, an incidental 3 Flair does
+  // not get dragged up alongside it.
+  const evalK = (k) => {
+    const scaled = {};
+    for (const key of VISIBLE_ATTRIBUTES) scaled[key] = clamp(raw[key] * k, ATTR_MIN, ATTR_MAX);
+    scaled.physical = deriveLegacyPhysical(scaled);
+    return overallFor(scaled, position);
+  };
+  const k = solveScale(evalK, ability);
+
+  const attributes = {};
+  for (const key of VISIBLE_ATTRIBUTES) attributes[key] = clamp(raw[key] * k, ATTR_MIN, ATTR_MAX);
+  attributes.physical = deriveLegacyPhysical(attributes);
 
   const overall = overallFor(attributes, position);
   const potential = rollPotential(rng, overall, age);
+  const hidden = rollHiddenAttributes(rng);
+  const foot = rollFoot(rng, position);
+  const traits = rollTraits(rng, attributes, position);
 
   const { codes, weights: nationWeights } = nationsForTier(tier);
   const nation = nationOverride || rng.weighted(codes, nationWeights);
@@ -157,6 +308,9 @@ export function generatePlayer(rng, { tier = 3, position = 'CM', targetOverall =
     nation,
     position,
     attributes,
+    hidden,
+    foot,
+    traits,
     overall,
     potential,
     archetype: archetype.name,
@@ -222,6 +376,7 @@ export function wageOf(player) {
 }
 
 export function refreshDerived(player) {
+  player.attributes.physical = deriveLegacyPhysical(player.attributes);
   player.overall = overallFor(player.attributes, player.position);
   player.value = valueOf(player);
   player.wage = wageOf(player);

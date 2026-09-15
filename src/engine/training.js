@@ -1,8 +1,8 @@
 // Training: where the player's squad actually improves week to week.
 
 import { clamp } from '../core/rng.js';
-import { refreshDerived } from '../model/player.js';
-import { ATTR_SCALE, ATTR_MIN, ATTR_MAX } from '../data/positions.js';
+import { refreshDerived, applyLegacyAttributeDelta } from '../model/player.js';
+import { ATTR_SCALE } from '../data/positions.js';
 
 // Each focus pushes a different set of attributes. Nothing is free: a heavy attacking
 // focus quietly lets the defensive work slide.
@@ -99,10 +99,13 @@ export function applyTraining(club, weeks, rng) {
     let changed = false;
     for (const [attr, rate] of Object.entries(focus.gains)) {
       if (player.attributes[attr] === undefined) continue;
-      // Gain rates are authored in Overall points; attributes are 1-20.
+      // Gain rates are authored in Overall points; attributes are 1-20. Routed through
+      // applyLegacyAttributeDelta rather than a direct write — "physical" has no
+      // single underlying attribute any more (see player.js), so writing it directly
+      // would be silently discarded on the very next refreshDerived.
       const delta = (rate * multiplier * scale * rng.float(0.6, 1.4)) / ATTR_SCALE;
       if (Math.abs(delta) < 0.001 / ATTR_SCALE) continue;
-      player.attributes[attr] = clamp(player.attributes[attr] + delta, ATTR_MIN, ATTR_MAX);
+      applyLegacyAttributeDelta(player.attributes, attr, delta);
       changed = true;
     }
     if (changed) {

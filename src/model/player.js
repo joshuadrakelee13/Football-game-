@@ -19,7 +19,7 @@
 
 import { clamp, Rng } from '../core/rng.js';
 import { overallFor, ATTR_SCALE, ATTR_MIN, ATTR_MAX } from '../data/positions.js';
-import { VISIBLE_ATTRIBUTES, HIDDEN_ATTRIBUTES, FULL_POSITION_WEIGHTS, TRAITS, GROUPS } from '../data/attributes.js';
+import { VISIBLE_ATTRIBUTES, HIDDEN_ATTRIBUTES, FULL_POSITION_WEIGHTS, TRAITS } from '../data/attributes.js';
 import { nationsForTier, firstNames, lastNames } from '../data/names.js';
 
 // Squad shape: how many of each position a club carries.
@@ -101,41 +101,18 @@ export const ARCHETYPE_PROFILE = {
 
 // "physical" has no single successor in the 47 — it is the mean of the four attributes
 // that absorbed it. Every other legacy name (pace, finishing, passing, tackling,
-// technique, handling, reflexes) is a real member of VISIBLE_ATTRIBUTES and needs no
-// derivation at all.
+// technique, handling, reflexes) is a real member of VISIBLE_ATTRIBUTES and needed no
+// derivation at all, which is why training.js and match.js could and did migrate onto
+// real attribute names directly (E1-P6) with no adapter required — a plain clamped
+// write, same as any other attribute. "physical" itself has no such migration to make:
+// it isn't a real attribute to rename, it's a display convenience. deriveLegacyPhysical
+// survives, called from refreshDerived below, purely because the pre-FM-grid Attributes
+// tab (src/ui/context-player.js) still shows it as one of its 6-8 badges — deleting this
+// before that UI is rebuilt (E1-P8) would leave that badge silently frozen.
 const PHYSICAL_CONSTITUENTS = ['strength', 'stamina', 'balance', 'naturalFitness'];
 
 export function deriveLegacyPhysical(attributes) {
   return PHYSICAL_CONSTITUENTS.reduce((s, k) => s + (attributes[k] || 0), 0) / PHYSICAL_CONSTITUENTS.length;
-}
-
-// Which GROUPS entry each legacy name used to stand in for, on its own, before Overall
-// read the full 47. Now that overallFor (data/attributes.js) reads the full set, a delta
-// that only touches the one named attribute reaches a much smaller slice of a position's
-// weight table than it used to — measured directly against the old POSITION_WEIGHTS,
-// touching just the named attribute keeps only ~20-35% of its original weight share,
-// where fanning out to its whole group keeps ~70-100% (e.g. a striker's finishing: 0.38
-// of the old table alone, 0.13 as the one new attribute, 0.28 as the shooting group it
-// belongs to). Training's focus presets still speak the old eight names (a later phase
-// moves them onto real per-attribute granularity) — this is what keeps a training gain
-// worth roughly what it always was in the meantime, the same fan-out physical already
-// needed for the same reason.
-const LEGACY_ATTRIBUTE_GROUP = {
-  pace: 'speed', finishing: 'shooting', passing: 'creation', tackling: 'defending',
-  technique: 'ballControl', handling: 'gkStopping', reflexes: 'gkStopping',
-};
-
-export function applyLegacyAttributeDelta(attributes, key, delta) {
-  if (key === 'physical') {
-    for (const sub of PHYSICAL_CONSTITUENTS) attributes[sub] = clamp((attributes[sub] ?? 0) + delta, ATTR_MIN, ATTR_MAX);
-    return;
-  }
-  const group = LEGACY_ATTRIBUTE_GROUP[key];
-  if (group) {
-    for (const sub of GROUPS[group]) attributes[sub] = clamp((attributes[sub] ?? 0) + delta, ATTR_MIN, ATTR_MAX);
-    return;
-  }
-  attributes[key] = clamp((attributes[key] ?? 0) + delta, ATTR_MIN, ATTR_MAX);
 }
 
 let nextPlayerId = 1;

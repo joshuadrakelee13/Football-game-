@@ -1,40 +1,70 @@
 // Training: where the player's squad actually improves week to week.
 
 import { clamp } from '../core/rng.js';
-import { refreshDerived, applyLegacyAttributeDelta } from '../model/player.js';
-import { ATTR_SCALE } from '../data/positions.js';
+import { refreshDerived } from '../model/player.js';
+import { ATTR_SCALE, ATTR_MIN, ATTR_MAX, GROUPS } from '../data/attributes.js';
 
-// Each focus pushes a different set of attributes. Nothing is free: a heavy attacking
-// focus quietly lets the defensive work slide.
+// Compiles a focus's per-group (and, for its one or two signature stats, per-attribute)
+// rates into a flat {attr: rate} gains table — the same idea data/attributes.js's
+// buildWeights uses for position tables, except a gains table needn't sum to anything,
+// so every group member gets the FULL rate rather than an even split: an "attack" focus
+// training shooting at rate 1.77 means finishing, longShots, penalties and freeKicks
+// each individually gain at 1.77 a week, not 1.77 shared four ways. A key entry adds a
+// further boost on top of its group, for the handful of attributes that are a focus's
+// real signature rather than just part of a broader emphasis.
+function buildGains(profile) {
+  const gains = {};
+  for (const [groupName, rate] of Object.entries(profile.groups || {})) {
+    for (const attr of GROUPS[groupName]) gains[attr] = (gains[attr] || 0) + rate;
+  }
+  for (const [attr, rate] of Object.entries(profile.key || {})) gains[attr] = (gains[attr] || 0) + rate;
+  return gains;
+}
+
+// Each focus's group rates are calibrated, not guessed: chosen so the squad-weighted
+// average Overall-equivalent contribution per week (rate * a position's own share of
+// that attribute, summed, averaged across a real 24-player squad's position mix) lands
+// within a rounding error of what the original 8-attribute presets gave before the
+// attribute foundation existed — verified directly in the E1-P6 commit. Nothing here
+// is free: a heavy attacking focus quietly lets the defensive work slide, same as ever.
 export const TRAINING_FOCUS = {
   balanced: {
     id: 'balanced', name: 'Balanced', blurb: 'Steady, even development across the squad.',
-    gains: { pace: 0.5, finishing: 0.5, passing: 0.5, tackling: 0.5, physical: 0.5, technique: 0.5, handling: 0.5, reflexes: 0.5 },
+    gains: buildGains({ groups: Object.fromEntries(Object.keys(GROUPS).map((g) => [g, 0.5])) }),
     fitnessBonus: 0, moraleShift: 0,
   },
   attack: {
     id: 'attack', name: 'Attack', blurb: 'Finishing and movement. Defensive work suffers.',
-    gains: { finishing: 1.5, technique: 0.9, pace: 0.6, passing: 0.3, tackling: -0.35, physical: 0 },
+    gains: buildGains({
+      groups: { shooting: 1.77, ballControl: 1.18, speed: 1.03, creation: 0.59, defending: -0.52 },
+      key: { finishing: 0.3 },
+    }),
     fitnessBonus: 0, moraleShift: 0.4,
   },
   defence: {
     id: 'defence', name: 'Defence', blurb: 'Organisation and tackling. Blunts the attack.',
-    gains: { tackling: 1.5, physical: 0.9, handling: 0.9, reflexes: 0.9, finishing: -0.35, technique: 0 },
+    gains: buildGains({
+      groups: { defending: 1.66, aerial: 0.97, power: 1.11, gkStopping: 1.25, gkSweeping: 0.42, shooting: -0.48, ballControl: -0.21 },
+      key: { tackling: 0.3 },
+    }),
     fitnessBonus: 0, moraleShift: -0.1,
   },
   fitness: {
     id: 'fitness', name: 'Fitness', blurb: 'Hard running. Players recover faster all season.',
-    gains: { physical: 1.3, pace: 0.9, tackling: 0.2, technique: 0 },
+    gains: buildGains({ groups: { power: 1.93, speed: 1.4, workRate: 0.53 }, key: { stamina: 0.3 } }),
     fitnessBonus: 4.5, moraleShift: -0.5,
   },
   passing: {
     id: 'passing', name: 'Passing', blurb: 'Keep the ball. Builds technical quality.',
-    gains: { passing: 1.5, technique: 1.1, pace: 0, physical: -0.2 },
+    gains: buildGains({
+      groups: { creation: 2.15, ballControl: 1.43, power: -0.45 },
+      key: { passing: 0.3, vision: 0.2 },
+    }),
     fitnessBonus: 0, moraleShift: 0.2,
   },
   youth: {
     id: 'youth', name: 'Youth Development', blurb: 'Under-23s develop much faster. Seniors stagnate.',
-    gains: { pace: 0.4, finishing: 0.4, passing: 0.4, tackling: 0.4, physical: 0.4, technique: 0.4 },
+    gains: buildGains({ groups: Object.fromEntries(Object.keys(GROUPS).map((g) => [g, 0.37])) }),
     youngMultiplier: 3.2, seniorMultiplier: 0.25,
     fitnessBonus: 0, moraleShift: 0,
   },
@@ -98,14 +128,13 @@ export function applyTraining(club, weeks, rng) {
 
     let changed = false;
     for (const [attr, rate] of Object.entries(focus.gains)) {
-      if (player.attributes[attr] === undefined) continue;
-      // Gain rates are authored in Overall points; attributes are 1-20. Routed through
-      // applyLegacyAttributeDelta rather than a direct write — "physical" has no
-      // single underlying attribute any more (see player.js), so writing it directly
-      // would be silently discarded on the very next refreshDerived.
+      // Gain rates are authored in Overall points; attributes are 1-20, hence /ATTR_SCALE.
+      // "physical" is never a key here (see buildGains) — it's purely derived from
+      // strength/stamina/balance/naturalFitness by refreshDerived below, so a direct
+      // write to any real attribute name is all that's needed, no adapter required.
       const delta = (rate * multiplier * scale * rng.float(0.6, 1.4)) / ATTR_SCALE;
       if (Math.abs(delta) < 0.001 / ATTR_SCALE) continue;
-      applyLegacyAttributeDelta(player.attributes, attr, delta);
+      player.attributes[attr] = clamp((player.attributes[attr] ?? 0) + delta, ATTR_MIN, ATTR_MAX);
       changed = true;
     }
     if (changed) {

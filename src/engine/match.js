@@ -344,11 +344,13 @@ function resolveChance(minute, side, opponent, rng, push, minuteLabel) {
   const attackQuality = side.ratings.attack * side.form;
   const keeperQuality = opponent.ratings.gk * opponent.form;
 
-  // A penalty is a chance resolved differently.
+  // A penalty is a chance resolved differently. Penalty-taking is its own attribute —
+  // a poacher who never takes one and a dead-ball specialist who always does should not
+  // be interchangeable here, so this reads `penalties`, not `finishing`.
   if (rng.chance(TUNING.penaltyChance)) {
-    const taker = pickWeighted(rng, side.onPitch, SCORER_WEIGHT, 'finishing', null, side);
+    const taker = pickWeighted(rng, side.onPitch, SCORER_WEIGHT, 'penalties', null, side);
     if (taker) {
-      const converted = rng.chance(TUNING.penaltyConversion + (taker.attributes.finishing * ATTR_SCALE - 60) * 0.0022);
+      const converted = rng.chance(TUNING.penaltyConversion + (taker.attributes.penalties * ATTR_SCALE - 60) * 0.0022);
       if (converted) {
         side.onTarget++;
         recordGoal(minute, side, taker, null, rng, push, label, 'penalty');
@@ -565,13 +567,15 @@ export function makeSub(minute, side, rng, push, outEntry, forced) {
 function shootout(home, away, rng, push) {
   push(120, 'shootout_start', {});
   // A side reduced by red cards can end the match with very few players on the pitch,
-  // so fall back to the wider squad rather than indexing into an empty list.
+  // so fall back to the wider squad rather than indexing into an empty list. Ordered by
+  // `penalties`, not `finishing` — the same real attribute a penalty in open play now
+  // uses, since it is the one that actually measures this specific skill.
   const takers = (side) => {
     const onPitch = [...side.onPitch]
-      .sort((a, b) => b.player.attributes.finishing - a.player.attributes.finishing)
+      .sort((a, b) => b.player.attributes.penalties - a.player.attributes.penalties)
       .map((e) => e.player);
     if (onPitch.length) return onPitch;
-    const squad = [...(side.club.squad || [])].sort((a, b) => b.attributes.finishing - a.attributes.finishing);
+    const squad = [...(side.club.squad || [])].sort((a, b) => b.attributes.penalties - a.attributes.penalties);
     return squad.length ? squad : null;
   };
   const homeTakers = takers(home);
@@ -580,7 +584,7 @@ function shootout(home, away, rng, push) {
 
   const kick = (side, taker, opponent) => {
     if (!taker) return rng.chance(0.5);
-    const p = clamp(0.7 + (taker.attributes.finishing * ATTR_SCALE - opponent.ratings.gk) * 0.004, 0.5, 0.92);
+    const p = clamp(0.7 + (taker.attributes.penalties * ATTR_SCALE - opponent.ratings.gk) * 0.004, 0.5, 0.92);
     return rng.chance(p);
   };
   const pickTaker = (list, i) => (list && list.length ? list[i % list.length] : null);

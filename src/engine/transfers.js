@@ -203,9 +203,16 @@ export function sellPlayer(world, club, playerId, fee, buyerId = null) {
 // ability has outgrown their deal wants a rise.
 export function renewalDemand(player) {
   const marketWage = wageOf(player);
-  const ambition = 1 + Math.max(0, player.overall - 55) * 0.012;
+  const qualityPremium = 1 + Math.max(0, player.overall - 55) * 0.012;
   const moraleFactor = player.morale < 45 ? 1.25 : player.morale > 78 ? 0.95 : 1.08;
-  const demand = Math.round((marketWage * ambition * moraleFactor) / 50) * 50;
+  // ambition/loyalty (hidden) push the same demand up or down a genuinely ambitious
+  // player wants paying like the bigger club he believes he deserves, a loyal one will
+  // take less to stay — both centred on the ~11 average hidden roll, so a typical
+  // player's demand is exactly what it always was.
+  const ambition = player.hidden?.ambition ?? 11;
+  const loyalty = player.hidden?.loyalty ?? 11;
+  const characterFactor = clamp(1 + (ambition - 11) * 0.01 - (loyalty - 11) * 0.008, 0.85, 1.25);
+  const demand = Math.round((marketWage * qualityPremium * moraleFactor * characterFactor) / 50) * 50;
   return { wage: Math.max(marketWage, demand), years: player.age >= 31 ? 1 : player.age >= 28 ? 2 : 3 };
 }
 

@@ -435,9 +435,16 @@ function bookPlayer(minute, side, rng, push, minuteLabel) {
   }
 }
 
-function injurePlayer(minute, side, rng, push, minuteLabel) {
+// Exported for tools/hidden-attribute-test.mjs, which verifies injuryProneness
+// actually shifts who gets hurt — not called from outside this file otherwise.
+export function injurePlayer(minute, side, rng, push, minuteLabel) {
   const label = minuteLabel || String(minute);
-  const entry = rng.pick(side.onPitch);
+  // injuryProneness (hidden) weights who this injury actually lands on, rather than a
+  // uniform pick across the pitch — a brittle player is a real, felt risk to select,
+  // not just flavour text on his profile. Floored well above zero rather than at zero:
+  // even the least fragile player on the pitch can still go over on an ankle.
+  const weights = side.onPitch.map((e) => Math.max(0.15, (e.player.hidden?.injuryProneness ?? 11) / 11));
+  const entry = rng.weighted(side.onPitch, weights);
   if (!entry) return;
   const weeks = rng.weighted([1, 2, 3, 5, 8, 14], [34, 26, 18, 12, 7, 3]);
   side.injuries.push({ playerId: entry.player.id, minute, weeks });

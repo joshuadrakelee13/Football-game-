@@ -287,9 +287,26 @@ function applyMatchOutcome(world, home, away, result, competition, rng) {
   }
 }
 
+// consistency (hidden) dampens or exaggerates how much a single match swings a
+// player's form — a streaky player, not a steady one. importantMatches works the same
+// way specifically for a cup or European result, which is exactly the situation that
+// attribute describes: a high roll is a player who rises to the occasion and performs
+// to his level reliably (low volatility, same shape as consistency), a low one is
+// extra-volatile away from routine league football, not simply "worse" outright. Both
+// are centred on the ~11 average hidden roll, so a typical player's form moves exactly
+// as it always did.
+export function formVolatility(player, isImportant) {
+  const consistency = player.hidden?.consistency ?? 11;
+  const steadiness = clamp(1.5 - consistency / 20, 0.6, 1.4);
+  if (!isImportant) return steadiness;
+  const bigMatch = player.hidden?.importantMatches ?? 11;
+  return steadiness * clamp(1.5 - bigMatch / 20, 0.7, 1.3);
+}
+
 function applySide(world, club, opponent, result, side, goalsFor, goalsAgainst, isHome, competition, rng) {
   if (!club.squad) return;
   const byId = new Map(club.squad.map((p) => [p.id, p]));
+  const isImportant = competition !== 'LEAGUE';
 
   const won = goalsFor > goalsAgainst;
   const drew = goalsFor === goalsAgainst;
@@ -321,14 +338,14 @@ function applySide(world, club, opponent, result, side, goalsFor, goalsAgainst, 
     const player = byId.get(s.playerId);
     if (!player) continue;
     player.goals++; player.seasonGoals++; player.careerGoals++;
-    player.form = clamp(player.form + 1.6, -6, 6);
+    player.form = clamp(player.form + 1.6 * formVolatility(player, isImportant), -6, 6);
     player.morale = clamp(player.morale + 5, 0, 100);
   }
   for (const a of side.assists) {
     const player = byId.get(a.playerId);
     if (!player) continue;
     player.assists++; player.seasonAssists++;
-    player.form = clamp(player.form + 0.9, -6, 6);
+    player.form = clamp(player.form + 0.9 * formVolatility(player, isImportant), -6, 6);
     player.morale = clamp(player.morale + 3, 0, 100);
   }
   for (const b of side.bookings) {
@@ -361,7 +378,7 @@ function applySide(world, club, opponent, result, side, goalsFor, goalsAgainst, 
   const formShift = won ? 0.8 : drew ? 0 : -0.7;
   for (const p of club.squad) {
     p.morale = clamp(p.morale + moraleShift * (0.6 + rng.next() * 0.8), 5, 100);
-    p.form = clamp(p.form + formShift * 0.5, -6, 6);
+    p.form = clamp(p.form + formShift * 0.5 * formVolatility(p, isImportant), -6, 6);
   }
 
   club.lineup = pickBestXI(club);

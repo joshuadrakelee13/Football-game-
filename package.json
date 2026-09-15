@@ -6,13 +6,14 @@
   "private": true,
   "scripts": {
     "start": "node tools/serve.mjs",
-    "test": "node tools/sim-test.mjs && node tools/season-test.mjs && node tools/tactics-test.mjs && node tools/balance-test.mjs && node tools/negotiation-test.mjs && node tools/attribute-test.mjs",
+    "test": "node tools/sim-test.mjs && node tools/season-test.mjs && node tools/tactics-test.mjs && node tools/balance-test.mjs && node tools/negotiation-test.mjs && node tools/attribute-test.mjs && node tools/hidden-attribute-test.mjs",
     "test:sim": "node tools/sim-test.mjs",
     "test:season": "node tools/season-test.mjs",
     "test:tactics": "node tools/tactics-test.mjs",
     "test:balance": "node tools/balance-test.mjs",
     "test:negotiation": "node tools/negotiation-test.mjs",
-    "test:attributes": "node tools/attribute-test.mjs"
+    "test:attributes": "node tools/attribute-test.mjs",
+    "test:hidden": "node tools/hidden-attribute-test.mjs"
   },
   "engines": { "node": ">=18" }
 }

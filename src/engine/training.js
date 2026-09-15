@@ -126,6 +126,20 @@ export function applyTraining(club, weeks, rng) {
     if (headroom <= 0 && player.age >= 29) scale *= 0.15;
     else if (headroom <= 0) scale *= 0.3;
 
+    // Professionalism (hidden) and determination (visible) are FM's own "some players
+    // just work harder" pair — a model professional with real desire converts more of
+    // a session into progress, a lazy or unmotivated one less. Each is measured as a
+    // deviation from its own real population average, not a shared assumed one:
+    // professionalism is a hidden attribute and averages ~11 like the rest of that set,
+    // but determination is a visible mental attribute most positions barely weight, and
+    // measures ~6 across a real generated squad — treating it as if it also centred on
+    // 11 quietly gave the whole league a systematic training slowdown (caught by
+    // tools/balance-test.mjs's climb-speed harness dropping from its post-P6 baseline).
+    const profDeviation = ((player.hidden?.professionalism ?? 11) - 11) / 10;
+    const detDeviation = ((player.attributes.determination ?? 6) - 6) / 10;
+    const workEthic = clamp((profDeviation + detDeviation) / 2, -1, 1);
+    scale *= clamp(1 + workEthic * 0.4, 0.6, 1.4);
+
     let changed = false;
     for (const [attr, rate] of Object.entries(focus.gains)) {
       // Gain rates are authored in Overall points; attributes are 1-20, hence /ATTR_SCALE.

@@ -54,6 +54,20 @@ export function addRiseClause(world, { playerId, debtorClubId, creditorClubId, a
   });
 }
 
+// A bonus clause, unlike a rise clause, pays out every time its event fires (not once
+// at a milestone) up to a running cap — an appearance fee or a goal bonus, the two
+// eventName values fireMatchEvent is actually called with today. Keyed by eventName so
+// a future event name (say a minutes-played threshold, or a clean-sheet bonus once the
+// match engine can report one) is a new caller of fireMatchEvent, never a change here.
+export function addBonusClause(world, { playerId, debtorClubId, creditorClubId, eventName, amountPerTrigger, cap }) {
+  if (amountPerTrigger <= 0 || cap <= 0) return;
+  world.bonusClauses = world.bonusClauses || [];
+  world.bonusClauses.push({
+    id: nextObligationId(world), playerId, debtorClubId, creditorClubId, eventName,
+    amountPerTrigger, cap, paidSoFar: 0, createdSeason: world.seasonNumber,
+  });
+}
+
 // ---------------------------------------------------------------------------
 // Sell-on clauses — fire once, on the very next fee-bearing sale, then discharge.
 // Not a perpetual tax on every future sale: this is the common real-world shape of a
@@ -175,6 +189,40 @@ function fireRiseClause(world, clause, player) {
   }
 }
 
+// The generalised bonus interface: called by name (onAppearance, onGoal, and whatever
+// epic 8's real match-event log eventually adds) rather than any caller reaching in to
+// ask "does this player have a bonus clause" — the caller only ever reports that
+// something happened to a player at a club, and every matching clause pays out or
+// doesn't on its own terms. Keeps every future emitter (and epic 8's own rewrite) able
+// to fire these two names without importing anything about how a bonus clause works.
+export function fireMatchEvent(world, eventName, { playerId, clubId }) {
+  const clauses = (world.bonusClauses || []).filter(
+    (c) => c.playerId === playerId && c.debtorClubId === clubId && c.eventName === eventName,
+  );
+  for (const clause of clauses) {
+    const remaining = clause.cap - clause.paidSoFar;
+    if (remaining <= 0) continue;
+    const amount = Math.min(clause.amountPerTrigger, remaining);
+    clause.paidSoFar += amount;
+
+    const debtor = world.clubs[clause.debtorClubId];
+    const creditor = world.clubs[clause.creditorClubId];
+    if (!debtor || !creditor) continue;
+    const player = findPlayer(world, clause.debtorClubId, playerId);
+    const name = player?.name || 'a player';
+    spendTransferFee(debtor, amount, world.seasonNumber, `Bonus clause (${eventName}) for ${name}`);
+    receiveTransferFee(creditor, amount, world.seasonNumber, `Bonus clause (${eventName}) from ${debtor.short}`);
+
+    if (clause.paidSoFar >= clause.cap) {
+      world.bonusClauses = (world.bonusClauses || []).filter((c) => c.id !== clause.id);
+    }
+  }
+  // Deliberately no inbox entry here, unlike payInstallment/fireRiseClause: those fire
+  // at most a handful of times ever, this can fire every single appearance or goal all
+  // season — an entry per trigger would drown every other kind of inbox news out. The
+  // ledger (Finances) is where this shows up instead.
+}
+
 // Promotion rise clauses are keyed purely to the debtor club being promoted — not to
 // the player still being on their books, matching how a real "if promoted, pay X"
 // clause usually reads. Called once at season-end promotion resolution.
@@ -197,4 +245,5 @@ export function dischargePlayerObligations(world, playerId) {
   world.sellOnClauses = (world.sellOnClauses || []).filter((c) => c.playerId !== playerId);
   world.installmentSchedules = (world.installmentSchedules || []).filter((s) => s.playerId !== playerId);
   world.riseClauses = (world.riseClauses || []).filter((c) => c.playerId !== playerId);
+  world.bonusClauses = (world.bonusClauses || []).filter((c) => c.playerId !== playerId);
 }

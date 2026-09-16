@@ -9,7 +9,7 @@ import { canSign, askingPrice, divisionStrength, signPlayer, sellPlayer } from '
 import { transferBudget, canAffordWage } from './finance.js';
 import { ratingForPrestige, squadRating } from '../model/club.js';
 import { wageOf } from '../model/player.js';
-import { addSellOnClause, addInstallmentSchedule, addRiseClause } from './obligations.js';
+import { addSellOnClause, addInstallmentSchedule, addRiseClause, addBonusClause } from './obligations.js';
 
 export const MAX_FEE_ROUNDS = 4;
 export const MAX_PERSONAL_ROUNDS = 4;
@@ -41,6 +41,8 @@ export function evaluateFeeOffer(world, aiClub, aiRole, player, offer, round, rn
   if (offer.sellOnPercent) ratio += offer.sellOnPercent * 0.006;
   if (offer.installmentPreset) ratio -= 0.03;
   if (offer.riseClause) ratio += 0.015;
+  if (offer.appearanceBonus) ratio += 0.012;
+  if (offer.goalBonus) ratio += 0.012;
 
   return aiRole === 'seller'
     ? evaluateAsSeller(aiClub, player, ratio, offer, round, rng)
@@ -216,6 +218,18 @@ function attachAddOns(world, session, playerId, buyerClubId, sellerClubId, defer
     addRiseClause(world, {
       playerId, debtorClubId: buyerClubId, creditorClubId: sellerClubId,
       amount: yourOffer.riseClause.amount, trigger: yourOffer.riseClause.trigger,
+    });
+  }
+  if (yourOffer.appearanceBonus) {
+    addBonusClause(world, {
+      playerId, debtorClubId: buyerClubId, creditorClubId: sellerClubId, eventName: 'onAppearance',
+      amountPerTrigger: yourOffer.appearanceBonus.amountPerTrigger, cap: yourOffer.appearanceBonus.cap,
+    });
+  }
+  if (yourOffer.goalBonus) {
+    addBonusClause(world, {
+      playerId, debtorClubId: buyerClubId, creditorClubId: sellerClubId, eventName: 'onGoal',
+      amountPerTrigger: yourOffer.goalBonus.amountPerTrigger, cap: yourOffer.goalBonus.cap,
     });
   }
 }

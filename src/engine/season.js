@@ -19,7 +19,7 @@ import {
   recordLedger, setTransferBudget, setWageBudget, refreshSponsor,
 } from './finance.js';
 import { pushInboxEntry } from './inbox.js';
-import { recordAppearanceForObligations, checkPromotionRiseClauses } from './obligations.js';
+import { recordAppearanceForObligations, checkPromotionRiseClauses, fireMatchEvent } from './obligations.js';
 import { recordLoanAppearance } from './loans.js';
 
 const nameOf = (world) => (id) => anyClub(world, id)?.name || id;
@@ -332,6 +332,7 @@ function applySide(world, club, opponent, result, side, goalsFor, goalsAgainst, 
     player.careerApps++;
     recordAppearanceForObligations(world, club, player);
     recordLoanAppearance(world, club, player);
+    fireMatchEvent(world, 'onAppearance', { playerId: player.id, clubId: club.id });
     const minutes = clamp(entry.minutes ?? 90, 1, 120);
     player.fitness = clamp(player.fitness - (6 + (minutes / 90) * 12) * (1 + rng.next() * 0.3), 25, 100);
   }
@@ -342,6 +343,7 @@ function applySide(world, club, opponent, result, side, goalsFor, goalsAgainst, 
     player.goals++; player.seasonGoals++; player.careerGoals++;
     player.form = clamp(player.form + 1.6 * formVolatility(player, isImportant), -6, 6);
     player.morale = clamp(player.morale + 5, 0, 100);
+    fireMatchEvent(world, 'onGoal', { playerId: player.id, clubId: club.id });
   }
   for (const a of side.assists) {
     const player = byId.get(a.playerId);

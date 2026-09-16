@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "start": "node tools/serve.mjs",
-    "test": "node tools/sim-test.mjs && node tools/season-test.mjs && node tools/tactics-test.mjs && node tools/balance-test.mjs && node tools/negotiation-test.mjs && node tools/attribute-test.mjs && node tools/hidden-attribute-test.mjs && node tools/release-clause-test.mjs && node tools/loan-test.mjs",
+    "test": "node tools/sim-test.mjs && node tools/season-test.mjs && node tools/tactics-test.mjs && node tools/balance-test.mjs && node tools/negotiation-test.mjs && node tools/attribute-test.mjs && node tools/hidden-attribute-test.mjs && node tools/release-clause-test.mjs && node tools/loan-test.mjs && node tools/bonus-test.mjs",
     "test:sim": "node tools/sim-test.mjs",
     "test:season": "node tools/season-test.mjs",
     "test:tactics": "node tools/tactics-test.mjs",
@@ -15,7 +15,8 @@
     "test:attributes": "node tools/attribute-test.mjs",
     "test:hidden": "node tools/hidden-attribute-test.mjs",
     "test:release-clause": "node tools/release-clause-test.mjs",
-    "test:loans": "node tools/loan-test.mjs"
+    "test:loans": "node tools/loan-test.mjs",
+    "test:bonuses": "node tools/bonus-test.mjs"
   },
   "engines": { "node": ">=18" }
 }

@@ -37,6 +37,23 @@ const RELEASE_CLAUSE_OPTIONS = [
   { key: 'mid', label: '2× value', multiplier: 2 },
   { key: 'high', label: '3× value', multiplier: 3 },
 ];
+// Fee-stage add-ons, same shape as a rise clause: a per-trigger payout the buyer owes
+// the seller, fired against the generic onAppearance/onGoal match-event interface
+// (obligations.js) rather than anything reaching into match internals — so whatever
+// later replaces today's minute-by-minute engine only has to keep emitting those two
+// events, not touch this code at all. Capped as a share of the fee, not a flat number,
+// for the same reason release clauses scale off value: the size that's meaningful for
+// a squad player is trivial for a star, and vice versa.
+const APPEARANCE_BONUS_OPTIONS = [
+  { key: 'none', label: 'None', build: null },
+  { key: 'low', label: '0.3% of fee per appearance, capped at 15% of fee', build: (fee) => ({ tag: 'low', amountPerTrigger: round1000(fee * 0.003), cap: round1000(fee * 0.15) }) },
+  { key: 'high', label: '0.6% of fee per appearance, capped at 25% of fee', build: (fee) => ({ tag: 'high', amountPerTrigger: round1000(fee * 0.006), cap: round1000(fee * 0.25) }) },
+];
+const GOAL_BONUS_OPTIONS = [
+  { key: 'none', label: 'None', build: null },
+  { key: 'low', label: '1% of fee per goal, capped at 20% of fee', build: (fee) => ({ tag: 'low', amountPerTrigger: round1000(fee * 0.01), cap: round1000(fee * 0.20) }) },
+  { key: 'high', label: '2% of fee per goal, capped at 30% of fee', build: (fee) => ({ tag: 'high', amountPerTrigger: round1000(fee * 0.02), cap: round1000(fee * 0.30) }) },
+];
 
 // ---------------------------------------------------------------------------
 // Entry points
@@ -60,7 +77,7 @@ export function openBuyNegotiation(world, buyerClub, player) {
     playerSnapshot: player,
     counterpartyClubId: sellerClubId,
     round: 1,
-    yourOffer: { fee: askingFee, sellOnPercent: 0, installmentPreset: null, riseClause: null },
+    yourOffer: { fee: askingFee, sellOnPercent: 0, installmentPreset: null, riseClause: null, appearanceBonus: null, goalBonus: null },
     agreedFee: hasNegotiableFee ? null : askingFee,
     clubResponse: null,
     personalOffer: null,
@@ -85,7 +102,7 @@ export function openReleaseClauseNegotiation(world, buyerClub, player) {
     playerSnapshot: player,
     counterpartyClubId: player.fromClub || null,
     round: 1,
-    yourOffer: { fee, sellOnPercent: 0, installmentPreset: null, riseClause: null },
+    yourOffer: { fee, sellOnPercent: 0, installmentPreset: null, riseClause: null, appearanceBonus: null, goalBonus: null },
     agreedFee: fee,
     clubResponse: null,
     personalOffer: null,
@@ -105,7 +122,7 @@ export function openSellNegotiation(world, sellerClub, bid) {
     playerSnapshot: player,
     counterpartyClubId: bid.buyerId,
     round: 1,
-    yourOffer: { fee: bid.offer, sellOnPercent: 0, installmentPreset: null, riseClause: null },
+    yourOffer: { fee: bid.offer, sellOnPercent: 0, installmentPreset: null, riseClause: null, appearanceBonus: null, goalBonus: null },
     agreedFee: null,
     clubResponse: null,
     personalOffer: null,
@@ -166,6 +183,14 @@ function renderOfferBuilder(world, session) {
         addOnRow('Rise clause', RISE_OPTIONS.map((opt) => ({
           key: opt.key, label: opt.label, active: sameRise(offer.riseClause, opt.key),
           onclick: () => { offer.riseClause = opt.build ? opt.build(offer.fee) : null; renderOfferBuilder(world, session); },
+        }))),
+        addOnRow('Appearance bonus', APPEARANCE_BONUS_OPTIONS.map((opt) => ({
+          key: opt.key, label: opt.label, active: sameBonusOption(offer.appearanceBonus, opt.key),
+          onclick: () => { offer.appearanceBonus = opt.build ? opt.build(offer.fee) : null; renderOfferBuilder(world, session); },
+        }))),
+        addOnRow('Goal bonus', GOAL_BONUS_OPTIONS.map((opt) => ({
+          key: opt.key, label: opt.label, active: sameBonusOption(offer.goalBonus, opt.key),
+          onclick: () => { offer.goalBonus = opt.build ? opt.build(offer.fee) : null; renderOfferBuilder(world, session); },
         }))),
       ),
     ),
@@ -412,6 +437,8 @@ function addOnSummary(offer, counterparty) {
       ? 'A rise clause pays extra on promotion.'
       : `A rise clause pays extra after ${offer.riseClause.trigger.threshold} appearances.`);
   }
+  if (offer?.appearanceBonus) parts.push(`${money(offer.appearanceBonus.amountPerTrigger)} per appearance, up to ${money(offer.appearanceBonus.cap)}.`);
+  if (offer?.goalBonus) parts.push(`${money(offer.goalBonus.amountPerTrigger)} per goal, up to ${money(offer.goalBonus.cap)}.`);
   if (!parts.length) return null;
   return h('p', { style: { color: 'var(--text-3)', fontSize: '12.5px' } }, parts.join(' '));
 }
@@ -433,4 +460,9 @@ function samePreset(a, b) {
 function sameRise(current, key) {
   if (!current) return key === 'none';
   return current.trigger.type === (key === 'promo' ? 'promotion' : 'appearances');
+}
+
+function sameBonusOption(current, key) {
+  if (!current) return key === 'none';
+  return current.tag === key;
 }

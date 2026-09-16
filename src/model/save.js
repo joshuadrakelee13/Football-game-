@@ -110,6 +110,7 @@ export function deserialise(json) {
   world.sellOnClauses = world.sellOnClauses || [];
   world.installmentSchedules = world.installmentSchedules || [];
   world.riseClauses = world.riseClauses || [];
+  world.bonusClauses = world.bonusClauses || [];
   world.shortlist = world.shortlist || [];
   world.loans = world.loans || [];
   return { world, savedAt: data.savedAt };

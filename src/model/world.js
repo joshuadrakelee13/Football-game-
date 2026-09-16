@@ -45,6 +45,7 @@ export function buildWorld({ seed = Date.now(), clubName = 'Riverside FC', manag
     sellOnClauses: [],
     installmentSchedules: [],
     riseClauses: [],
+    bonusClauses: [],
     obligationSeq: 0,
     shortlist: [],
     loans: [],

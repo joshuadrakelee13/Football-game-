@@ -111,6 +111,7 @@ export function deserialise(json) {
   world.installmentSchedules = world.installmentSchedules || [];
   world.riseClauses = world.riseClauses || [];
   world.shortlist = world.shortlist || [];
+  world.loans = world.loans || [];
   return { world, savedAt: data.savedAt };
 }
 

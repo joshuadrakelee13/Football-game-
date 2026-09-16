@@ -11,7 +11,8 @@ import { DIAL_KEYS, DIAL_LABELS, dialLevelLabel } from '../data/tactics.js';
 import { persist, render, openContext } from '../main.js';
 import { openRoleDutyPopover } from './role-duty.js';
 import { openContextMenu } from './context-menu.js';
-import { renewPlayer, sellSquadPlayer } from './player-actions.js';
+import { renewPlayer, sellSquadPlayer, loanPlayerOut, recallLoanedPlayer } from './player-actions.js';
+import { canRecall } from '../engine/loans.js';
 import { toast } from './toast.js';
 import { registrationStatus, SQUAD_LIST_SIZE, HOMEGROWN_MINIMUM } from '../engine/registration.js';
 
@@ -45,8 +46,41 @@ export function renderSquad(world) {
         pitchPanel(world, you),
         tacticsPanel(you),
         linesPanel(you),
+        loanedOutPanel(world, you),
       ),
     ),
+  );
+}
+
+// Loaned-out players have physically left you.squad for their loan club's — this is
+// the one place they're still visible from your own Squad screen, and the only place
+// you can pull one back without first browsing to wherever he currently plays.
+function loanedOutPanel(world, you) {
+  const loans = (world.loans || []).filter((l) => l.parentClubId === you.id);
+  if (!loans.length) return null;
+  return panel('On loan',
+    h('div', { class: 'grid', style: { gap: 'var(--space-2)' } }, ...loans.map((loan) => {
+      const loanClub = world.clubs[loan.loanClubId];
+      const player = loanClub?.squad.find((p) => p.id === loan.playerId);
+      if (!player) return null;
+      const recallCheck = canRecall(world, loan);
+      return h('div', {
+        style: {
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '8px 10px', border: '1px solid var(--line)', borderRadius: 'var(--radius)',
+        },
+      },
+        h('div', null,
+          h('div', { class: 'strong', style: { fontSize: '13px' } }, player.name),
+          h('div', { style: { fontSize: '11.5px', color: 'var(--text-3)' } },
+            `at ${loanClub.short} · they pay ${loan.wageSplitPercent}%`),
+        ),
+        h('button', {
+          class: 'btn sm ghost', disabled: !recallCheck.ok, title: recallCheck.ok ? '' : recallCheck.reason,
+          onclick: () => recallLoanedPlayer(world, loan.id),
+        }, 'Recall'),
+      );
+    })),
   );
 }
 
@@ -226,6 +260,7 @@ function squadTable(world, you) {
               p.name,
               !isAvailable(p) ? h('span', { class: 'tag danger', style: { marginLeft: '6px' } }, `${p.injuredFor}w`) : null,
               p.academyGraduate ? h('span', { class: 'tag muted', style: { marginLeft: '6px' } }, 'Academy') : null,
+              p.onLoanFrom ? h('span', { class: 'tag gold', style: { marginLeft: '6px' } }, `On loan · ${world.clubs[p.onLoanFrom]?.short || '?'}`) : null,
             ),
             h('td', null, p.position),
             h('td', { class: 'num' }, p.age),
@@ -251,12 +286,19 @@ function squadTable(world, you) {
 }
 
 function squadRowMenu(world, you, player) {
-  return [
+  const items = [
     { label: 'View profile', onClick: () => openContext('player', { playerId: player.id, source: { kind: 'squad', clubId: you.id } }) },
     { divider: true },
+  ];
+  // A loaned-in player isn't yours to renew or sell — his Contract tab covers his loan
+  // terms; here he just isn't offered those two actions.
+  if (player.onLoanFrom) return items;
+  items.push(
     { label: 'Renew contract', onClick: () => renewPlayer(you, player) },
     { label: 'Sell', tone: 'danger', onClick: () => sellSquadPlayer(world, you, player) },
-  ];
+    { label: 'Loan out', onClick: () => loanPlayerOut(world, you, player) },
+  );
+  return items;
 }
 
 function conditionDot(fitness) {

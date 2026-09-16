@@ -336,6 +336,11 @@ export function generatePlayer(rng, { tier = 3, position = 'CM', targetOverall =
     // (world generation, an AI signing/renewal, or a human negotiation) — never
     // here, since raw generation isn't a contract event.
     releaseClause: null,
+    // Set only while this player sits in a loan club's squad — see loans.js, which is
+    // the actual source of truth for full loan terms (world.loans); these two are a
+    // denormalised convenience for weeklyWages and the UI.
+    onLoanFrom: null,
+    loanWagePercent: null,
   };
 
   player.value = valueOf(player);

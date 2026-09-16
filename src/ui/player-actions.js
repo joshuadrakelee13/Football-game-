@@ -14,6 +14,8 @@ import { scoutPlayer } from '../engine/scouting.js';
 import { promoteProspect } from '../engine/youth.js';
 import { receiveTransferFee } from '../engine/finance.js';
 import { openBuyNegotiation, openReleaseClauseNegotiation } from './negotiation-modal.js';
+import { openLoanOutModal, openLoanEnquiryModal } from './loan-modal.js';
+import { recallLoan } from '../engine/loans.js';
 
 export async function renewPlayer(club, player) {
   const demand = renewalDemand(player);
@@ -51,6 +53,21 @@ export function negotiateFor(world, club, player) {
 
 export function triggerReleaseClause(world, club, player) {
   openReleaseClauseNegotiation(world, club, player);
+}
+
+export function loanPlayerOut(world, parentClub, player) {
+  openLoanOutModal(world, parentClub, player);
+}
+
+export function enquireAboutLoan(world, parentClub, player) {
+  openLoanEnquiryModal(world, parentClub, player);
+}
+
+export function recallLoanedPlayer(world, loanId) {
+  const result = recallLoan(world, loanId);
+  if (result.ok) toast('Player recalled', `${result.player.name} returns to the squad.`);
+  else toast('Cannot recall', result.reasons[0], { tone: 'danger' });
+  persist(); render();
 }
 
 export function promoteYouthProspect(world, prospect) {

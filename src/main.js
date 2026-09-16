@@ -11,6 +11,7 @@ import {
 import { generateTransferMarket, generateFreeAgents, generateBids, runAiTransferWindow, processExpiringContracts } from './engine/transfers.js';
 import { windowJustOpened, windowJustClosed } from './engine/transferWindow.js';
 import { registrationStatus } from './engine/registration.js';
+import { checkLoanReturns } from './engine/loans.js';
 import { applyTraining } from './engine/training.js';
 import { maybeFireEvent } from './engine/events.js';
 import { rollProspect, prospectGrade } from './engine/youth.js';
@@ -289,6 +290,10 @@ function applyBetweenMatchday(world, digest) {
   // do in January versus a full squad rebuild.
   if (previous && next) {
     if (windowJustOpened(world.startYear, previous.day, next.day)) {
+      // Half-season loans ("until January") return the moment this window opens —
+      // before the AI burst below, so a returning player is available to be part of
+      // either club's business rather than sitting mid-transition.
+      checkLoanReturns(world);
       runAiTransferWindow(world, game.rng, 1);
       pushInboxEntry(world, {
         type: 'transfer_window', tone: 'neutral', title: 'Transfer window open',
@@ -387,6 +392,11 @@ async function finishSeason() {
   persist();
 
   await showSeasonReview(summary, world);
+
+  // Every loan resolves here at the latest, whatever its own return date — a loaned
+  // player's contract is really with his parent club, and processExpiringContracts
+  // below has no notion of that, so nobody can still be out on loan by the time it runs.
+  checkLoanReturns(world, { atSeasonEnd: true });
 
   const departures = processExpiringContracts(world, game.rng);
   const you = playerClub(world);

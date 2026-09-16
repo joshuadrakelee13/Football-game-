@@ -20,6 +20,7 @@ import {
 } from './finance.js';
 import { pushInboxEntry } from './inbox.js';
 import { recordAppearanceForObligations, checkPromotionRiseClauses } from './obligations.js';
+import { recordLoanAppearance } from './loans.js';
 
 const nameOf = (world) => (id) => anyClub(world, id)?.name || id;
 
@@ -330,6 +331,7 @@ function applySide(world, club, opponent, result, side, goalsFor, goalsAgainst, 
     player.seasonApps++;
     player.careerApps++;
     recordAppearanceForObligations(world, club, player);
+    recordLoanAppearance(world, club, player);
     const minutes = clamp(entry.minutes ?? 90, 1, 120);
     player.fitness = clamp(player.fitness - (6 + (minutes / 90) * 12) * (1 + rng.next() * 0.3), 25, 100);
   }

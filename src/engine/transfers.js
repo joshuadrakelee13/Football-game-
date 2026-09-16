@@ -9,6 +9,7 @@ import { pushInboxEntry } from './inbox.js';
 import { fireSellOnClauses, dischargePlayerObligations } from './obligations.js';
 import { isWindowOpen } from './transferWindow.js';
 import { isRegistrationRequired, registrationStatus } from './registration.js';
+import { dischargePlayerLoan } from './loans.js';
 
 export const MARKET_SIZE = 34;
 export const FREE_AGENT_SIZE = 10;
@@ -284,6 +285,7 @@ export function processExpiringContracts(world, rng) {
       }
       club.squad = club.squad.filter((p) => p.id !== player.id);
       dischargePlayerObligations(world, player.id);
+      dischargePlayerLoan(world, player.id);
       departures.push({ clubId: club.id, player });
     }
     club.lineup = pickBestXI(club);
@@ -379,7 +381,9 @@ export function runAiTransferWindow(world, rng, maxSignings = 4) {
     let signings = 0;
 
     while (budget > 0 && signings < maxSignings && club.squad.length < 27) {
-      const weakest = [...club.squad].sort((a, b) => a.overall - b.overall)[0];
+      // A loaned-in player isn't this club's to sell — he belongs to his parent club,
+      // and replacing him here would silently orphan the active loan record.
+      const weakest = [...club.squad].filter((p) => !p.onLoanFrom).sort((a, b) => a.overall - b.overall)[0];
       if (!weakest) break;
 
       const wanted = clamp(target + rng.int(-3, 5), 28, 92);

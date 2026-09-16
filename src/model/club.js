@@ -173,8 +173,14 @@ export function pickClubIdentity(rng, club, forcedKey = null) {
   club.lineup = pickBestXI(club);
 }
 
+// A loaned-in player only costs the wage share this club agreed to cover; the rest
+// stays a commitment on his actual parent club's books (loanWageCommitment, kept
+// current by loans.js at every loan start/end/recall rather than recomputed here from
+// world.loans — this function only ever sees a single club, not the whole world).
 export function weeklyWages(club) {
-  return club.squad.reduce((sum, p) => sum + p.wage, 0);
+  const squadWages = club.squad.reduce((sum, p) =>
+    sum + (p.onLoanFrom ? Math.round(p.wage * (p.loanWagePercent ?? 100) / 100) : p.wage), 0);
+  return squadWages + (club.loanWageCommitment || 0);
 }
 
 export function squadRating(club) {

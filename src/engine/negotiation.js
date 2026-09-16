@@ -182,6 +182,10 @@ export function finalizeSigning(world, session, rng) {
     // previous club straight into this one. Explicit reset to null unless this
     // negotiation's own personal-terms stage actually offered one.
     result.player.releaseClause = session.personalOffer?.releaseClause || null;
+    // Same reasoning for a squad-status promise and any live transfer request: both
+    // belonged to the relationship with his old club, never the new one.
+    result.player.promisedStatus = session.personalOffer?.promisedStatus || null;
+    result.player.transferListed = false;
 
     attachAddOns(world, session, result.player.id, buyerClub.id, sellerClub?.id, deferredValue);
     return { ...result, fee: agreedFee ?? result.fee };

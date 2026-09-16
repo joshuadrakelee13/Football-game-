@@ -57,6 +57,17 @@ export function generateTransferMarket(world, rng) {
     market.push({ ...player, askingPrice: askingPrice(player, rng, 1.15), fromClub: club.id, listedBy: club.id });
   }
 
+  // A player who has actually handed in a transfer request is guaranteed to be
+  // findable, not just possibly sampled by the surplus pick above — that's the whole
+  // point of a transfer request having a real market consequence.
+  for (const club of Object.values(world.clubs)) {
+    if (club.isPlayerClub) continue;
+    for (const player of club.squad) {
+      if (!player.transferListed || market.some((m) => m.id === player.id)) continue;
+      market.push({ ...player, askingPrice: askingPrice(player, rng, 0.9), fromClub: club.id, listedBy: club.id });
+    }
+  }
+
   return market;
 }
 
@@ -187,10 +198,14 @@ export function sellPlayer(world, club, playerId, fee, buyerId = null) {
 
   const buyer = buyerId ? world.clubs[buyerId] : null;
   if (buyer) {
-    // A release clause belonged to the contract just torn up, not the new one — clear
-    // it here rather than let the shallow copy below silently carry a stale figure
-    // into a club that never agreed to it.
-    buyer.squad.push({ ...player, morale: 75, joinedFrom: club.short, releaseClause: null });
+    // A release clause, a squad-status promise and any transfer request all belonged
+    // to the contract just torn up, not the new one — clear them here rather than let
+    // the shallow copy below silently carry stale state into a club that never agreed
+    // to any of it (and never made the promise he was unhappy about).
+    buyer.squad.push({
+      ...player, morale: 75, joinedFrom: club.short,
+      releaseClause: null, promisedStatus: null, transferListed: false,
+    });
     spendTransferFee(buyer, fee, world.seasonNumber, `Signed ${player.name}`);
     buyer.lineup = pickBestXI(buyer);
   }
@@ -305,15 +320,20 @@ export function generateBids(world, rng) {
   const you = world.clubs[world.playerClubId];
   if (you.squad.length <= 17 || !isWindowOpen(world)) return [];
 
+  // A transfer-listed player is guaranteed a look regardless of the usual "good enough
+  // to be worth chasing" filter below — that filter is about unprompted rival interest,
+  // not about whether anyone will touch a player his own club has made available.
+  const listed = you.squad.filter((p) => p.transferListed);
   const targets = [...you.squad]
-    .filter((p) => p.overall >= squadRating(you) - 1 || p.potential >= p.overall + 12)
+    .filter((p) => !p.transferListed && (p.overall >= squadRating(you) - 1 || p.potential >= p.overall + 12))
     .sort((a, b) => (b.overall + b.potential) - (a.overall + a.potential))
     .slice(0, 6);
+  targets.push(...listed);
   if (!targets.length) return [];
 
   const bids = [];
   for (const player of targets) {
-    if (!rng.chance(0.22)) continue;
+    if (!rng.chance(player.transferListed ? 0.5 : 0.22)) continue;
 
     // Interest comes from clubs a level or two above where you are now.
     const suitors = Object.values(world.clubs).filter((c) =>

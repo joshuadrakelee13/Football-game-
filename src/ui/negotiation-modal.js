@@ -15,6 +15,7 @@ import { openModal, closeModal } from './modal.js';
 import { persist, render, game, retargetPlayerContext } from '../main.js';
 import { toast } from './toast.js';
 import { registrationStatus } from '../engine/registration.js';
+import { SQUAD_STATUS_LABELS } from '../engine/squadStatus.js';
 
 const SELL_ON_OPTIONS = [0, 10, 20, 30];
 const INSTALLMENT_OPTIONS = [
@@ -53,6 +54,16 @@ const GOAL_BONUS_OPTIONS = [
   { key: 'none', label: 'None', build: null },
   { key: 'low', label: '1% of fee per goal, capped at 20% of fee', build: (fee) => ({ tag: 'low', amountPerTrigger: round1000(fee * 0.01), cap: round1000(fee * 0.20) }) },
   { key: 'high', label: '2% of fee per goal, capped at 30% of fee', build: (fee) => ({ tag: 'high', amountPerTrigger: round1000(fee * 0.02), cap: round1000(fee * 0.30) }) },
+];
+// Only the tiers worth promising at signing — nobody convinces a player to join by
+// promising him he'll be a rotation option, that's just the default expectation, not a
+// sweetener. Breaking whichever of these IS promised is what squadStatus.js's own
+// transfer-request check watches for over the following season.
+const SQUAD_STATUS_OPTIONS = [
+  { key: 'none', label: 'No promise' },
+  { key: 'star', label: SQUAD_STATUS_LABELS.star },
+  { key: 'important', label: SQUAD_STATUS_LABELS.important },
+  { key: 'regular', label: SQUAD_STATUS_LABELS.regular },
 ];
 
 // ---------------------------------------------------------------------------
@@ -241,7 +252,7 @@ function renderPersonalTerms(world, session) {
   const isFreeAgent = !session.counterpartyClubId;
   const buyerClub = playerClub(world);
   const demand = personalTermsDemand(world, buyerClub, player, true, session.counterpartyClubId);
-  if (!session.personalOffer) session.personalOffer = { wage: demand.wage, years: demand.years, releaseClause: null };
+  if (!session.personalOffer) session.personalOffer = { wage: demand.wage, years: demand.years, releaseClause: null, promisedStatus: null };
   const offer = session.personalOffer;
 
   openModal({
@@ -271,7 +282,7 @@ function renderPersonalTerms(world, session) {
         ),
       ),
 
-      h('div', { style: { marginTop: 'var(--space-4)' } },
+      h('div', { style: { display: 'grid', gap: 'var(--space-3)', marginTop: 'var(--space-4)' } },
         addOnRow('Release clause', RELEASE_CLAUSE_OPTIONS.map((opt) => {
           const amount = opt.multiplier === null ? null : round1000(player.value * opt.multiplier);
           return {
@@ -279,6 +290,10 @@ function renderPersonalTerms(world, session) {
             onclick: () => { offer.releaseClause = amount; renderPersonalTerms(world, session); },
           };
         })),
+        addOnRow('Squad status promise', SQUAD_STATUS_OPTIONS.map((opt) => ({
+          key: opt.key, label: opt.label, active: (offer.promisedStatus ?? 'none') === opt.key,
+          onclick: () => { offer.promisedStatus = opt.key === 'none' ? null : opt.key; renderPersonalTerms(world, session); },
+        }))),
       ),
     ),
     actions: [
@@ -336,6 +351,8 @@ function renderComplete(world, session) {
         session.kind === 'buy' && session.personalOffer ? summaryStat('Contract', `${session.personalOffer.years} yr`) : null,
         session.kind === 'buy' && session.personalOffer?.releaseClause
           ? summaryStat('Release clause', money(session.personalOffer.releaseClause)) : null,
+        session.kind === 'buy' && session.personalOffer?.promisedStatus
+          ? summaryStat('Promised', SQUAD_STATUS_LABELS[session.personalOffer.promisedStatus]) : null,
       ),
       addOnSummary(session.yourOffer, counterparty),
     ),

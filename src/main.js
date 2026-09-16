@@ -12,6 +12,7 @@ import { generateTransferMarket, generateFreeAgents, generateBids, runAiTransfer
 import { windowJustOpened, windowJustClosed } from './engine/transferWindow.js';
 import { registrationStatus } from './engine/registration.js';
 import { checkLoanReturns } from './engine/loans.js';
+import { checkTransferRequests } from './engine/squadStatus.js';
 import { applyTraining } from './engine/training.js';
 import { maybeFireEvent } from './engine/events.js';
 import { rollProspect, prospectGrade } from './engine/youth.js';
@@ -320,6 +321,11 @@ function applyBetweenMatchday(world, digest) {
   }
 
   applyTraining(you, weeks, game.rng);
+
+  // Squad unrest: every club gets a look, not just yours — an unhappy rival player
+  // becoming transfer-listed is exactly what makes generateTransferMarket's own
+  // guaranteed-inclusion of a listed player worth anything beyond your own squad.
+  for (const club of Object.values(world.clubs)) checkTransferRequests(world, club, game.rng);
 
   // Youth prospects surface every few weeks rather than constantly.
   world.youthTimer = (world.youthTimer ?? 0) + weeks;

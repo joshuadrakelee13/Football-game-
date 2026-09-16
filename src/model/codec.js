@@ -24,10 +24,10 @@ const PLAYER_FIELDS = [
   'seasonGoals', 'seasonAssists', 'seasonApps', 'careerGoals', 'careerApps',
   'contractYears', 'injuredFor', 'injuryType', 'scouted', 'yellowCards', 'redCards',
   'academyGraduate', 'joinedFrom', 'trainingDelta', 'askingPrice', 'fromClub', 'freeAgent',
-  'releaseClause', 'onLoanFrom', 'loanWagePercent',
+  'releaseClause', 'onLoanFrom', 'loanWagePercent', 'promisedStatus', 'transferListed',
 ];
 
-const BOOLEAN_FIELDS = new Set(['scouted', 'academyGraduate', 'freeAgent']);
+const BOOLEAN_FIELDS = new Set(['scouted', 'academyGraduate', 'freeAgent', 'transferListed']);
 
 // ---------------------------------------------------------------------------
 // Attribute packing. Each visible attribute gets 2 characters (12 bits, 4096 levels

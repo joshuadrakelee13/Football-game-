@@ -341,6 +341,11 @@ export function generatePlayer(rng, { tier = 3, position = 'CM', targetOverall =
     // denormalised convenience for weeklyWages and the UI.
     onLoanFrom: null,
     loanWagePercent: null,
+    // What he was promised about his squad role at signing (see squadStatus.js), and
+    // whether he has since handed in a transfer request over it — his ACTUAL status is
+    // deliberately never stored here, only derived from real appearances on demand.
+    promisedStatus: null,
+    transferListed: false,
   };
 
   player.value = valueOf(player);

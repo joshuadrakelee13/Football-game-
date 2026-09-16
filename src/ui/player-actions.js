@@ -16,6 +16,7 @@ import { receiveTransferFee } from '../engine/finance.js';
 import { openBuyNegotiation, openReleaseClauseNegotiation } from './negotiation-modal.js';
 import { openLoanOutModal, openLoanEnquiryModal } from './loan-modal.js';
 import { recallLoan } from '../engine/loans.js';
+import { rejectTransferRequest } from '../engine/squadStatus.js';
 
 export async function renewPlayer(club, player) {
   const demand = renewalDemand(player);
@@ -67,6 +68,15 @@ export function recallLoanedPlayer(world, loanId) {
   const result = recallLoan(world, loanId);
   if (result.ok) toast('Player recalled', `${result.player.name} returns to the squad.`);
   else toast('Cannot recall', result.reasons[0], { tone: 'danger' });
+  persist(); render();
+}
+
+export async function rejectRequest(player) {
+  const ok = await confirmDialog('Reject the transfer request?',
+    `${player.name} will take it badly — expect a real hit to his morale.`, 'Reject');
+  if (!ok) return;
+  rejectTransferRequest(player);
+  toast('Request rejected', `${player.name} stays, unhappily.`, { tone: 'danger' });
   persist(); render();
 }
 

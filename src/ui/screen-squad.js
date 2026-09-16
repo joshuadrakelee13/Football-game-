@@ -261,6 +261,7 @@ function squadTable(world, you) {
               !isAvailable(p) ? h('span', { class: 'tag danger', style: { marginLeft: '6px' } }, `${p.injuredFor}w`) : null,
               p.academyGraduate ? h('span', { class: 'tag muted', style: { marginLeft: '6px' } }, 'Academy') : null,
               p.onLoanFrom ? h('span', { class: 'tag gold', style: { marginLeft: '6px' } }, `On loan · ${world.clubs[p.onLoanFrom]?.short || '?'}`) : null,
+              p.transferListed ? h('span', { class: 'tag danger', style: { marginLeft: '6px' } }, 'Wants to leave') : null,
             ),
             h('td', null, p.position),
             h('td', { class: 'num' }, p.age),

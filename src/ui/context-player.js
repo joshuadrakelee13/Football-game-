@@ -11,8 +11,9 @@ import { visiblePotential, scoutCost } from '../engine/scouting.js';
 import { anyClub } from '../engine/europe.js';
 import { renewalDemand } from '../engine/transfers.js';
 import { canOpenNegotiation } from '../engine/negotiation.js';
-import { renewPlayer, sellSquadPlayer, scoutTarget, negotiateFor, triggerReleaseClause, promoteYouthProspect, sellYouthProspect, releaseYouthProspect, toggleShortlist, loanPlayerOut, enquireAboutLoan, recallLoanedPlayer } from './player-actions.js';
+import { renewPlayer, sellSquadPlayer, scoutTarget, negotiateFor, triggerReleaseClause, promoteYouthProspect, sellYouthProspect, releaseYouthProspect, toggleShortlist, loanPlayerOut, enquireAboutLoan, recallLoanedPlayer, rejectRequest } from './player-actions.js';
 import { canRecall } from '../engine/loans.js';
+import { actualSquadStatus, SQUAD_STATUS_LABELS } from '../engine/squadStatus.js';
 import { ROLE_OPTIONS, ROLE_LABELS } from '../data/positions.js';
 import {
   VISIBLE_ATTRIBUTES, VISIBLE_ATTRIBUTE_LABELS, ATTRIBUTE_CATEGORY,
@@ -93,11 +94,13 @@ export const playerContext = {
 
       if (canManage && !isLoaneeHere) {
         const demand = renewalDemand(player);
-        return [
+        const items = [
           { label: `Renew · ${money(demand.wage)}/wk`, onClick: () => renewPlayer(club, player) },
           { label: 'Sell', tone: 'danger', onClick: () => sellSquadPlayer(world, club, player) },
           { label: 'Loan out', onClick: () => loanPlayerOut(world, club, player) },
         ];
+        if (player.transferListed) items.push({ label: 'Reject transfer request', onClick: () => rejectRequest(player) });
+        return items;
       }
       if (isMyLoanedOutPlayer) {
         const loan = (world.loans || []).find((l) => l.playerId === player.id);
@@ -286,6 +289,8 @@ function contractTab(world, entry, player) {
     const isLoaneeHere = !!player.onLoanFrom;
     const isMyLoanedOutPlayer = isLoaneeHere && player.onLoanFrom === world.playerClubId;
 
+    const actual = canManage ? actualSquadStatus(club, player) : null;
+
     const actions = [];
     if (canManage && !isLoaneeHere) {
       actions.push(
@@ -293,6 +298,9 @@ function contractTab(world, entry, player) {
         h('button', { class: 'btn danger', onclick: () => sellSquadPlayer(world, club, player) }, 'Sell'),
         h('button', { class: 'btn ghost', onclick: () => loanPlayerOut(world, club, player) }, 'Loan out'),
       );
+      if (player.transferListed) {
+        actions.push(h('button', { class: 'btn ghost', onclick: () => rejectRequest(player) }, 'Reject request'));
+      }
     } else if (isMyLoanedOutPlayer) {
       const loan = (world.loans || []).find((l) => l.playerId === player.id);
       const recallCheck = loan ? canRecall(world, loan) : { ok: false, reason: 'Loan not found' };
@@ -307,12 +315,17 @@ function contractTab(world, entry, player) {
     }
 
     return h('div', null,
+      canManage && !isLoaneeHere && player.transferListed ? h('div', {
+        class: 'tag danger', style: { display: 'block', marginBottom: 'var(--space-4)' },
+      }, `${player.name} has handed in a transfer request.`) : null,
       h('div', { style: { display: 'flex', gap: 'var(--space-4)', flexWrap: 'wrap', marginBottom: 'var(--space-4)' } },
         pill('Value', money(player.value)),
         pill('Wage', money(player.wage) + '/wk'),
         pill('Contract', player.contractYears <= 0 ? 'Expired' : `${player.contractYears} yr`),
         player.releaseClause ? pill('Release clause', money(player.releaseClause)) : null,
         isLoaneeHere ? pill('On loan from', world.clubs[player.onLoanFrom]?.short || '?') : null,
+        canManage && player.promisedStatus ? pill('Promised', SQUAD_STATUS_LABELS[player.promisedStatus]) : null,
+        canManage && actual ? pill('Actual status', SQUAD_STATUS_LABELS[actual]) : null,
       ),
       actions.length ? h('div', { style: { display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' } }, ...actions) : null,
     );

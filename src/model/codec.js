@@ -24,6 +24,7 @@ const PLAYER_FIELDS = [
   'seasonGoals', 'seasonAssists', 'seasonApps', 'careerGoals', 'careerApps',
   'contractYears', 'injuredFor', 'injuryType', 'scouted', 'yellowCards', 'redCards',
   'academyGraduate', 'joinedFrom', 'trainingDelta', 'askingPrice', 'fromClub', 'freeAgent',
+  'releaseClause',
 ];
 
 const BOOLEAN_FIELDS = new Set(['scouted', 'academyGraduate', 'freeAgent']);

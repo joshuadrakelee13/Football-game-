@@ -186,7 +186,10 @@ export function sellPlayer(world, club, playerId, fee, buyerId = null) {
 
   const buyer = buyerId ? world.clubs[buyerId] : null;
   if (buyer) {
-    buyer.squad.push({ ...player, morale: 75, joinedFrom: club.short });
+    // A release clause belonged to the contract just torn up, not the new one — clear
+    // it here rather than let the shallow copy below silently carry a stale figure
+    // into a club that never agreed to it.
+    buyer.squad.push({ ...player, morale: 75, joinedFrom: club.short, releaseClause: null });
     spendTransferFee(buyer, fee, world.seasonNumber, `Signed ${player.name}`);
     buyer.lineup = pickBestXI(buyer);
   }
@@ -222,6 +225,23 @@ export function renewalDemand(player) {
   return { wage: Math.max(marketWage, demand), years: player.age >= 31 ? 1 : player.age >= 28 ? 2 : 3 };
 }
 
+// A flat buy-out fee written into some contracts: any club can pay exactly this to
+// sign the player with no haggling and no right of refusal for the seller — the whole
+// point being a guaranteed exit banked in advance. Ambitious players push hardest for
+// one; a big gap between potential and current overall gives a player's camp the
+// leverage to ask, same as a real agent using a release clause to protect a wonderkid's
+// route out of a club that stalls his progress. Rolled wherever a contract is actually
+// agreed (world generation, an AI signing/renewal, a human negotiation) — never inside
+// generatePlayer itself, since raw generation isn't a contract event.
+export function rollReleaseClause(player, rng) {
+  const ambition = player.hidden?.ambition ?? 11;
+  const headroom = Math.max(0, player.potential - player.overall);
+  const chance = clamp(0.08 + (ambition - 11) * 0.012 + Math.min(0.15, headroom * 0.01), 0.03, 0.35);
+  if (!rng.chance(chance)) return null;
+  const premium = rng.float(1.3, 2.2);
+  return Math.max(5000, Math.round((player.value * premium) / 1000) * 1000);
+}
+
 export function renewContract(club, playerId, offeredWage, years) {
   const player = club.squad.find((p) => p.id === playerId);
   if (!player) return { ok: false, reasons: ['Player not in squad'] };
@@ -255,6 +275,7 @@ export function processExpiringContracts(world, rng) {
         const demand = renewalDemand(player);
         player.wage = demand.wage;
         player.contractYears = demand.years;
+        player.releaseClause = rollReleaseClause(player, rng);
         continue;
       }
       if (club.squad.length <= 17 && !club.isPlayerClub) {
@@ -303,9 +324,17 @@ export function generateBids(world, rng) {
     if (!suitors.length) continue;
 
     const buyer = rng.pick(suitors);
-    // A wealthy suitor pays over the odds for a young player with a ceiling.
-    const potentialPremium = 1 + Math.max(0, player.potential - player.overall) * 0.03;
-    const offer = Math.round((player.value * rng.float(0.85, 1.45) * potentialPremium) / 1000) * 1000;
+    // A release clause is a standing offer to the whole league, not just this one
+    // suitor: no club would pay more than the fixed figure they could already get the
+    // player for, and the seller has no leverage to ask for more either.
+    let offer;
+    if (player.releaseClause) {
+      offer = player.releaseClause;
+    } else {
+      // A wealthy suitor pays over the odds for a young player with a ceiling.
+      const potentialPremium = 1 + Math.max(0, player.potential - player.overall) * 0.03;
+      offer = Math.round((player.value * rng.float(0.85, 1.45) * potentialPremium) / 1000) * 1000;
+    }
 
     bids.push({
       playerId: player.id,
@@ -316,6 +345,7 @@ export function generateBids(world, rng) {
       buyerTier: buyer.tier,
       offer,
       value: player.value,
+      viaReleaseClause: !!player.releaseClause,
     });
   }
   return bids;
@@ -369,6 +399,7 @@ export function runAiTransferWindow(world, rng, maxSignings = 4) {
       if (weeklyWages(club) - weakest.wage + recruit.wage > club.wageBudget * 1.2) break;
       if (recruit.overall <= weakest.overall) break;
 
+      recruit.releaseClause = rollReleaseClause(recruit, rng);
       club.squad = club.squad.filter((p) => p.id !== weakest.id);
       club.squad.push(recruit);
       spendTransferFee(club, fee, world.seasonNumber, `Signed ${recruit.name}`);

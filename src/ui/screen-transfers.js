@@ -12,7 +12,7 @@ import { isWindowOpen, isDeadlineDay, daysUntilWindowChange } from '../engine/tr
 import { persist, render, game, openContext } from '../main.js';
 import { confirmDialog } from './modal.js';
 import { openContextMenu } from './context-menu.js';
-import { scoutTarget, negotiateFor, toggleShortlist } from './player-actions.js';
+import { scoutTarget, negotiateFor, toggleShortlist, triggerReleaseClause } from './player-actions.js';
 import { openSellNegotiation } from './negotiation-modal.js';
 import { toast } from './toast.js';
 
@@ -153,7 +153,10 @@ function playerTable(world, you, list, mode) {
           h('td', null, h('span', { class: 'pot-range' + (pot.exact ? ' exact' : '') },
             pot.exact ? pot.min : `${pot.min}–${pot.max}`)),
           h('td', null, h('span', { style: { fontSize: '11.5px', color: 'var(--text-3)' } }, p.archetype)),
-          h('td', { class: 'num' }, p.askingPrice ? money(p.askingPrice) : 'Free'),
+          h('td', { class: 'num' },
+            p.askingPrice ? money(p.askingPrice) : 'Free',
+            p.releaseClause ? h('div', { style: { fontSize: '10.5px', color: 'var(--gold)' } }, `Clause ${money(p.releaseClause)}`) : null,
+          ),
           h('td', { class: 'num' }, money(p.wage)),
           h('td', null, h('div', { style: { display: 'flex', gap: '6px', alignItems: 'center', justifyContent: 'flex-end' } },
             check.ok
@@ -180,6 +183,12 @@ function targetRowMenu(world, you, player, mode) {
   }
   if (canOpenNegotiation(world, you, player).ok) {
     items.push({ divider: true }, { label: 'Negotiate', onClick: () => negotiateFor(world, you, player) });
+  }
+  if (player.releaseClause && player.fromClub) {
+    items.push({ divider: true }, {
+      label: `Trigger release clause · ${money(player.releaseClause)}`,
+      onClick: () => triggerReleaseClause(world, you, player),
+    });
   }
   items.push({ divider: true }, {
     label: (world.shortlist || []).includes(player.id) ? 'Remove from shortlist' : 'Add to shortlist',
@@ -228,17 +237,21 @@ function bidsPanel(world, you, bids) {
             h('td', { class: 'num' }, money(bid.value)),
             h('td', { class: 'num strong', style: { color: 'var(--gold)' } },
               money(bid.offer),
-              premium > 0 ? h('span', { style: { color: 'var(--text-3)', fontSize: '11px' } }, ` +${premium}%`) : null),
+              bid.viaReleaseClause
+                ? h('span', { class: 'tag gold', style: { marginLeft: '6px', fontSize: '10.5px' } }, 'Clause')
+                : premium > 0 ? h('span', { style: { color: 'var(--text-3)', fontSize: '11px' } }, ` +${premium}%`) : null),
             h('td', null,
               h('div', { style: { display: 'flex', gap: '6px', justifyContent: 'flex-end' } },
-                h('button', {
+                // A release clause is a fixed, pre-agreed figure — there is nothing left
+                // to haggle, and the club can't be talked into paying more for it.
+                !bid.viaReleaseClause ? h('button', {
                   class: 'btn sm',
                   onclick: (e) => {
                     e.stopPropagation();
                     if (!player) return;
                     openSellNegotiation(world, you, bid);
                   },
-                }, 'Negotiate'),
+                }, 'Negotiate') : null,
                 h('button', {
                   class: 'btn sm primary',
                   onclick: async (e) => {

@@ -331,6 +331,11 @@ export function generatePlayer(rng, { tier = 3, position = 'CM', targetOverall =
     redCards: 0,
     academyGraduate: false,
     joinedFrom: null,
+    // A flat buy-out fee written into some contracts, rolled separately by
+    // transfers.js's rollReleaseClause wherever a contract is actually agreed
+    // (world generation, an AI signing/renewal, or a human negotiation) — never
+    // here, since raw generation isn't a contract event.
+    releaseClause: null,
   };
 
   player.value = valueOf(player);

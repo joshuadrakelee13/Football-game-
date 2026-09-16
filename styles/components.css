@@ -218,6 +218,9 @@
 .btn.danger { border-color: var(--danger-dim); color: var(--danger); background: transparent; }
 .btn.danger:hover:not(:disabled) { background: rgba(255, 93, 108, 0.09); }
 
+.btn.gold { border-color: var(--gold); color: var(--gold); background: transparent; }
+.btn.gold:hover:not(:disabled) { background: rgba(240, 194, 77, 0.09); }
+
 .btn.sm { padding: 5px 10px; font-size: 12px; }
 .btn.lg { padding: 12px 22px; font-size: 15px; }
 .btn.block { width: 100%; }

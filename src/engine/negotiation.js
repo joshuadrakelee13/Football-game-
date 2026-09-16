@@ -174,6 +174,13 @@ export function finalizeSigning(world, session, rng) {
     const result = signPlayer(world, buyerClub, player, rng, { fee: upfrontFee, wage, years });
     if (!result.ok) return result;
 
+    // A release clause is a term of the contract just agreed, not something that
+    // survives from whatever the player's old deal happened to carry — signPlayer's
+    // shallow copy of the listing would otherwise leak a stale clause from his
+    // previous club straight into this one. Explicit reset to null unless this
+    // negotiation's own personal-terms stage actually offered one.
+    result.player.releaseClause = session.personalOffer?.releaseClause || null;
+
     attachAddOns(world, session, result.player.id, buyerClub.id, sellerClub?.id, deferredValue);
     return { ...result, fee: agreedFee ?? result.fee };
   }

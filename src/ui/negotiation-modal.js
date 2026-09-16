@@ -10,6 +10,7 @@ import {
   canOpenNegotiation, evaluateFeeOffer, personalTermsDemand, evaluatePersonalTermsOffer,
   finalizeSigning, MAX_FEE_ROUNDS, MAX_PERSONAL_ROUNDS,
 } from '../engine/negotiation.js';
+import { canSign } from '../engine/transfers.js';
 import { openModal, closeModal } from './modal.js';
 import { persist, render, game, retargetPlayerContext } from '../main.js';
 import { toast } from './toast.js';
@@ -25,6 +26,16 @@ const RISE_OPTIONS = [
   { key: 'none', label: 'No rise clause', build: null },
   { key: 'promo', label: '+15% on promotion', build: (fee) => ({ amount: Math.round(fee * 0.15), trigger: { type: 'promotion' } }) },
   { key: 'apps', label: '+10% after 20 apps', build: (fee) => ({ amount: Math.round(fee * 0.10), trigger: { type: 'appearances', threshold: 20 } }) },
+];
+// Written into the NEW contract, offered as a sweetener during personal terms rather
+// than haggled over — a wary or ambitious target is easier to convince when he already
+// knows his own way out. Presets are a multiple of his value rather than a flat number,
+// since the same clause size means very different things for a squad player and a star.
+const RELEASE_CLAUSE_OPTIONS = [
+  { key: 'none', label: 'None', multiplier: null },
+  { key: 'low', label: '1.5× value', multiplier: 1.5 },
+  { key: 'mid', label: '2× value', multiplier: 2 },
+  { key: 'high', label: '3× value', multiplier: 3 },
 ];
 
 // ---------------------------------------------------------------------------
@@ -54,6 +65,32 @@ export function openBuyNegotiation(world, buyerClub, player) {
     clubResponse: null,
     personalOffer: null,
     personalResponse: null,
+  };
+  renderSession(world, session);
+}
+
+// A release clause is a standing offer to the whole league at a fixed figure: no
+// haggling, and the selling club has no discretion to refuse — so this skips the fee
+// stage entirely rather than routing through evaluateFeeOffer's normal seller logic,
+// which is built around a club that CAN say no.
+export function openReleaseClauseNegotiation(world, buyerClub, player) {
+  const fee = player.releaseClause;
+  const check = canSign(world, buyerClub, player, { fee });
+  if (!check.ok) { toast('Cannot trigger clause', check.reasons[0], { tone: 'danger' }); return; }
+
+  const session = {
+    kind: 'buy',
+    stage: 'personal',
+    playerId: player.id,
+    playerSnapshot: player,
+    counterpartyClubId: player.fromClub || null,
+    round: 1,
+    yourOffer: { fee, sellOnPercent: 0, installmentPreset: null, riseClause: null },
+    agreedFee: fee,
+    clubResponse: null,
+    personalOffer: null,
+    personalResponse: null,
+    viaReleaseClause: true,
   };
   renderSession(world, session);
 }
@@ -179,7 +216,7 @@ function renderPersonalTerms(world, session) {
   const isFreeAgent = !session.counterpartyClubId;
   const buyerClub = playerClub(world);
   const demand = personalTermsDemand(world, buyerClub, player, true, session.counterpartyClubId);
-  if (!session.personalOffer) session.personalOffer = { wage: demand.wage, years: demand.years };
+  if (!session.personalOffer) session.personalOffer = { wage: demand.wage, years: demand.years, releaseClause: null };
   const offer = session.personalOffer;
 
   openModal({
@@ -187,7 +224,8 @@ function renderPersonalTerms(world, session) {
     wide: true,
     body: h('div', null,
       h('p', { style: { color: 'var(--text-2)', fontSize: '13px', marginTop: 0 } },
-        isFreeAgent ? 'Free transfer.' : `Fee agreed at ${money(session.agreedFee)}.`,
+        session.viaReleaseClause ? `Release clause triggered — fee fixed at ${money(session.agreedFee)}.`
+          : isFreeAgent ? 'Free transfer.' : `Fee agreed at ${money(session.agreedFee)}.`,
         ` Now agree terms with the player. Round ${session.round} of ${MAX_PERSONAL_ROUNDS}.`),
 
       session.personalResponse ? responseBanner(session.personalResponse, session.personalResponse.counterWage) : null,
@@ -206,6 +244,16 @@ function renderPersonalTerms(world, session) {
             }, `${y} yr`),
           )),
         ),
+      ),
+
+      h('div', { style: { marginTop: 'var(--space-4)' } },
+        addOnRow('Release clause', RELEASE_CLAUSE_OPTIONS.map((opt) => {
+          const amount = opt.multiplier === null ? null : round1000(player.value * opt.multiplier);
+          return {
+            key: opt.key, label: opt.label, active: offer.releaseClause === amount,
+            onclick: () => { offer.releaseClause = amount; renderPersonalTerms(world, session); },
+          };
+        })),
       ),
     ),
     actions: [
@@ -261,6 +309,8 @@ function renderComplete(world, session) {
         summaryStat('Fee', session.agreedFee ? money(session.agreedFee) : 'Free'),
         session.kind === 'buy' && session.personalOffer ? summaryStat('Wage', money(session.personalOffer.wage) + '/wk') : null,
         session.kind === 'buy' && session.personalOffer ? summaryStat('Contract', `${session.personalOffer.years} yr`) : null,
+        session.kind === 'buy' && session.personalOffer?.releaseClause
+          ? summaryStat('Release clause', money(session.personalOffer.releaseClause)) : null,
       ),
       addOnSummary(session.yourOffer, counterparty),
     ),
@@ -285,7 +335,8 @@ function completeDeal(world, session) {
   if (session.kind === 'buy') {
     world.transferMarket = (world.transferMarket || []).filter((p) => p.id !== session.playerId);
     world.freeAgents = (world.freeAgents || []).filter((p) => p.id !== session.playerId);
-    toast('Signed', `${result.player.name} joins for ${result.fee ? money(result.fee) : 'nothing'}`, { tone: 'gold' });
+    toast('Signed', `${result.player.name} joins for ${result.fee ? money(result.fee) : 'nothing'}`
+      + (session.viaReleaseClause ? ' (release clause triggered)' : ''), { tone: 'gold' });
     // If a Player context is still open on this exact player (opened him, then
     // negotiated from inside that context), it was pointing at a market/free-agent
     // listing that no longer exists — retarget it to where he actually lives now,

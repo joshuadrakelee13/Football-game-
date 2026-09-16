@@ -11,7 +11,7 @@ import { visiblePotential, scoutCost } from '../engine/scouting.js';
 import { anyClub } from '../engine/europe.js';
 import { renewalDemand } from '../engine/transfers.js';
 import { canOpenNegotiation } from '../engine/negotiation.js';
-import { renewPlayer, sellSquadPlayer, scoutTarget, negotiateFor, promoteYouthProspect, sellYouthProspect, releaseYouthProspect, toggleShortlist } from './player-actions.js';
+import { renewPlayer, sellSquadPlayer, scoutTarget, negotiateFor, triggerReleaseClause, promoteYouthProspect, sellYouthProspect, releaseYouthProspect, toggleShortlist } from './player-actions.js';
 import { ROLE_OPTIONS, ROLE_LABELS } from '../data/positions.js';
 import {
   VISIBLE_ATTRIBUTES, VISIBLE_ATTRIBUTE_LABELS, ATTRIBUTE_CATEGORY,
@@ -99,6 +99,9 @@ export const playerContext = {
       const items = [];
       if (!player.scouted) items.push({ label: `Scout · ${money(scoutCost(you, player))}`, onClick: () => scoutTarget(world, you, player) });
       if (canOpenNegotiation(world, you, player).ok) items.push({ label: 'Negotiate', onClick: () => negotiateFor(world, you, player) });
+      if (player.releaseClause && player.fromClub) {
+        items.push({ label: `Trigger release clause · ${money(player.releaseClause)}`, onClick: () => triggerReleaseClause(world, you, player) });
+      }
       items.push({
         label: (world.shortlist || []).includes(player.id) ? 'Remove from shortlist' : 'Add to shortlist',
         onClick: () => toggleShortlist(world, player.id),
@@ -267,6 +270,7 @@ function contractTab(world, entry, player) {
         pill('Value', money(player.value)),
         pill('Wage', money(player.wage) + '/wk'),
         pill('Contract', player.contractYears <= 0 ? 'Expired' : `${player.contractYears} yr`),
+        player.releaseClause ? pill('Release clause', money(player.releaseClause)) : null,
       ),
       canManage ? h('div', { style: { display: 'flex', gap: 'var(--space-2)' } },
         h('button', { class: 'btn', onclick: () => renewPlayer(club, player) }, `Renew · ${money(demand.wage)}/wk`),
@@ -281,6 +285,7 @@ function contractTab(world, entry, player) {
       h('div', { style: { display: 'flex', gap: 'var(--space-4)', flexWrap: 'wrap', marginBottom: 'var(--space-4)' } },
         pill('Fee', player.askingPrice ? money(player.askingPrice) : 'Free'),
         pill('Wage', money(player.wage) + '/wk'),
+        player.releaseClause ? pill('Release clause', money(player.releaseClause)) : null,
       ),
       !check.ok ? h('div', {
         style: {
@@ -288,13 +293,19 @@ function contractTab(world, entry, player) {
           borderRadius: 'var(--radius)', color: 'var(--danger)', fontSize: '12.5px',
         },
       }, check.reasons.join(' · ')) : null,
-      h('button', {
-        class: 'btn primary',
-        disabled: !check.ok,
-        onclick: () => negotiateFor(world, you, player),
-      }, !player.askingPrice ? 'Discuss personal terms'
-        : player.fromClub ? `Negotiate · asking ${money(player.askingPrice)}`
-        : `Sign for ${money(player.askingPrice)}`),
+      h('div', { style: { display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' } },
+        h('button', {
+          class: 'btn primary',
+          disabled: !check.ok,
+          onclick: () => negotiateFor(world, you, player),
+        }, !player.askingPrice ? 'Discuss personal terms'
+          : player.fromClub ? `Negotiate · asking ${money(player.askingPrice)}`
+          : `Sign for ${money(player.askingPrice)}`),
+        player.releaseClause && player.fromClub ? h('button', {
+          class: 'btn gold',
+          onclick: () => triggerReleaseClause(world, you, player),
+        }, `Trigger clause · ${money(player.releaseClause)}`) : null,
+      ),
     );
   }
 

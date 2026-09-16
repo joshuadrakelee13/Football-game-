@@ -13,7 +13,7 @@ import { renewContract, renewalDemand, sellPlayer } from '../engine/transfers.js
 import { scoutPlayer } from '../engine/scouting.js';
 import { promoteProspect } from '../engine/youth.js';
 import { receiveTransferFee } from '../engine/finance.js';
-import { openBuyNegotiation } from './negotiation-modal.js';
+import { openBuyNegotiation, openReleaseClauseNegotiation } from './negotiation-modal.js';
 
 export async function renewPlayer(club, player) {
   const demand = renewalDemand(player);
@@ -47,6 +47,10 @@ export function scoutTarget(world, club, player) {
 
 export function negotiateFor(world, club, player) {
   openBuyNegotiation(world, club, player);
+}
+
+export function triggerReleaseClause(world, club, player) {
+  openReleaseClauseNegotiation(world, club, player);
 }
 
 export function promoteYouthProspect(world, prospect) {

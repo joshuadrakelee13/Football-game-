@@ -8,6 +8,7 @@ import { sellPlayer } from '../engine/transfers.js';
 import { canOpenNegotiation } from '../engine/negotiation.js';
 import { visiblePotential, scoutCost } from '../engine/scouting.js';
 import { transferBudget } from '../engine/finance.js';
+import { isWindowOpen, isDeadlineDay, daysUntilWindowChange } from '../engine/transferWindow.js';
 import { persist, render, game, openContext } from '../main.js';
 import { confirmDialog } from './modal.js';
 import { openContextMenu } from './context-menu.js';
@@ -29,6 +30,8 @@ export function renderTransfers(world) {
         `${money(transferBudget(you))} to spend · ${money(Math.max(0, you.wageBudget - weeklyWages(you)))}/wk of wage room`),
     ),
 
+    windowBanner(world),
+
     h('div', { class: 'formation-picker', style: { marginBottom: 'var(--space-4)' } },
       tabButton('market', 'Transfer market'),
       tabButton('free', `Free agents (${(world.freeAgents || []).length})`),
@@ -41,6 +44,24 @@ export function renderTransfers(world) {
       : tab === 'shortlist' ? shortlistPanel(world, you)
       : bidsPanel(world, you, bids),
   );
+}
+
+// Free-agent signings are never blocked by this — only shown here as a heads-up
+// about buying/selling FROM other clubs, which the row-level "Window closed" tags
+// (see shortReason below) already gate on a per-player basis.
+function windowBanner(world) {
+  const days = daysUntilWindowChange(world);
+  const tail = days != null ? ` (${days} day${days === 1 ? '' : 's'})` : '';
+  if (isDeadlineDay(world)) {
+    // isDeadlineDay covers the window's final week, not literally its final day — the
+    // world's clock advances in matchday-sized jumps, so a literal "today" check could
+    // land on nothing at all (see transferWindow.js). "Deadline soon" over "tonight".
+    return h('div', { class: 'tag gold', style: { marginBottom: 'var(--space-4)' } }, `Deadline day approaching — the window closes${tail}`);
+  }
+  if (!isWindowOpen(world)) {
+    return h('div', { class: 'tag muted', style: { marginBottom: 'var(--space-4)' } }, `Transfer window closed — reopens${tail}`);
+  }
+  return h('div', { class: 'tag pitch', style: { marginBottom: 'var(--space-4)' } }, `Transfer window open — closes${tail}`);
 }
 
 function tabButton(key, label) {
@@ -173,6 +194,7 @@ function shortReason(reason) {
   if (reason.includes('Wage')) return 'Wages';
   if (reason.includes('Not interested')) return 'Won’t come';
   if (reason.includes('Squad is full')) return 'Squad full';
+  if (reason.includes('window is closed')) return 'Window closed';
   return reason;
 }
 

@@ -53,16 +53,22 @@ export function compact(n) {
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-// The calendar works in abstract day offsets from 1 August; this renders them.
-export function matchDate(dayOffset, startYear) {
+// The calendar works in abstract day offsets from 1 August; this turns one back into a
+// real calendar date. Shared with engine/transferWindow.js, which needs the real month
+// and day-of-month to know whether a window is open — not just a rendered string.
+export function dayToDate(dayOffset, startYear) {
   const d = new Date(Date.UTC(startYear, 7, 1));
   d.setUTCDate(d.getUTCDate() + dayOffset);
+  return d;
+}
+
+export function matchDate(dayOffset, startYear) {
+  const d = dayToDate(dayOffset, startYear);
   return `${DAYS[d.getUTCDay()]} ${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]}`;
 }
 
 export function matchDateLong(dayOffset, startYear) {
-  const d = new Date(Date.UTC(startYear, 7, 1));
-  d.setUTCDate(d.getUTCDate() + dayOffset);
+  const d = dayToDate(dayOffset, startYear);
   return `${DAYS[d.getUTCDay()]} ${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
 }
 

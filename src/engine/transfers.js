@@ -7,6 +7,7 @@ import { spendTransferFee, receiveTransferFee, transferBudget, canAffordWage } f
 import { DIVISION_BY_TIER } from '../data/competitions.js';
 import { pushInboxEntry } from './inbox.js';
 import { fireSellOnClauses, dischargePlayerObligations } from './obligations.js';
+import { isWindowOpen } from './transferWindow.js';
 
 export const MARKET_SIZE = 34;
 export const FREE_AGENT_SIZE = 10;
@@ -116,6 +117,9 @@ export function canSign(world, club, player, overrides = {}) {
   if (club.squad.length >= 30) reasons.push('Squad is full (30 players)');
   if (fee > transferBudget(club)) reasons.push('Transfer budget too low');
   if (!canAffordWage(club, wage)) reasons.push('Wage budget too low');
+  // A genuine free agent has no club to be registered with, so — as in real football —
+  // he can join at any time; only a transfer FROM another club needs an open window.
+  if (!player.freeAgent && !isWindowOpen(world)) reasons.push('The transfer window is closed');
 
   // What a player will accept is driven by the division as much as by the club: people
   // sign for a Championship club because it is a Championship club. Judging purely on
@@ -172,6 +176,7 @@ export function sellPlayer(world, club, playerId, fee, buyerId = null) {
   const player = club.squad.find((p) => p.id === playerId);
   if (!player) return { ok: false, reasons: ['Player not in squad'] };
   if (club.squad.length <= 16) return { ok: false, reasons: ['Squad would drop below 16 players'] };
+  if (!isWindowOpen(world)) return { ok: false, reasons: ['The transfer window is closed'] };
 
   club.squad = club.squad.filter((p) => p.id !== playerId);
   club.transfersOut.push({ playerId, name: player.name, fee, season: world.seasonNumber });
@@ -269,10 +274,12 @@ export function processExpiringContracts(world, rng) {
 // ---------------------------------------------------------------------------
 
 // Bigger clubs come calling for your best players. Accepting is a genuine decision:
-// the money is real, and so is the hole it leaves.
+// the money is real, and so is the hole it leaves. Gated to open windows for the same
+// reason canSign/sellPlayer are — a bid you could never actually complete is just a
+// dead end once you try to accept it.
 export function generateBids(world, rng) {
   const you = world.clubs[world.playerClubId];
-  if (you.squad.length <= 17) return [];
+  if (you.squad.length <= 17 || !isWindowOpen(world)) return [];
 
   const targets = [...you.squad]
     .filter((p) => p.overall >= squadRating(you) - 1 || p.potential >= p.overall + 12)
@@ -325,7 +332,10 @@ export function generateBids(world, rng) {
 // per season rather than swamping every other kind of entry.
 const MAX_RIVAL_SIGNING_NEWS = 6;
 
-export function runAiTransferWindow(world, rng) {
+// `maxSignings` defaults to the full summer business; the January window gets a much
+// smaller cap (see the mid-season winter-window trigger in main.js) since real clubs
+// do far less business mid-season than in the summer rebuild.
+export function runAiTransferWindow(world, rng, maxSignings = 4) {
   const you = world.clubs[world.playerClubId];
   let rivalNewsLogged = 0;
   for (const club of Object.values(world.clubs)) {
@@ -337,7 +347,7 @@ export function runAiTransferWindow(world, rng) {
     let budget = transferBudget(club);
     let signings = 0;
 
-    while (budget > 0 && signings < 4 && club.squad.length < 27) {
+    while (budget > 0 && signings < maxSignings && club.squad.length < 27) {
       const weakest = [...club.squad].sort((a, b) => a.overall - b.overall)[0];
       if (!weakest) break;
 

@@ -9,6 +9,7 @@ import {
   resolvePlayerMatchSession,
 } from './engine/season.js';
 import { generateTransferMarket, generateFreeAgents, generateBids, runAiTransferWindow, processExpiringContracts } from './engine/transfers.js';
+import { windowJustOpened, windowJustClosed } from './engine/transferWindow.js';
 import { applyTraining } from './engine/training.js';
 import { maybeFireEvent } from './engine/events.js';
 import { rollProspect, prospectGrade } from './engine/youth.js';
@@ -279,6 +280,27 @@ function applyBetweenMatchday(world, digest) {
   const next = world.calendar[world.matchdayIndex];
   const previous = world.calendar[world.matchdayIndex - 1];
   const weeks = next && previous ? Math.max(0.4, (next.day - previous.day) / 7) : 1;
+
+  // Winter window: opens and closes entirely mid-season, inside this per-matchday-gap
+  // check — unlike the summer window, which always reopens at the season boundary
+  // (finishSeason already runs runAiTransferWindow there, so nothing to catch here).
+  // A much smaller AI burst than summer's own, matching how little business real clubs
+  // do in January versus a full squad rebuild.
+  if (previous && next) {
+    if (windowJustOpened(world.startYear, previous.day, next.day)) {
+      runAiTransferWindow(world, game.rng, 1);
+      pushInboxEntry(world, {
+        type: 'transfer_window', tone: 'neutral', title: 'Transfer window open',
+        body: 'The January transfer window is now open.',
+        action: { screen: 'transfers' },
+      });
+    } else if (windowJustClosed(world.startYear, previous.day, next.day)) {
+      pushInboxEntry(world, {
+        type: 'transfer_window', tone: 'neutral', title: 'Transfer window closed',
+        body: 'The transfer window has closed. Business resumes when it next opens.',
+      });
+    }
+  }
 
   applyTraining(you, weeks, game.rng);
 

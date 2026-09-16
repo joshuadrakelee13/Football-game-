@@ -9,6 +9,7 @@ import { generateProspect, promoteProspect } from './youth.js';
 import { recordLedger, receiveTransferFee } from './finance.js';
 import { STADIUM_TIERS } from './stadium.js';
 import { pushInboxEntry } from './inbox.js';
+import { isWindowOpen } from './transferWindow.js';
 
 function contractCandidates(club) {
   const bar = squadRating(club);
@@ -209,7 +210,9 @@ const EVENT_POOL = [
   },
   {
     id: 'transfer_interest', weight: 11, tone: 'neutral',
-    applicable: (world, club) => club.squad.length > 18 && club.squad.some((p) => p.overall >= squadRating(club) + 2),
+    // A bid outside an open window is a dead end the moment you try to accept it —
+    // real interest, like a real bid, only actually arrives during a window.
+    applicable: (world, club) => isWindowOpen(world) && club.squad.length > 18 && club.squad.some((p) => p.overall >= squadRating(club) + 2),
     build(world, club, rng) {
       const targets = club.squad.filter((p) => p.overall >= squadRating(club) + 2);
       const player = rng.pick(targets);

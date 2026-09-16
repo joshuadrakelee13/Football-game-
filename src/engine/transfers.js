@@ -8,6 +8,7 @@ import { DIVISION_BY_TIER } from '../data/competitions.js';
 import { pushInboxEntry } from './inbox.js';
 import { fireSellOnClauses, dischargePlayerObligations } from './obligations.js';
 import { isWindowOpen } from './transferWindow.js';
+import { isRegistrationRequired, registrationStatus } from './registration.js';
 
 export const MARKET_SIZE = 34;
 export const FREE_AGENT_SIZE = 10;
@@ -352,11 +353,16 @@ export function runAiTransferWindow(world, rng, maxSignings = 4) {
       if (!weakest) break;
 
       const wanted = clamp(target + rng.int(-3, 5), 28, 92);
+      // Premier League clubs actively protect their homegrown quota when recruiting —
+      // bias (not force; real squads do still run tight sometimes) this signing
+      // English/Welsh whenever the squad is currently short of the minimum.
+      const needsHomegrown = isRegistrationRequired(club) && registrationStatus(club).homegrownShortBy > 0;
       const recruit = generatePlayer(rng, {
         tier: club.tier,
         position: weakest.position,
         targetOverall: wanted,
         ageBias: rng.chance(0.2) ? 'youth' : null,
+        nationOverride: needsHomegrown && rng.chance(0.75) ? (rng.chance(0.9) ? 'ENG' : 'WAL') : null,
       });
       const fee = recruit.value;
       if (fee > budget) break;

@@ -10,6 +10,7 @@ import {
 } from './engine/season.js';
 import { generateTransferMarket, generateFreeAgents, generateBids, runAiTransferWindow, processExpiringContracts } from './engine/transfers.js';
 import { windowJustOpened, windowJustClosed } from './engine/transferWindow.js';
+import { registrationStatus } from './engine/registration.js';
 import { applyTraining } from './engine/training.js';
 import { maybeFireEvent } from './engine/events.js';
 import { rollProspect, prospectGrade } from './engine/youth.js';
@@ -299,6 +300,17 @@ function applyBetweenMatchday(world, digest) {
         type: 'transfer_window', tone: 'neutral', title: 'Transfer window closed',
         body: 'The transfer window has closed. Business resumes when it next opens.',
       });
+      // Registration is only ever the Premier League's own rule (registrationStatus
+      // reports required:false everywhere else), and only worth a warning once the
+      // window that could have fixed it has actually shut.
+      const status = registrationStatus(you);
+      if (status.required && !status.ok) {
+        pushInboxEntry(world, {
+          type: 'registration', tone: 'bad', title: 'Squad registration incomplete',
+          body: `Your registered squad falls short: ${status.issues.join(' · ')}.`,
+          action: { screen: 'squad' },
+        });
+      }
     }
   }
 

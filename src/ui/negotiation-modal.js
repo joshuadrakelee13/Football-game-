@@ -13,6 +13,7 @@ import {
 import { openModal, closeModal } from './modal.js';
 import { persist, render, game, retargetPlayerContext } from '../main.js';
 import { toast } from './toast.js';
+import { registrationStatus } from '../engine/registration.js';
 
 const SELL_ON_OPTIONS = [0, 10, 20, 30];
 const INSTALLMENT_OPTIONS = [
@@ -290,6 +291,14 @@ function completeDeal(world, session) {
     // listing that no longer exists — retarget it to where he actually lives now,
     // rather than resolving to "no longer available" on the very next render.
     retargetPlayerContext(session.playerId, { kind: 'squad', clubId: playerClub(world).id });
+    // Registration is advisory, not a signing block (a Premier League club really
+    // can buy a 26th senior player, it just can't register him) — so the earliest
+    // useful moment to flag it is right after the deal that tipped the squad over,
+    // not silently waiting for the deadline-day inbox notice.
+    const status = registrationStatus(playerClub(world));
+    if (status.required && !status.ok) {
+      toast('Squad registration', status.issues.join(' · '), { tone: 'danger' });
+    }
   } else {
     world.pendingBids = (world.pendingBids || []).filter((b) => b !== session.originalBid);
     toast('Sold', `${session.playerSnapshot.name} leaves for ${money(result.fee)}`, { tone: 'gold' });

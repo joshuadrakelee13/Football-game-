@@ -13,6 +13,7 @@ import { openRoleDutyPopover } from './role-duty.js';
 import { openContextMenu } from './context-menu.js';
 import { renewPlayer, sellSquadPlayer } from './player-actions.js';
 import { toast } from './toast.js';
+import { registrationStatus, SQUAD_LIST_SIZE, HOMEGROWN_MINIMUM } from '../engine/registration.js';
 
 // Where each formation slot sits on the pitch, as percentages.
 const SLOT_LAYOUT = {
@@ -33,6 +34,8 @@ export function renderSquad(world) {
       h('span', { class: 'sub' }, `${you.squad.length} players · rating ${squadRating(you).toFixed(1)} · ${money(weeklyWages(you))}/wk`),
     ),
 
+    registrationBanner(you),
+
     h('div', { class: 'grid split' },
       h('div', { class: 'grid', style: { gap: 'var(--space-4)' } },
         squadTable(world, you),
@@ -45,6 +48,20 @@ export function renderSquad(world) {
       ),
     ),
   );
+}
+
+// A Premier League rule only — nothing renders for any other division, since the
+// Championship downward has no such cap. Players 21 and under never count toward the
+// 25, so a squad can comfortably carry more than 25 names and still be compliant.
+function registrationBanner(club) {
+  const status = registrationStatus(club);
+  if (!status.required) return null;
+  if (status.ok) {
+    return h('div', { class: 'tag pitch', style: { marginBottom: 'var(--space-4)' } },
+      `Registered: ${status.seniorCount}/${SQUAD_LIST_SIZE} senior players · ${status.homegrownCount}/${HOMEGROWN_MINIMUM} homegrown`);
+  }
+  return h('div', { class: 'tag danger', style: { marginBottom: 'var(--space-4)' } },
+    `Registration: ${status.issues.join(' · ')}`);
 }
 
 // ---------------------------------------------------------------------------

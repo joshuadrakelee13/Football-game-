@@ -1,0 +1,65 @@
+/* The page is nothing but a frame around a fixed stage. */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* A faint vignette so the letterbox bars do not read as a broken layout. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 42%, rgba(80, 58, 40, 0.34), transparent 68%);
+  pointer-events: none;
+}
+
+#stage-wrap {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  --stage-scale: 1;
+}
+
+#stage {
+  display: block;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(255, 236, 205, 0.1);
+}
+
+/* The overlays all sit exactly on top of the canvas and scale with it, so the
+   interface is laid out in the same coordinate space the game is drawn in. */
+#hud, #picker, #screens {
+  position: absolute;
+  width: calc(960px * var(--stage-scale));
+  height: calc(540px * var(--stage-scale));
+  font-size: calc(13px * var(--stage-scale));
+}
+
+#hud { pointer-events: none; opacity: 0; transition: opacity var(--normal) var(--ease); }
+#hud.on { opacity: 1; }
+#hud > * { pointer-events: auto; }
+
+#picker, #screens { display: none; }
+#picker.on, #screens.on { display: block; }
+
+kbd {
+  font: inherit;
+  font-size: 0.78em;
+  padding: 0.08em 0.36em;
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text-3);
+}

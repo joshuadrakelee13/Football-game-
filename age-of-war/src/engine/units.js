@@ -20,12 +20,26 @@ import { fireAt } from './projectiles.js';
 const EPS = 1e-6;
 
 export function tickUnits(state, dt) {
+  // Both sides read the field as it stood at the START of the tick, before
+  // either of them has moved. Resolving one side and then the other looks
+  // harmless and is not: the second side gets to aim at where the first side
+  // actually ended up, which is a one-tick information advantage. It is worth
+  // about nine percentage points of win rate in a mirror match, and it took a
+  // two-hundred-battle harness to notice.
+  const snapshot = state.sides.map((side) => {
+    const foe = state.sides[1 - side.index];
+    const target = frontLiving(foe);
+    return {
+      target,
+      targetX: target ? target.x : foe.base.frontX,
+      targetR: target ? unitDef(target).size.radius : 0,
+    };
+  });
+
   for (const side of state.sides) {
     const foe = state.sides[1 - side.index];
     const dir = side.dir;
-    const target = frontLiving(foe);
-    const targetX = target ? target.x : foe.base.frontX;
-    const targetR = target ? unitDef(target).size.radius : 0;
+    const { target, targetX, targetR } = snapshot[side.index];
 
     let ahead = null;    // nearest living ally in front of me
 

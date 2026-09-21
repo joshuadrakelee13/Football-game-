@@ -17,7 +17,12 @@ import { queueIntent } from './intents.js';
 import { frontLiving } from './units.js';
 
 const ROLES = ['melee', 'ranged', 'heavy'];
-const BASE_SHARE = { melee: 0.55, ranged: 0.3, heavy: 0.15 };
+// Where the gold goes, by role. Weighted hard towards the cheap melee wall
+// because tools/matchup-test.mjs says that is simply what wins: only about three
+// ranks of a column can reach the enemy at once, so a wall that is always there
+// beats a heavy unit that is occasionally there. An earlier split of 55/30/15
+// lost to a scripted player nineteen times out of twenty.
+const BASE_SHARE = { melee: 0.66, ranged: 0.26, heavy: 0.08 };
 
 export function tickAi(state, dt, rng) {
   for (const side of state.sides) {
@@ -89,7 +94,11 @@ function think(state, side, p, rng) {
   //    which is precisely what a human uses it for. Without this the AI only ever
   //    fired defensively, and a third of mirror battles ran to the time limit.
   const stalled = side.ai.stalledFor > 10;
-  const minCrowd = evolve === null ? 2 : 4;   // last age: nothing else to spend on
+  // The crowd has to be big enough that the special roughly pays for itself in
+  // bounties. Set too low, the AI trades its next age for a handful of club men
+  // and finishes a whole age behind anyone who simply waited - which is the gap
+  // that made it lose nineteen battles in twenty to a scripted player.
+  const minCrowd = evolve === null ? 3 : 5;
   if (special && canFireSpecial(side) && crowd >= minCrowd
       && (relative > p.panicThreat || hpFrac < p.panicHp || stalled)
       && hasSpecialSurplus(side, p, special, evolve)
@@ -127,7 +136,7 @@ function think(state, side, p, rng) {
   }
 
   // 6. Spawn.
-  const queueTarget = Math.round(lerp(1, 5, aggression));
+  const queueTarget = Math.round(lerp(2, 6, aggression));
   if (side.queue.length < queueTarget) {
     if (p.idleWaste > 0 && rng.chance(p.idleWaste)) return;   // deliberate slack
     const pick = chooseUnit(side, foe, p, rng);

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A recreation of Age of War. Five ages, sixteen units, one lane.">
+  <meta name="color-scheme" content="dark">
+  <title>Age of War</title>
+
+  <link rel="stylesheet" href="styles/tokens.css">
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/hud.css">
+  <link rel="stylesheet" href="styles/screens.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%231B1410'/><path d='M8 22h16' stroke='%23D9A441' stroke-width='2' stroke-linecap='round'/><path d='M12 22V13l4-5 4 5v9' fill='none' stroke='%23E8743A' stroke-width='2' stroke-linejoin='round'/></svg>">
+</head>
+<body>
+  <div id="stage-wrap">
+    <canvas id="stage" width="960" height="540"></canvas>
+    <div id="hud"></div>
+    <div id="picker"></div>
+    <div id="screens"></div>
+  </div>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

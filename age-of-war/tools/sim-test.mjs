@@ -11,7 +11,6 @@ import { Rng } from '../src/core/rng.js';
 import { LANE, TUNING } from '../src/data/balance.js';
 import { createState, hashState, unitDef } from '../src/model/state.js';
 import { DT, step } from '../src/engine/step.js';
-import { tickAi } from '../src/engine/ai.js';
 
 const SEEDS = Number(process.env.SEEDS || 20);
 const TICKS = Number(process.env.TICKS || 40000);

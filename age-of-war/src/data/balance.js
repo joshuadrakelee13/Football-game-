@@ -15,9 +15,17 @@
 export const TUNING = {
   // The stage is a fixed 960x540 and scales to the window. Both bases are always
   // on screen, exactly as the original played.
-  stage: { w: 960, h: 540, groundY: 452, horizonY: 300 },
+  stage: { w: 960, h: 540, groundY: 398, horizonY: 262 },   // groundY clears the bottom bar
 
   rankGap: 2,          // px of air between ranks in a column. Tune before any art.
+                       //
+                       // Every unit carries a `standoff` as well as a `range`:
+                       // how close it tries to get, as opposed to how far it can
+                       // hit. They are not the same number, and making them the
+                       // same is the single easiest way to break this game. A
+                       // unit stops at its standoff, so with standoff == range
+                       // only the front rank of a column is ever in range and a
+                       // line of twelve archers fires one arrow at a time.
   readyWindup: 0.15,   // s. A unit arriving at the line strikes almost at once,
                        // rather than idling for a full attack period first.
   hitRadius: 18,       // px. How close a ballistic shot must land to connect.
@@ -69,11 +77,11 @@ export const AGES = [
   // rather than cumulative totals, and in that reading they land within a few
   // percent of the experience income measured by tools/xp-curve.mjs. So these
   // are the wiki numbers after all, and the harness agrees with them.
-  { key: 'stone', name: 'Stone Age', evolveCost: 4000, baseHp: 9000, trickle: 1.6 },
-  { key: 'castle', name: 'Castle Age', evolveCost: 14000, baseHp: 24000, trickle: 4.8 },
-  { key: 'renaissance', name: 'Renaissance Age', evolveCost: 12000, baseHp: 45000, trickle: 24 },
-  { key: 'modern', name: 'Modern Age', evolveCost: 20000, baseHp: 64000, trickle: 150 },
-  { key: 'future', name: 'Future Age', evolveCost: null, baseHp: 74000, trickle: 400 },
+  { key: 'stone', name: 'Stone Age', evolveCost: 4000, baseHp: 14000, trickle: 1.6 },
+  { key: 'castle', name: 'Castle Age', evolveCost: 14000, baseHp: 38000, trickle: 4.8 },
+  { key: 'renaissance', name: 'Renaissance Age', evolveCost: 12000, baseHp: 70000, trickle: 24 },
+  { key: 'modern', name: 'Modern Age', evolveCost: 20000, baseHp: 142000, trickle: 175 },
+  { key: 'future', name: 'Future Age', evolveCost: null, baseHp: 150000, trickle: 490 },
 ];
 
 export const AGE_COUNT = AGES.length;
@@ -97,7 +105,7 @@ export const UNITS = {
   },
   slingshot_man: {
     key: 'slingshot_man', name: 'Slingshot Man', age: 0, role: 'ranged',
-    hp: 45, damage: 9, attackSpeed: 0.85, range: 130, moveSpeed: 38,
+    hp: 52, damage: 11, attackSpeed: 0.85, range: 130, standoff: 88, moveSpeed: 38,
     cost: 25,          // wiki
     goldValue: 16, xpValue: 112, buildTime: 2.4,
     size: { radius: 9, height: 33 },
@@ -116,23 +124,23 @@ export const UNITS = {
     key: 'sword_man', name: 'Sword Man', age: 1, role: 'melee',
     hp: 190, damage: 26, attackSpeed: 1.05, range: 50, standoff: 4, moveSpeed: 44,
     cost: 50,          // wiki
-    goldValue: 34, xpValue: 380, buildTime: 2.0,
+    goldValue: 34, xpValue: 480, buildTime: 2.0,
     size: { radius: 10, height: 36 },
     attack: { kind: 'melee' }, splash: 0,
   },
   archer: {
     key: 'archer', name: 'Archer', age: 1, role: 'ranged',
-    hp: 120, damage: 22, attackSpeed: 0.9, range: 165, moveSpeed: 40,
+    hp: 120, damage: 22, attackSpeed: 0.9, range: 165, standoff: 120, moveSpeed: 40,
     cost: 75,          // wiki
-    goldValue: 48, xpValue: 520, buildTime: 2.8,
+    goldValue: 48, xpValue: 660, buildTime: 2.8,
     size: { radius: 10, height: 35 },
     attack: { kind: 'ballistic', speed: 380, arc: 0.14 }, splash: 0,
   },
   knight: {
     key: 'knight', name: 'Knight', age: 1, role: 'heavy',
-    hp: 700, damage: 70, attackSpeed: 0.85, range: 46, standoff: 6, moveSpeed: 38,
+    hp: 950, damage: 88, attackSpeed: 0.85, range: 46, standoff: 6, moveSpeed: 38,
     cost: 500,         // wiki
-    goldValue: 250, xpValue: 2800, buildTime: 7.0,
+    goldValue: 250, xpValue: 3600, buildTime: 7.0,
     size: { radius: 15, height: 46 },
     attack: { kind: 'melee' }, splash: 0,
   },
@@ -141,48 +149,48 @@ export const UNITS = {
     key: 'dueler', name: 'Dueler', age: 2, role: 'melee',
     hp: 520, damage: 62, attackSpeed: 1.15, range: 50, standoff: 4, moveSpeed: 48,
     cost: 200,         // wiki
-    goldValue: 120, xpValue: 500, buildTime: 2.2,
+    goldValue: 120, xpValue: 620, buildTime: 2.2,
     size: { radius: 10, height: 37 },
     attack: { kind: 'melee' }, splash: 0,
   },
   musketeer: {
     key: 'musketeer', name: 'Musketeer', age: 2, role: 'ranged',
-    hp: 340, damage: 70, attackSpeed: 0.7, range: 195, moveSpeed: 42,
+    hp: 430, damage: 96, attackSpeed: 0.7, range: 205, standoff: 150, moveSpeed: 42,
     cost: 400,         // wiki
-    goldValue: 230, xpValue: 700, buildTime: 3.2,
+    goldValue: 230, xpValue: 880, buildTime: 3.2,
     size: { radius: 10, height: 36 },
     attack: { kind: 'ballistic', speed: 520, arc: 0.02 }, splash: 0,
   },
   cannoneer: {
     key: 'cannoneer', name: 'Cannoneer', age: 2, role: 'heavy',
-    hp: 900, damage: 150, attackSpeed: 0.45, range: 230, moveSpeed: 30,
+    hp: 1200, damage: 165, attackSpeed: 0.45, range: 230, standoff: 165, moveSpeed: 30,
     cost: 1000,        // wiki
-    goldValue: 500, xpValue: 1600, buildTime: 8.0,
+    goldValue: 500, xpValue: 2000, buildTime: 8.0,
     size: { radius: 14, height: 38 },
-    attack: { kind: 'ballistic', speed: 340, arc: 0.22 }, splash: 34,
+    attack: { kind: 'ballistic', speed: 340, arc: 0.22 }, splash: 48,
   },
 
   melee_infantry: {
     key: 'melee_infantry', name: 'Melee Infantry', age: 3, role: 'melee',
     hp: 1500, damage: 150, attackSpeed: 1.2, range: 50, standoff: 4, moveSpeed: 52,
     cost: 1500,        // wiki
-    goldValue: 780, xpValue: 1300, buildTime: 2.6,
+    goldValue: 780, xpValue: 2250, buildTime: 2.6,
     size: { radius: 10, height: 37 },
     attack: { kind: 'melee' }, splash: 0,
   },
   infantry: {
     key: 'infantry', name: 'Infantry', age: 3, role: 'ranged',
-    hp: 1100, damage: 95, attackSpeed: 1.8, range: 210, moveSpeed: 46,
+    hp: 1100, damage: 95, attackSpeed: 1.8, range: 210, standoff: 150, moveSpeed: 46,
     cost: 2000,        // wiki
-    goldValue: 1000, xpValue: 1650, buildTime: 3.4,
+    goldValue: 1000, xpValue: 2800, buildTime: 3.4,
     size: { radius: 10, height: 36 },
     attack: { kind: 'hitscan', beam: 0.06 }, splash: 0,
   },
   tank: {
     key: 'tank', name: 'Tank', age: 3, role: 'heavy',
-    hp: 4200, damage: 420, attackSpeed: 0.5, range: 250, moveSpeed: 32,
+    hp: 4200, damage: 420, attackSpeed: 0.5, range: 250, standoff: 180, moveSpeed: 32,
     cost: 7000,        // wiki
-    goldValue: 3200, xpValue: 5400, buildTime: 9.0,
+    goldValue: 3200, xpValue: 9000, buildTime: 9.0,
     size: { radius: 20, height: 34 },
     attack: { kind: 'ballistic', speed: 480, arc: 0.1 }, splash: 40,
   },
@@ -197,7 +205,7 @@ export const UNITS = {
   },
   blaster: {
     key: 'blaster', name: 'Blaster', age: 4, role: 'ranged',
-    hp: 3200, damage: 300, attackSpeed: 1.5, range: 240, moveSpeed: 48,
+    hp: 3200, damage: 300, attackSpeed: 1.5, range: 240, standoff: 172, moveSpeed: 48,
     cost: 6000,        // wiki
     goldValue: 2900, xpValue: 3800, buildTime: 3.8,
     size: { radius: 11, height: 38 },
@@ -205,7 +213,7 @@ export const UNITS = {
   },
   war_machine: {
     key: 'war_machine', name: 'War Machine', age: 4, role: 'heavy',
-    hp: 14000, damage: 1100, attackSpeed: 0.55, range: 280, moveSpeed: 30,
+    hp: 14000, damage: 1100, attackSpeed: 0.55, range: 280, standoff: 200, moveSpeed: 30,
     cost: 20000,       // wiki
     goldValue: 8500, xpValue: 11000, buildTime: 11.0,
     size: { radius: 24, height: 52 },
@@ -344,23 +352,23 @@ export const DIFFICULTY = {
     key: 'normal', name: 'Normal',
     startGold: 175, startXp: 0,
     trickleMul: 1.0, killMul: 1.0,
-    reaction: 1.0,
+    reaction: 0.85,
     aggr0: 0.55, aggr1: 0.9, rampSeconds: 600,
-    mistake: 0.08, idleWaste: 0.18, bankMul: 2.2,
-    turretThreat: 4.0, slotMul: 1.6,
-    specialReserve: 0.5, panicThreat: 8, panicHp: 0.55,
-    evolveGoldFloor: 0.6,
+    mistake: 0.05, idleWaste: 0.12, bankMul: 2.2,
+    turretThreat: 2.0, slotMul: 1.6,
+    specialReserve: 1.0, panicThreat: 8, panicHp: 0.55,
+    evolveGoldFloor: 0.25,
   },
   impossible: {
     key: 'impossible', name: 'Impossible',
-    startGold: 4000, startXp: 4000,
-    trickleMul: 2.2, killMul: 1.15,
-    reaction: 0.35,
+    startGold: 2600, startXp: 4000,
+    trickleMul: 1.25, killMul: 1.06,
+    reaction: 0.6,
     aggr0: 0.8, aggr1: 1.0, rampSeconds: 600,
     mistake: 0, idleWaste: 0, bankMul: 1.6,
-    turretThreat: 2.5, slotMul: 1.2,
-    specialReserve: 0, panicThreat: 5, panicHp: 0.7,
-    evolveGoldFloor: 0.2,
+    turretThreat: 1.4, slotMul: 1.2,
+    specialReserve: 0.6, panicThreat: 5, panicHp: 0.7,
+    evolveGoldFloor: 0.1,
   },
 };
 

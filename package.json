@@ -10,7 +10,8 @@
     "test:sim": "node tools/sim-test.mjs",
     "test:season": "node tools/season-test.mjs",
     "test:balance": "node tools/balance-test.mjs",
-    "merlin:build": "node merlin-accessories/build.mjs"
+    "merlin:build": "node merlin-accessories/build.mjs",
+    "merlin:check": "node merlin-accessories/tools/check.mjs"
   },
   "engines": {
     "node": ">=18"

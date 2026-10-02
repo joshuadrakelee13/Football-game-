@@ -1,0 +1,35 @@
+/* Design tokens. The battlefield supplies the colour; the interface stays out
+   of its way, which is why almost everything here is a neutral. */
+
+:root {
+  --bg: #0E0B09;
+  --surface: rgba(24, 18, 14, 0.86);
+  --surface-2: rgba(38, 29, 22, 0.9);
+  --surface-3: rgba(52, 40, 30, 0.92);
+  --line: rgba(255, 236, 205, 0.16);
+  --line-strong: rgba(255, 236, 205, 0.34);
+
+  --text: #F5EAD9;
+  --text-2: #CDBCA4;
+  --text-3: #93816C;
+
+  --gold: #F2C75B;
+  --xp: #9B7FE0;
+  --danger: #E05A3E;
+  --good: #6FCB6A;
+  --warn: #E8B13A;
+  --you: #5AA9F0;
+  --foe: #E86A54;
+
+  --radius: 5px;
+  --radius-lg: 9px;
+
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --fast: 120ms;
+  --normal: 200ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --fast: 0.01ms; --normal: 0.01ms; }
+  * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "age-of-war",
+  "version": "1.0.0",
+  "description": "A recreation of the 2007 lane-battle game Age of War. Five ages, sixteen units, one lane.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "node tools/serve.mjs",
+    "test": "node tools/sim-test.mjs && node tools/matchup-test.mjs && node tools/balance-test.mjs && node tools/difficulty-test.mjs && node tools/xp-curve.mjs",
+    "test:sim": "node tools/sim-test.mjs",
+    "test:matchup": "node tools/matchup-test.mjs",
+    "test:balance": "node tools/balance-test.mjs",
+    "test:difficulty": "node tools/difficulty-test.mjs",
+    "test:xp": "node tools/xp-curve.mjs"
+  },
+  "engines": { "node": ">=18" }
+}

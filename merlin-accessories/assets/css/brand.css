@@ -1,0 +1,43 @@
+/*
+  Brand tokens: the only file that carries Merlin's visual identity.
+
+  Colours are sampled from a screenshot of the live merlinaccessories.com header:
+  the indigo-navy masthead, the mid-blue navigation bar and the cyan of the
+  logo's "M". The live site itself could not be reached from the build
+  environment, so the fonts are close stand-ins; set the real ones here and the
+  whole site follows. No other stylesheet hard-codes a brand colour or typeface.
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,500;0,600;0,700;0,800;1,700;1,800&family=Open+Sans:wght@400;600;700&display=swap');
+
+:root {
+  /* Core brand */
+  --brand-primary: #272f7a;        /* masthead, footer, headings */
+  --brand-primary-ink: #ffffff;
+  --brand-accent: #0e73aa;         /* navigation bar, buttons, links */
+  --brand-accent-hover: #272f7a;
+  --brand-accent-ink: #ffffff;
+  --brand-highlight: #29abe2;      /* logo cyan: active states, ticks, stripes */
+  --brand-highlight-soft: #a9e3ff; /* active link on the blue nav bar */
+
+  /* Neutrals */
+  --ink: #1c2233;
+  --ink-soft: #4a5268;
+  --muted: #6c7489;
+  --line: #dde1ea;
+  --surface: #ffffff;
+  --surface-alt: #f2f4f8;
+  --surface-sunk: #e7ebf2;
+
+  /* Status */
+  --open: #1f8a4c;
+  --closed: #c0392b;
+
+  /* Type */
+  --font-display: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+  --font-body: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+
+  /* Shape */
+  --radius: 4px;
+  --radius-lg: 6px;
+}

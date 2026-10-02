@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 56" role="img" aria-label="Merlin Accessories Ltd">
-  <!-- Approximation of the Merlin logo, drawn from a screenshot. Replace this file with the real logo. -->
-  <path d="M0 48 L18 6 L30 6 L12 48 Z" fill="#fff"/>
-  <path d="M18 6 L30 6 L44 36 L38 48 Z" fill="#fff"/>
-  <path d="M30 48 L48 6 L62 48 Z" fill="#29abe2"/>
-  <text x="72" y="34" font-family="Montserrat, 'Helvetica Neue', Arial, sans-serif" font-weight="700" font-size="34" letter-spacing="1" fill="#fff">MERLIN</text>
-  <text x="73" y="49" font-family="Montserrat, 'Helvetica Neue', Arial, sans-serif" font-weight="500" font-size="10.5" letter-spacing="3.1" fill="#d5dcf0">ACCESSORIES LTD</text>
-</svg>

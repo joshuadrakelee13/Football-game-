@@ -1,24 +1,27 @@
 /*
   Brand tokens: the only file that carries Merlin's visual identity.
 
-  Colours are sampled from a screenshot of the live merlinaccessories.com header:
-  the indigo-navy masthead, the mid-blue navigation bar and the cyan of the
-  logo's "M". The live site itself could not be reached from the build
-  environment, so the fonts are close stand-ins; set the real ones here and the
-  whole site follows. No other stylesheet hard-codes a brand colour or typeface.
+  Colours are read from the live merlinaccessories.com: the indigo-navy
+  (#243077, rgb 36 48 119) of the masthead, footer and headings, and the blue
+  (#0070af, rgb 0 112 175) of the menu bar and buttons. The live site sets its
+  type in Proxima Nova (headings and body) and DIN Next Light, which are Wix-licensed
+  fonts that cannot be copied into another site, so Montserrat and Nunito Sans
+  (free Google Fonts, closest in shape) stand in. Change the two font tokens below
+  and the whole site follows. No other stylesheet hard-codes a brand colour or typeface.
 */
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,500;0,600;0,700;0,800;1,700;1,800&family=Open+Sans:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,500;0,600;0,700;0,800;1,700;1,800&family=Nunito+Sans:wght@400;600;700&display=swap');
 
 :root {
-  /* Core brand */
-  --brand-primary: #272f7a;        /* masthead, footer, headings */
+  /* Core brand (from the live site) */
+  --brand-primary: #243077;        /* masthead, footer, headings */
   --brand-primary-ink: #ffffff;
-  --brand-accent: #0e73aa;         /* navigation bar, buttons, links */
-  --brand-accent-hover: #272f7a;
+  --brand-accent: #0070af;         /* navigation bar, buttons, links */
+  --brand-accent-hover: #243077;
   --brand-accent-ink: #ffffff;
-  --brand-highlight: #29abe2;      /* logo cyan: active states, ticks, stripes */
-  --brand-highlight-soft: #a9e3ff; /* active link on the blue nav bar */
+  /* Lighter tints of the two brand colours: ticks, stripes, active links on the blue bar */
+  --brand-highlight: #3a9bd1;
+  --brand-highlight-soft: #c4e5f7;
 
   /* Neutrals */
   --ink: #1c2233;
@@ -35,7 +38,7 @@
 
   /* Type */
   --font-display: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
-  --font-body: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+  --font-body: 'Nunito Sans', 'Helvetica Neue', Arial, sans-serif;
 
   /* Shape */
   --radius: 4px;

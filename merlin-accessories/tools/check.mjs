@@ -4,6 +4,7 @@
 //
 // Starts the repo's static server, then:
 //   - crawls every internal link and fails on any non-200 page or missing #anchor
+//   - checks every image on every page exists (no broken pictures)
 //   - checks the mega menu opens on hover and closes on leave
 //   - checks search finds and opens a result from the keyboard
 //   - checks no page scrolls sideways at phone width (390px)
@@ -42,18 +43,24 @@ try {
   p.on('pageerror', (e) => jsErrors.push(`${p.url()}: ${e.message}`));
 
   // 1. Crawl
-  const seen = new Set(); const queue = [BASE]; const anchors = new Set();
+  const seen = new Set(); const queue = [BASE]; const anchors = new Set(); const images = new Set();
   while (queue.length) {
     const url = queue.shift(); if (seen.has(url)) continue; seen.add(url);
     const res = await p.goto(url, { waitUntil: 'domcontentloaded' });
     if (!res || res.status() !== 200) { fail(`${url} returned ${res?.status()}`); continue; }
+    for (const src of await p.$$eval('img[src]', (is) => is.map((i) => i.src))) {
+      if (new URL(src).origin !== new URL(BASE).origin || images.has(src)) continue;
+      images.add(src);
+      const res = await p.request.get(src);
+      if (!res.ok()) fail(`broken image ${src} (on ${url})`);
+    }
     for (const href of await p.$$eval('a[href]', (as) => as.map((a) => a.href))) {
       const u = new URL(href); if (u.origin !== new URL(BASE).origin) continue;
       if (u.hash && !['#top', '#main'].includes(u.hash)) anchors.add(u.href);
       u.hash = ''; if (!seen.has(u.href)) queue.push(u.href);
     }
   }
-  ok(`crawled ${seen.size} pages`);
+  ok(`crawled ${seen.size} pages and ${images.size} images`);
   for (const a of anchors) { await p.goto(a); if (!(await p.$(new URL(a).hash))) fail(`missing anchor ${a}`); }
   ok(`checked ${anchors.size} anchors`);
 

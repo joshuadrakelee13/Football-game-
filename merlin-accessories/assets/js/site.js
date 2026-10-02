@@ -65,8 +65,8 @@
   const input = $('[data-search-input]');
   const list = $('[data-search-results]');
   const index = (window.MERLIN_SEARCH || []).map((e) => ({ ...e, hay: `${e.t} ${e.d} ${e.w || ''}`.toLowerCase(), title: e.t.toLowerCase() }));
-  const ORDER = ['Category', 'Featured', 'Service', 'Range', 'Product', 'Brand', 'Page'];
-  const SUGGESTED = ['Silicone', 'Post Spikes', 'Tool Repair Service', 'Conversion Charts', 'Contact & opening hours'];
+  const ORDER = ['Category', 'Featured', 'Service', 'Range', 'Product', 'Brand', 'News', 'Team', 'FAQ', 'Page'];
+  const SUGGESTED = ['Silicone', 'Fencing', 'Tool Repair Service', 'Downloads', 'Contact & opening hours'];
   let active = 0;
 
   const escapeHtml = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -214,21 +214,62 @@
     update();
   }
 
-  // Enquiry form: composes an email in the visitor's mail app. --------------------
-  const form = $('[data-enquiry-form]');
-  if (form) {
+  // Forms: each one composes an email in the visitor's mail app (there is no server). ----------
+  $$('[data-form]').forEach((form) => {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
+      const lines = [];
+      $$('input, select, textarea', form).forEach((el) => {
+        if (!el.name || !el.value.trim()) return;
+        lines.push(`${el.dataset.label || el.name}: ${el.value.trim()}`);
+      });
       const f = Object.fromEntries(new FormData(form));
-      const lines = [f.message, '', '—', `Name: ${f.name}`];
-      if (f.company) lines.push(`Company: ${f.company}`);
-      if (f.phone) lines.push(`Phone: ${f.phone}`);
-      const subject = `${f.topic} – ${f.name}${f.company ? ` (${f.company})` : ''}`;
+      const subject = `${form.dataset.subject}${f.name ? ` – ${f.name}` : ''}${f.company ? ` (${f.company})` : ''}`;
       location.href = `mailto:${form.dataset.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\n'))}`;
     });
-    // Preselect the topic from ?topic= links.
-    const t = new URLSearchParams(location.search).get('topic');
-    if (t) { const opt = [...form.topic.options].find((o) => o.text === t); if (opt) opt.selected = true; }
+  });
+  $$('[data-newsletter]').forEach((form) => form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = new FormData(form).get('email');
+    location.href = `mailto:${form.dataset.email}?subject=${encodeURIComponent('Newsletter sign-up')}&body=${encodeURIComponent(`Please add me to the Merlin Accessories newsletter: ${email}`)}`;
+  }));
+
+  // Home slideshow: auto-advances, pauses on hover/focus, never autoplays if the visitor prefers reduced motion. ----
+  const show = $('[data-slideshow]');
+  if (show) {
+    const slides = $$('.slide', show);
+    const dots = $$('[data-slide-dot]', show);
+    const toggle = $('[data-slide-toggle]', show);
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let i = 0; let playing = !reduce; let timer;
+    const go = (n) => {
+      i = (n + slides.length) % slides.length;
+      slides.forEach((s, k) => {
+        const on = k === i;
+        s.classList.toggle('is-active', on);
+        s.setAttribute('aria-hidden', String(!on));
+        if (on) s.removeAttribute('tabindex'); else s.setAttribute('tabindex', '-1');
+        const im = $('img', s); if (on && im) im.loading = 'eager';
+      });
+      dots.forEach((d, k) => (k === i ? d.setAttribute('aria-current', 'true') : d.removeAttribute('aria-current')));
+    };
+    const stop = () => clearInterval(timer);
+    const start = () => { stop(); if (playing) timer = setInterval(() => go(i + 1), 6000); };
+    const paint = () => {
+      toggle.setAttribute('aria-label', playing ? 'Pause slideshow' : 'Play slideshow');
+      toggle.innerHTML = playing ? toggle.dataset.pause : toggle.dataset.play;
+    };
+    toggle.dataset.pause = toggle.innerHTML;
+    toggle.dataset.play = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z" fill="currentColor"/></svg>';
+    $('[data-slide-prev]', show).addEventListener('click', () => { go(i - 1); start(); });
+    $('[data-slide-next]', show).addEventListener('click', () => { go(i + 1); start(); });
+    dots.forEach((d, k) => d.addEventListener('click', () => { go(k); start(); }));
+    toggle.addEventListener('click', () => { playing = !playing; paint(); start(); });
+    show.addEventListener('mouseenter', stop);
+    show.addEventListener('mouseleave', start);
+    show.addEventListener('focusin', stop);
+    show.addEventListener('focusout', start);
+    paint(); start();
   }
 
   // Back to top without leaving a #top in the URL.

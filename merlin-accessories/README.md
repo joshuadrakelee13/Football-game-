@@ -33,7 +33,7 @@ Page URLs match the live site's (`/products/adhesivesandchemicals`, `/toolrepair
   hours) and the blue menu bar with the same items. When you scroll, the menu bar sticks to
   the top and picks up a small logo, a search button and the phone number, so navigation is
   always within reach.
-- **Products mega menu.** All ten categories with one-line descriptions, plus featured ranges,
+- **Products mega menu.** All twelve categories with one-line descriptions, plus featured ranges,
   Tool Repair and Bulk Deals, one hover or tap away. Hover intent stops it flickering, and it
   works fully from the keyboard (chevron toggles, arrow keys, Esc).
 - **Instant search** across categories, sub-ranges, products, brands and pages. Open it from
@@ -48,8 +48,7 @@ Page URLs match the live site's (`/products/adhesivesandchemicals`, `/toolrepair
   - "Jump to" chips for each sub-range
   - Enquire links that pre-fill the email subject
   - previous/next category links
-- **Brands page** listing every brand and where it is stocked. The Brands menu links straight
-  to each one.
+- **Brands page** with the brand pages and the trading-partner logo wall.
 - **Phones:**
   - a slide-in menu with accordions
   - a thumb-reach bar for Call, Directions, Email and Search
@@ -61,19 +60,25 @@ Page URLs match the live site's (`/products/adhesivesandchemicals`, `/toolrepair
 - **Smooth page changes** (cross-document view transitions), link prefetching on hover,
   skip link, visible focus states and reduced-motion support.
 
-## Still to swap in from the live site
+## Content: 1:1 with the live site (v1.1 content pass)
 
-The live site could not be reached from the build environment. The colours were taken from
-a screenshot of its header. These are stand-ins:
+Every page, menu item, wording, brochure, photo, logo and form field on
+merlinaccessories.com is in this build, copied from the live pages (checked October 2026):
 
-- **Logo:** `assets/img/logo.svg` and `favicon.svg` are drawn approximations. Replace the files.
-- **Fonts:** Montserrat and Open Sans are set in `brand.css`. Change them there if the live
-  site uses something else.
-- **Images:** drop these into `assets/img/` and they appear automatically. Until then a neutral
-  panel shows.
-  - `banner-tool-repair.jpg` (home banner, left side)
-  - `promo-tool-repair.jpg`, `promo-sanding-belts.jpg`, `promo-silicone.jpg`, `promo-products.jpg` (home tiles)
-- **Copy and files:** search `TODO` in `src/content.mjs`. This covers:
-  - the Abrasives, Power Tool Accessories and Building Hardware descriptions
-  - the remaining Meet the Team members
-  - the Downloads PDF links (until they are added, each card offers "Request a copy" by email)
+- real logo, favicon, banners, tile photos, range photos, brand logos, team photos, brochure
+  covers and the conversion chart images (all under `assets/img/`)
+- brand colours read from the live CSS (`brand.css`)
+- every sub-range on every product page (with its brands, brochure and call/view buttons),
+  Blum, Konig, Moldex PPE, Soudaclean, Made to order sanding belts, Delivery, FAQ's, Bulk Buy
+  Silicone Pallet Deals, the four Latest News posts, 13 team members, the full About story,
+  the 14 brochures, Terms / Privacy / Cookie pages and the footer details
+
+Still different from the live site, on purpose:
+
+- **Fonts.** The live site uses Proxima Nova and DIN Next (licensed through Wix). Montserrat and
+  Nunito Sans stand in. Change `--font-display` / `--font-body` in `brand.css`.
+- **Online product catalogue** (206 products in 24 categories on the live site) is not rebuilt.
+  Links to it go to the live site.
+- **Forms** open the visitor's email app (there is no server). The live site's forms and newsletter
+  sign-up post to Wix.
+- **Brochure PDFs** are linked from the live site (about 300 MB in total), not copied in.

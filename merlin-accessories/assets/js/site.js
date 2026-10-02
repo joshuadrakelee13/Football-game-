@@ -4,6 +4,17 @@
   const $ = (s, el = document) => el.querySelector(s);
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
   const root = document.body.dataset.root || './';
+
+  // Opened straight from disk (file://) there is no server to turn "about/" into
+  // "about/index.html", so add it to every local link.
+  const fromDisk = location.protocol === 'file:';
+  const local = (href) => (fromDisk ? href.replace(/(^|\/)(#|$)/, '$1index.html$2') : href);
+  if (fromDisk) {
+    $$('a[href]').forEach((a) => {
+      const h = a.getAttribute('href');
+      if (!/^[a-z]+:|^#/i.test(h)) a.setAttribute('href', local(h));
+    });
+  }
   const navbar = $('[data-navbar]');
   const masthead = $('[data-masthead]');
 
@@ -92,7 +103,7 @@
     active = 0;
     if (!results.length) {
       list.innerHTML = `<li class="search-empty">No matches for “${escapeHtml(input.value)}”. We stock far more than we list —
-        <a class="text-link" href="tel:+441962842002">call 01962 842 002</a> or <a class="text-link" href="${root}contact/">send an enquiry</a>.</li>`;
+        <a class="text-link" href="tel:+441962842002">call 01962 842 002</a> or <a class="text-link" href="${local(`${root}contact/`)}">send an enquiry</a>.</li>`;
       return;
     }
     let lastGroup = null;
@@ -100,7 +111,7 @@
       const group = terms.length ? null : 'Suggested';
       const head = group && group !== lastGroup ? `<li class="search-group" role="presentation">${group}</li>` : '';
       lastGroup = group;
-      return `${head}<li role="presentation"><a role="option" id="sr-${i}" href="${root}${e.u}" aria-selected="${i === 0}">
+      return `${head}<li role="presentation"><a role="option" id="sr-${i}" href="${local(root + e.u)}" aria-selected="${i === 0}">
         <span><strong>${highlight(e.t, terms)}</strong><small>${highlight(e.d, terms)}</small></span>
         <span class="search-tag">${e.k === 'Suggested' ? 'Go' : e.k}</span></a></li>`;
     }).join('');

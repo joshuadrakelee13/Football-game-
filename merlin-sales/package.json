@@ -1,0 +1,13 @@
+{
+  "name": "merlin-sales",
+  "version": "0.1.0",
+  "description": "Daily sales view for Merlin Accessories, built from Merlin ERP exports. Runs in the browser; data stays on the computer.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "node ../tools/serve.mjs",
+    "test": "node --test tests/",
+    "check": "node tests/check.mjs"
+  },
+  "engines": { "node": ">=18" }
+}

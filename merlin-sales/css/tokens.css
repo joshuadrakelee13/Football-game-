@@ -1,0 +1,91 @@
+/*
+  Design tokens for Merlin Sales. Every colour, size and radius used by app.css comes from here.
+
+  Brand colours are copied (not linked) from merlin-accessories/assets/css/brand.css:
+  navy #243077 and blue #0070af. The font is IBM Plex Sans, stored in vendor/ so the app
+  makes no request to a font service.
+*/
+
+@font-face {
+  font-family: 'IBM Plex Sans';
+  src: url('../vendor/ibm-plex-sans/IBMPlexSans-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Sans';
+  src: url('../vendor/ibm-plex-sans/IBMPlexSans-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Sans';
+  src: url('../vendor/ibm-plex-sans/IBMPlexSans-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Brand */
+  --navy: #243077;
+  --navy-raised: #2f3c8c;   /* active item on the rail */
+  --navy-deep: #1b2460;     /* pressed primary button */
+  --navy-ink: #ffffff;
+  --navy-ink-soft: #c9cde4; /* inactive rail text: 7.6:1 on navy */
+  --focus: #0070af;         /* Merlin blue, used only for the focus ring */
+
+  /* One cool grey scale */
+  --ink: #1b2030;
+  --ink-2: #454c5e;
+  --muted: #646b7d;         /* 5.3:1 on white */
+  --rule-strong: #b9bec9;
+  --rule: #dcdfe6;
+  --rule-faint: #eceef2;
+  --surface: #ffffff;
+  --surface-2: #f6f7f9;     /* table header, sunk areas */
+  --surface-3: #eef0f4;     /* hover */
+
+  /* Health: colour plus shape, never colour alone */
+  --good: #1d7343;
+  --watch: #9a5b00;
+  --risk: #b3261e;
+  --lost: #5f6675;
+  --risk-wash: #fbeeed;     /* only behind an error message on the import screen */
+
+  /* Type */
+  --font: 'IBM Plex Sans', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --fs-xs: 12px;
+  --fs-s: 13px;
+  --fs-m: 14px;
+  --fs-l: 16px;
+  --fs-xl: 20px;
+  --fs-xxl: 24px;
+  --lh: 1.45;
+
+  /* Space, on a 4px grid */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 20px;
+  --s6: 24px;
+  --s8: 32px;
+  --s10: 40px;
+
+  /* Shape, by purpose */
+  --r-control: 2px;
+  --r-button: 4px;
+  --r-panel: 6px;
+
+  --row-h: 32px;
+  --rail-w: 208px;
+  --shadow-float: 0 4px 16px rgba(27, 32, 48, 0.14);
+  --t-fast: 120ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --t-fast: 0ms; }
+}

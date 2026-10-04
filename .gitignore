@@ -3,3 +3,7 @@ node_modules/
 *.log
 .playwright/
 screenshots/
+
+# Merlin Sales: never commit real Merlin ERP exports
+*.real.*
+exports/

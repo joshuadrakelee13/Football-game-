@@ -11,6 +11,18 @@ Edge or Firefox. Keep the terminal window open while you use the app; press Ctrl
 Opening `index.html` by double-clicking it will not work, because browsers do not let a page
 opened straight from disk keep its data reliably.
 
+## Importing
+
+1. Export the customer list, the sales lines (or invoice headers and invoice lines) and,
+   if you want stock views, the stock report from Merlin ERP as .csv or .xlsx.
+2. Open **Import** and drop the files (up to 4 at once).
+3. Check each file's kind and its column matches. Anything marked with a red star is needed.
+4. Check the totals. Type the net total from a Merlin ERP sales report for the same dates
+   into **Total from Merlin report**: a zero difference means nothing was lost. Every skipped
+   row is listed in a download, with the reason.
+5. Click **Import**. Tick **Save these column matches** and next time the same exports go
+   straight to step 4.
+
 ## Where the data lives
 
 Everything you import is stored inside your browser on this computer (in its built-in

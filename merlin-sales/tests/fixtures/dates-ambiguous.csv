@@ -1,0 +1,5 @@
+Invoice Number,Invoice Date,Account,Customer,Product,Product Group,Quantity,Net Value
+A1,03/04/2026,000101,Fixture Windows Ltd,SIL-LMN-C,Silicone,10,61.00
+A2,05/06/2026,000102,Testbridge Glazing,PAK-FLT-3,Packers and vents,4,15.60
+A3,01/12/2025,000101,Fixture Windows Ltd,PPE-GLV-L,PPE,20,35.00
+A4,11/02/2026,000103,Mockford Builders,FIX-FR-100,Fixings and bolting,2,18.80

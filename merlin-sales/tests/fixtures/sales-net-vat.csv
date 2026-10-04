@@ -1,0 +1,4 @@
+Invoice No,Date,Account Code,Product Code,Description,Quantity,Net,VAT,Gross
+V1,14/09/2026,000101,SIL-LMN-C,LMN silicone clear 310ml,10,61.00,12.20,73.20
+V2,15/09/2026,000102,PAK-FLT-3,Flat packer 3mm bag 100,4,15.60,3.12,18.72
+V3,16/09/2026,000103,FIX-FR-100,Frame fixing 10x100 box 50,2,18.80,3.76,22.56

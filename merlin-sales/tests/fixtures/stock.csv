@@ -1,0 +1,12 @@
+Stock Code,Description,Group,Free Stock,Avg Cost,Sell Price,Supplier,Re-order Level,On Order,Last Receipt
+SIL-LMN-C,LMN silicone clear 310ml,Silicone,"1,200",4.20,6.10,Sealant Supplier A,300,600,12/09/2026
+SIL-SAN-W,Sanitary silicone white 310ml,Silicone,96,3.10,4.95,Sealant Supplier A,100,0,02/08/2026
+SCR-WF-430,Window fab screw 4.3x30 box 1000,Window fabrication screws,40,9.50,14.80,Screw Supplier B,20,0,20/07/2026
+FIX-FR-100,Frame fixing 10x100 box 50,Fixings and bolting,75,6.00,9.40,Fixings Supplier C,30,0,14/05/2026
+PAK-FLT-3,Flat packer 3mm bag 100,Packers and vents,300,2.20,3.90,Packer Supplier D,50,0,01/09/2026
+CMP-TP600,Expanding foam tape TP600 15/3,EPDM and Compriband,-4,11.00,17.50,Tape Supplier E,10,24,30/06/2026
+PPE-GLV-L,Nitrile grip gloves large pair,PPE,480,0.90,1.75,PPE Supplier F,100,0,11/09/2026
+TSL-310,Total Seal hybrid adhesive 310ml,Adhesives and foams,60,5.40,8.20,Adhesive Supplier G,24,0,03/03/2026
+OLD-DRILL-9,Discontinued drill bit set,Power tool accessories,18,£22.50,39.99,Tool Supplier H,0,0,15/01/2023
+OLD-HINGE-2,Bronze butt hinge pair,Architectural hardware,250,3.75,7.50,Hardware Supplier I,0,0,04/04/2022
+Totals,,,"2,465",,,,,,

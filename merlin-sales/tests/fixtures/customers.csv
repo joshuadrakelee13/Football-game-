@@ -1,0 +1,15 @@
+Merlin Accessories Ltd (fixture)
+Customer list printed 30/09/2026
+
+Acc,Customer Name,Address 1,Town,Inv Postcode,Del Postcode,Rep,Type,Credit Limit,Terms,Opened,Contact,Telephone,Email
+000101,Fixture Windows Ltd,1 Example Road,Winchester,ZZ1 1AA,ZZ1 1AB,Tom,Glazing,"£5,000.00",30 days,12/03/2015,Pat Example,01000 000101,pat@fixture-windows.invalid
+000102,Testbridge Glazing,2 Sample Street,Eastleigh,ZZ1 2AA,,Tom,Glazing,"£2,500.00",30 days,01/07/2019,,01000 000102,
+000103,Mockford Builders,3 Demo Lane,Romsey,ZZ1 3AA,ZZ1 3AB,Steve,Builder,"£1,000.00",30 days,15/11/2020,Sam Mock,,
+ 000104 ,"Smith, Jones & Co",4 Trial Way,Andover,ZZ1 4AA,,Steve,Joiner,,Cash with order,22/01/2022,,,
+000105,Placeholder Fencing,5 Test Close,Basingstoke,,,,Fencing,£750.00,30 days,03/05/2018,,,
+000106,O'Neill Maintenance,6 Dummy Drive,Southampton,ZZ1 6AA,ZZ1 6AB,Counter,,,7 days,09/09/2021,,,
+000107,Sampleton Joinery,7 Fiction Row,Alresford,ZZ1 7AA,,,,"£1,500.00",30 days,28/02/2017,,,
+000108,Examplar Glass,8 Imaginary Ave,Portsmouth,ZZ1 8AA,ZZ1 8AB,Tom,Glazing,"£10,000.00",60 days,14/06/2012,Lee Glass,01000 000108,lee@examplar.invalid
+000109,Notreal Kitchens,9 Pretend Place,Fareham,ZZ1 9AA,,Steve,,,30 days,30/09/2023,,,
+000110,Quiet Account Ltd,10 Silent Street,Winchester,ZZ2 1AA,,Counter,Builder,,30 days,01/01/2016,,,
+CASH,Cash Sales,Trade counter,Winchester,,,Counter,,,,,,,

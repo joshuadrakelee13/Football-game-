@@ -1,0 +1,217 @@
+Invoice,Line,Item,Item Description,Category,Quantity,Goods Value,Cost Value
+INV50001,1,SCR-WF-430,Window fab screw 4.3x30 box 1000,Window fabrication screws,30,444.00,285.00
+INV50001,2,PAK-FLT-3,Flat packer 3mm bag 100,Packers and vents,15,58.50,33.00
+INV50002,1,CMP-TP600,Expanding foam tape TP600 15/3,EPDM and Compriband,22,385.00,242.00
+INV50003,1,CMP-TP600,Expanding foam tape TP600 15/3,EPDM and Compriband,40,700.00,440.00
+INV50004,1,CMP-TP600,Expanding foam tape TP600 15/3,EPDM and Compriband,1,17.50,11.00
+INV50004,2,SIL-LMN-C,LMN silicone clear 310ml,Silicone,7,42.70,29.40
+INV50004,3,TAP-ALU-50,Aluminium tape 50mm x 45m,Tapes,25,140.00,82.50
+INV50005,1,SCR-WF-430,Window fab screw 4.3x30 box 1000,Window fabrication screws,6,88.80,57.00
+INV50005,2,SCR-WF-430,Window fab screw 4.3x30 box 1000,Window fabrication screws,10,148.00,95.00
+INV50005,3,TAP-ALU-50,Aluminium tape 50mm x 45m,Tapes,35,196.00,115.50
+INV50006,9,CMP-TP600,Expanding foam tape TP600 15/3,EPDM and Compriband,120,2100.00,1320.00
+INV50006,1,SIL-LMN-C,LMN silicone clear 310ml,Silicone,18,109.80,75.60
+INV50006,2,PPE-GLV-L,Nitrile grip gloves large pair,PPE,10,17.50,9.00
+INV50007,1,TSL-310,Total Seal hybrid adhesive 310ml,Adhesives and foams,27,221.40,145.80
+INV50007,2,PAK-FLT-3,Flat packer 3mm bag 100,Packers and vents,37,144.30,81.40
+INV50008,1,TSL-310,Total Seal hybrid adhesive 310ml,Adhesives and foams,31,254.20,167.40
+INV50009,1,FIX-FR-100,Frame fixing 10x100 box 50,Fixings and bolting,39,366.60,234.00
+INV50009,2,TSL-310,Total Seal hybrid adhesive 310ml,Adhesives and foams,28,229.60,151.20
+INV50009,3,SIL-SAN-W,Sanitary silicone white 310ml,Silicone,38,188.10,117.80
+INV50010,1,TAP-ALU-50,Aluminium tape 50mm x 45m,Tapes,40,224.00,132.00
+INV50010,2,CMP-TP600,Expanding foam tape TP600 15/3,EPDM and Compriband,9,157.50,99.00
+INV50010,3,TAP-ALU-50,Aluminium tape 50mm x 45m,Tapes,34,190.40,112.20
+INV50011,1,TSL-310,Total Seal hybrid adhesive 310ml,Adhesives and foams,24,196.80,129.60
+INV50011,2,TSL-310,Total Seal hybrid adhesive 310ml,Adhesives and foams,18,147.60,97.20
+INV50012,1,TAP-ALU-50,Aluminium tape 50mm x 45m,Tapes,34,190.40,112.20
+INV50012,2,PPE-GLV-L,Nitrile grip gloves large pair,PPE,35,61.25,31.50
+INV50013,1,FIX-FR-100,Frame fixing 10x100 box 50,Fixings and bolting,25,235.00,150.00
+CRN50014,1,PPE-GLV-L,Nitrile grip gloves large pair,PPE,-2,3.50-,-1.80
+INV50015,1,PPE-GLV-L,Nitrile grip gloves large pair,PPE,34,59.50,30.60
+INV50015,2,FIX-FR-100,Frame fixing 10x100 box 50,Fixings and bolting,16,150.40,96.00
+INV50015,2,FIX-FR-100,Frame fixing 10x100 box 50,Fixings and bolting,16,150.40,96.00
+INV50015,3,SCR-WF-430,Window fab screw 4.3x30 box 1000,Window fabrication screws,18,266.40,171.00
+INV50016,1,SIL-SAN-W,Sanitary silicone white 310ml,Silicone,38,188.10,117.80
+INV50016,2,CMP-TP600,Expanding foam tape TP600 15/3,EPDM and Compriband,19,332.50,209.00
+INV50017,1,TAP-ALU-50,Aluminium tape 50mm x 45m,Tapes,39,218.40,128.70
+INV50017,2,TAP-ALU-50,Aluminium tape 50mm x 45m,Tapes,36,201.60,118.80
+INV50017,3,SIL-LMN-C,LMN silicone clear 310ml,Silicone,26,158.60,109.20
+INV50018,1,TSL-310,Total Seal hybrid adhesive 310ml,Adhesives and foams,35,287.00,189.00
+INV50019,1,FIX-FR-100,Frame fixing 10x100 box 50,Fixings and bolting,8,75.20,48.00
+INV50020,1,PPE-GLV-L,Nitrile grip gloves large pair,PPE,24,42.00,21.60
+INV50020,2,PAK-FLT-3,Flat packer 3mm bag 100,Packers and vents,13,50.70,28.60
+INV50020,3,FIX-FR-100,Frame fixing 10x100 box 50,Fixings and bolting,16,150.40,96.00
+INV50021,1,TSL-310,Total Seal hybrid adhesive 310ml,Adhesives and foams,19,155.80,102.60
+INV50022,1,PPE-GLV-L,Nitrile grip gloves large pair,PPE,25,43.75,22.50
+INV50022,2,TAP-ALU-50,Aluminium tape 50mm x 45m,Tapes,37,207.20,122.10
+INV50022,3,TAP-ALU-50,Aluminium tape 50mm x 45m,Tapes,21,117.60,69.30
+INV50023,1,PAK-FLT-3,Flat packer 3mm bag 100,Packers and vents,2,7.80,4.40
+INV50023,2,CMP-TP600,Expanding foam tape TP600 15/3,EPDM and Compriband,7,122.50,77.00
+INV50023,3,TAP-ALU-50,Aluminium tape 50mm x 45m,Tapes,13,72.80,42.90
+INV50024,1,FIX-FR-100,Frame fixing 10x100 box 50,Fixings and bolting,6,56.40,36.00
+INV50024,2,TSL-310,Total Seal hybrid adhesive 310ml,Adhesives and foams,4,32.80,21.60
+INV50025,1,TSL-310,Total Seal hybrid adhesive 310ml,Adhesives and foams,19,155.80,102.60
+INV50026,1,SIL-LMN-C,LMN silicone clear 310ml,Silicone,5,30.50,21.00
+INV50026,2,PPE-GLV-L,Nitrile grip gloves large pair,PPE,12,21.00,10.80
+INV50026,3,PPE-GLV-L,Nitrile grip gloves large pair,PPE,28,49.00,25.20
+INV50027,1,SIL-LMN-C,LMN silicone clear 310ml,Silicone,5,30.50,21.00
+INV50027,2,SIL-SAN-W,Sanitary silicone white 310ml,Silicone,39,193.05,120.90
+INV50027,3,SIL-LMN-C,LMN silicone clear 310ml,Silicone,39,237.90,163.80
+INV50028,1,PPE-GLV-L,Nitrile grip gloves large pair,PPE,7,12.25,6.30
+INV50028,2,TSL-310,Total Seal hybrid adhesive 310ml,Adhesives and foams,10,82.00,54.00
+INV50028,3,CMP-TP600,Expanding foam tape TP600 15/3,EPDM and Compriband,19,332.50,209.00
+INV50029,1,CMP-TP600,Expanding foam tape TP600 15/3,EPDM and Compriband,30,525.00,330.00
+INV50030,1,FIX-FR-100,Frame fixing 10x100 box 50,Fixings and bolting,5,47.00,30.00
+INV50030,2,TSL-310,Total Seal hybrid adhesive 310ml,Adhesives and foams,22,180.40,118.80
+INV50031,1,FIX-FR-100,Frame fixing 10x100 box 50,Fixings and bolting,25,235.00,150.00
+INV50031,2,TAP-ALU-50,Aluminium tape 50mm x 45m,Tapes,40,224.00,132.00
+INV50032,1,TSL-310,Total Seal hybrid adhesive 310ml,Adhesives and foams,10,82.00,54.00
+INV50032,2,PPE-GLV-L,Nitrile grip gloves large pair,PPE,24,42.00,21.60
+INV50033,1,SCR-WF-430,Window fab screw 4.3x30 box 1000,Window fabrication screws,37,547.60,351.50
+INV50033,2,TAP-ALU-50,Aluminium tape 50mm x 45m,Tapes,33,184.80,108.90
+INV50033,3,CMP-TP600,Expanding foam tape TP600 15/3,EPDM and Compriband,21,367.50,231.00
+CRN50034,1,TAP-ALU-50,Aluminium tape 50mm x 45m,Tapes,-2,11.20-,-6.60
+INV50035,1,TAP-ALU-50,Aluminium tape 50mm x 45m,Tapes,15,84.00,49.50
+INV50035,2,FIX-FR-100,Frame fixing 10x100 box 50,Fixings and bolting,5,47.00,30.00
+INV50035,3,SCR-WF-430,Window fab screw 4.3x30 box 1000,Window fabrication screws,39,577.20,370.50
+INV50036,1,SIL-LMN-C,LMN silicone clear 310ml,Silicone,23,140.30,96.60
+INV50036,2,PPE-GLV-L,Nitrile grip gloves large pair,PPE,29,50.75,26.10
+INV50037,1,SIL-LMN-C,LMN silicone clear 310ml,Silicone,14,85.40,58.80
+INV50038,1,TSL-310,Total Seal hybrid adhesive 310ml,Adhesives and foams,36,295.20,194.40
+INV50038,2,PPE-GLV-L,Nitrile grip gloves large pair,PPE,33,57.75,29.70
+INV50038,3,TAP-ALU-50,Aluminium tape 50mm x 45m,Tapes,32,179.20,105.60
+INV50039,1,FIX-FR-100,Frame fixing 10x100 box 50,Fixings and bolting,25,235.00,150.00
+INV50039,2,CMP-TP600,Expanding foam tape TP600 15/3,EPDM and Compriband,38,665.00,418.00
+INV50039,3,TAP-ALU-50,Aluminium tape 50mm x 45m,Tapes,13,72.80,42.90
+INV50040,1,TAP-ALU-50,Aluminium tape 50mm x 45m,Tapes,17,95.20,56.10
+INV50041,1,FIX-FR-100,Frame fixing 10x100 box 50,Fixings and bolting,21,197.40,126.00
+INV50041,2,PPE-GLV-L,Nitrile grip gloves large pair,PPE,20,35.00,18.00
+INV50041,3,SCR-WF-430,Window fab screw 4.3x30 box 1000,Window fabrication screws,22,325.60,209.00
+INV50042,1,TAP-ALU-50,Aluminium tape 50mm x 45m,Tapes,10,56.00,33.00
+INV50042,2,CMP-TP600,Expanding foam tape TP600 15/3,EPDM and Compriband,28,490.00,308.00
+INV50043,1,SIL-SAN-W,Sanitary silicone white 310ml,Silicone,19,94.05,58.90
+INV50044,1,TAP-ALU-50,Aluminium tape 50mm x 45m,Tapes,34,190.40,112.20
+INV50044,2,TAP-ALU-50,Aluminium tape 50mm x 45m,Tapes,11,61.60,36.30
+INV50044,3,CMP-TP600,Expanding foam tape TP600 15/3,EPDM and Compriband,3,52.50,33.00
+INV50045,1,PAK-FLT-3,Flat packer 3mm bag 100,Packers and vents,38,148.20,83.60
+INV50046,1,TSL-310,Total Seal hybrid adhesive 310ml,Adhesives and foams,39,319.80,210.60
+INV50047,1,FIX-FR-100,Frame fixing 10x100 box 50,Fixings and bolting,2,18.80,12.00
+INV50048,1,PPE-GLV-L,Nitrile grip gloves large pair,PPE,2,3.50,1.80
+INV50048,2,SIL-SAN-W,Sanitary silicone white 310ml,Silicone,7,34.65,21.70
+INV50048,3,TSL-310,Total Seal hybrid adhesive 310ml,Adhesives and foams,2,16.40,10.80
+INV50049,1,PPE-GLV-L,Nitrile grip gloves large pair,PPE,25,43.75,22.50
+INV50049,2,PAK-FLT-3,Flat packer 3mm bag 100,Packers and vents,29,113.10,63.80
+INV50050,1,TAP-ALU-50,Aluminium tape 50mm x 45m,Tapes,18,100.80,59.40
+INV50051,1,FIX-FR-100,Frame fixing 10x100 box 50,Fixings and bolting,13,122.20,78.00
+INV50052,1,FIX-FR-100,Frame fixing 10x100 box 50,Fixings and bolting,25,235.00,150.00
+INV50052,2,SIL-LMN-C,LMN silicone clear 310ml,Silicone,1,6.10,4.20
+INV50053,1,SIL-LMN-C,LMN silicone clear 310ml,Silicone,2,12.20,8.40
+INV50054,1,SCR-WF-430,Window fab screw 4.3x30 box 1000,Window fabrication screws,4,59.20,38.00
+INV50054,2,PAK-FLT-3,Flat packer 3mm bag 100,Packers and vents,26,101.40,57.20
+INV50054,3,SCR-WF-430,Window fab screw 4.3x30 box 1000,Window fabrication screws,33,488.40,313.50
+INV50055,1,SIL-SAN-W,Sanitary silicone white 310ml,Silicone,27,133.65,83.70
+INV50055,2,SIL-LMN-C,LMN silicone clear 310ml,Silicone,7,42.70,29.40
+INV50055,3,SIL-SAN-W,Sanitary silicone white 310ml,Silicone,34,168.30,105.40
+INV50056,1,SCR-WF-430,Window fab screw 4.3x30 box 1000,Window fabrication screws,10,148.00,95.00
+INV50057,1,SIL-SAN-W,Sanitary silicone white 310ml,Silicone,38,188.10,117.80
+INV50058,1,FIX-FR-100,Frame fixing 10x100 box 50,Fixings and bolting,14,131.60,84.00
+CRN50059,1,SIL-SAN-W,Sanitary silicone white 310ml,Silicone,-2,9.90-,-6.20
+INV50060,1,SIL-LMN-C,LMN silicone clear 310ml,Silicone,18,109.80,75.60
+INV50060,2,PPE-GLV-L,Nitrile grip gloves large pair,PPE,40,70.00,36.00
+INV50060,3,CMP-TP600,Expanding foam tape TP600 15/3,EPDM and Compriband,25,437.50,275.00
+INV50061,1,PAK-FLT-3,Flat packer 3mm bag 100,Packers and vents,20,78.00,44.00
+INV50061,2,SIL-SAN-W,Sanitary silicone white 310ml,Silicone,36,178.20,111.60
+INV50062,1,PPE-GLV-L,Nitrile grip gloves large pair,PPE,26,45.50,23.40
+INV50062,2,SCR-WF-430,Window fab screw 4.3x30 box 1000,Window fabrication screws,19,281.20,180.50
+INV50063,1,SCR-WF-430,Window fab screw 4.3x30 box 1000,Window fabrication screws,34,503.20,323.00
+INV50063,2,TSL-310,Total Seal hybrid adhesive 310ml,Adhesives and foams,13,106.60,70.20
+INV50063,3,PAK-FLT-3,Flat packer 3mm bag 100,Packers and vents,3,11.70,6.60
+INV50064,1,PPE-GLV-L,Nitrile grip gloves large pair,PPE,32,56.00,28.80
+INV50064,2,SIL-SAN-W,Sanitary silicone white 310ml,Silicone,30,148.50,93.00
+INV50064,3,SCR-WF-430,Window fab screw 4.3x30 box 1000,Window fabrication screws,16,236.80,152.00
+INV50065,1,FIX-FR-100,Frame fixing 10x100 box 50,Fixings and bolting,12,112.80,72.00
+INV50065,2,SCR-WF-430,Window fab screw 4.3x30 box 1000,Window fabrication screws,20,296.00,190.00
+INV50065,3,TSL-310,Total Seal hybrid adhesive 310ml,Adhesives and foams,27,221.40,145.80
+INV50066,1,SIL-SAN-W,Sanitary silicone white 310ml,Silicone,24,118.80,74.40
+INV50066,2,CMP-TP600,Expanding foam tape TP600 15/3,EPDM and Compriband,35,612.50,385.00
+INV50066,3,SCR-WF-430,Window fab screw 4.3x30 box 1000,Window fabrication screws,25,370.00,237.50
+INV50067,1,PPE-GLV-L,Nitrile grip gloves large pair,PPE,32,56.00,28.80
+INV50067,2,PPE-GLV-L,Nitrile grip gloves large pair,PPE,32,56.00,28.80
+INV50067,3,PAK-FLT-3,Flat packer 3mm bag 100,Packers and vents,17,66.30,37.40
+INV50068,1,SIL-SAN-W,Sanitary silicone white 310ml,Silicone,12,59.40,37.20
+INV50068,2,TSL-310,Total Seal hybrid adhesive 310ml,Adhesives and foams,11,90.20,59.40
+INV50068,3,TAP-ALU-50,Aluminium tape 50mm x 45m,Tapes,40,224.00,132.00
+INV50069,1,TSL-310,Total Seal hybrid adhesive 310ml,Adhesives and foams,24,196.80,129.60
+INV50070,1,SCR-WF-430,Window fab screw 4.3x30 box 1000,Window fabrication screws,7,103.60,66.50
+INV50071,1,SCR-WF-430,Window fab screw 4.3x30 box 1000,Window fabrication screws,14,207.20,133.00
+INV50071,2,PPE-GLV-L,Nitrile grip gloves large pair,PPE,4,7.00,3.60
+INV50071,3,TAP-ALU-50,Aluminium tape 50mm x 45m,Tapes,22,123.20,72.60
+INV50072,1,PAK-FLT-3,Flat packer 3mm bag 100,Packers and vents,15,58.50,33.00
+INV50072,2,SIL-SAN-W,Sanitary silicone white 310ml,Silicone,13,64.35,40.30
+INV50072,3,SIL-LMN-C,LMN silicone clear 310ml,Silicone,1,6.10,4.20
+INV50073,1,CMP-TP600,Expanding foam tape TP600 15/3,EPDM and Compriband,31,542.50,341.00
+INV50074,1,FIX-FR-100,Frame fixing 10x100 box 50,Fixings and bolting,39,366.60,234.00
+INV50075,1,PAK-FLT-3,Flat packer 3mm bag 100,Packers and vents,40,156.00,88.00
+INV50075,2,CMP-TP600,Expanding foam tape TP600 15/3,EPDM and Compriband,18,315.00,198.00
+INV50075,3,TAP-ALU-50,Aluminium tape 50mm x 45m,Tapes,29,162.40,95.70
+INV50076,1,TSL-310,Total Seal hybrid adhesive 310ml,Adhesives and foams,11,90.20,59.40
+INV50076,2,TSL-310,Total Seal hybrid adhesive 310ml,Adhesives and foams,36,295.20,194.40
+INV50076,3,PPE-GLV-L,Nitrile grip gloves large pair,PPE,30,52.50,27.00
+INV50077,1,PPE-GLV-L,Nitrile grip gloves large pair,PPE,1,1.75,0.90
+INV50077,2,PPE-GLV-L,Nitrile grip gloves large pair,PPE,18,31.50,16.20
+INV50078,1,TSL-310,Total Seal hybrid adhesive 310ml,Adhesives and foams,29,237.80,156.60
+INV50078,2,CMP-TP600,Expanding foam tape TP600 15/3,EPDM and Compriband,24,420.00,264.00
+INV50079,1,PAK-FLT-3,Flat packer 3mm bag 100,Packers and vents,26,101.40,57.20
+INV50079,2,SIL-SAN-W,Sanitary silicone white 310ml,Silicone,25,123.75,77.50
+INV50080,1,CMP-TP600,Expanding foam tape TP600 15/3,EPDM and Compriband,5,87.50,55.00
+INV50080,2,CMP-TP600,Expanding foam tape TP600 15/3,EPDM and Compriband,20,350.00,220.00
+INV50081,1,SIL-LMN-C,LMN silicone clear 310ml,Silicone,31,189.10,130.20
+INV50081,2,SCR-WF-430,Window fab screw 4.3x30 box 1000,Window fabrication screws,16,236.80,152.00
+INV50081,3,PAK-FLT-3,Flat packer 3mm bag 100,Packers and vents,1,3.90,2.20
+CRN50082,1,SCR-WF-430,Window fab screw 4.3x30 box 1000,Window fabrication screws,-2,29.60-,-19.00
+INV50083,1,SIL-SAN-W,Sanitary silicone white 310ml,Silicone,1,4.95,3.10
+INV50084,1,FIX-FR-100,Frame fixing 10x100 box 50,Fixings and bolting,8,75.20,48.00
+INV50084,2,TSL-310,Total Seal hybrid adhesive 310ml,Adhesives and foams,23,188.60,124.20
+INV50084,3,CMP-TP600,Expanding foam tape TP600 15/3,EPDM and Compriband,27,472.50,297.00
+INV50085,1,PAK-FLT-3,Flat packer 3mm bag 100,Packers and vents,24,93.60,52.80
+INV50086,1,FIX-FR-100,Frame fixing 10x100 box 50,Fixings and bolting,30,282.00,180.00
+INV50087,1,PAK-FLT-3,Flat packer 3mm bag 100,Packers and vents,27,105.30,59.40
+INV50088,1,PAK-FLT-3,Flat packer 3mm bag 100,Packers and vents,10,39.00,22.00
+INV50088,2,PPE-GLV-L,Nitrile grip gloves large pair,PPE,10,17.50,9.00
+INV50089,1,SIL-SAN-W,Sanitary silicone white 310ml,Silicone,19,94.05,58.90
+INV50089,2,SIL-LMN-C,LMN silicone clear 310ml,Silicone,15,91.50,63.00
+INV50089,3,CMP-TP600,Expanding foam tape TP600 15/3,EPDM and Compriband,1,17.50,11.00
+INV50090,1,PAK-FLT-3,Flat packer 3mm bag 100,Packers and vents,29,113.10,63.80
+INV50090,2,TSL-310,Total Seal hybrid adhesive 310ml,Adhesives and foams,31,254.20,167.40
+INV50091,1,SIL-SAN-W,Sanitary silicone white 310ml,Silicone,4,19.80,12.40
+INV50091,2,TSL-310,Total Seal hybrid adhesive 310ml,Adhesives and foams,7,57.40,37.80
+INV50091,3,CMP-TP600,Expanding foam tape TP600 15/3,EPDM and Compriband,22,385.00,242.00
+INV50092,1,FIX-FR-100,Frame fixing 10x100 box 50,Fixings and bolting,39,366.60,234.00
+INV50092,2,TAP-ALU-50,Aluminium tape 50mm x 45m,Tapes,27,151.20,89.10
+INV50093,1,SIL-SAN-W,Sanitary silicone white 310ml,Silicone,39,193.05,120.90
+INV50094,1,CMP-TP600,Expanding foam tape TP600 15/3,EPDM and Compriband,18,315.00,198.00
+INV50094,2,PPE-GLV-L,Nitrile grip gloves large pair,PPE,23,40.25,20.70
+INV50094,3,SIL-SAN-W,Sanitary silicone white 310ml,Silicone,31,153.45,96.10
+INV50095,1,SCR-WF-430,Window fab screw 4.3x30 box 1000,Window fabrication screws,33,488.40,313.50
+INV50096,1,SIL-LMN-C,LMN silicone clear 310ml,Silicone,6,36.60,25.20
+INV50097,1,SIL-SAN-W,Sanitary silicone white 310ml,Silicone,14,69.30,43.40
+INV50098,1,SIL-SAN-W,Sanitary silicone white 310ml,Silicone,23,113.85,71.30
+INV50099,1,SCR-WF-430,Window fab screw 4.3x30 box 1000,Window fabrication screws,35,518.00,332.50
+INV50100,1,SIL-LMN-C,LMN silicone clear 310ml,Silicone,9,54.90,37.80
+INV50100,2,SIL-SAN-W,Sanitary silicone white 310ml,Silicone,15,74.25,46.50
+INV50100,3,PPE-GLV-L,Nitrile grip gloves large pair,PPE,24,42.00,21.60
+INV50101,1,SIL-LMN-C,LMN silicone clear 310ml,Silicone,32,195.20,134.40
+INV50101,2,TAP-ALU-50,Aluminium tape 50mm x 45m,Tapes,1,5.60,3.30
+INV50101,3,SCR-WF-430,Window fab screw 4.3x30 box 1000,Window fabrication screws,8,118.40,76.00
+INV50102,1,TAP-ALU-50,Aluminium tape 50mm x 45m,Tapes,16,89.60,52.80
+INV50102,2,SCR-WF-430,Window fab screw 4.3x30 box 1000,Window fabrication screws,20,296.00,190.00
+INV50103,1,SIL-SAN-W,Sanitary silicone white 310ml,Silicone,24,118.80,74.40
+INV50103,2,TSL-310,Total Seal hybrid adhesive 310ml,Adhesives and foams,22,180.40,118.80
+INV50103,3,PPE-GLV-L,Nitrile grip gloves large pair,PPE,38,66.50,34.20
+CRN50104,1,TSL-310,Total Seal hybrid adhesive 310ml,Adhesives and foams,-2,16.40-,-10.80
+INV50105,1,SCR-WF-430,Window fab screw 4.3x30 box 1000,Window fabrication screws,11,162.80,104.50
+INV50106,1,CMP-TP600,Expanding foam tape TP600 15/3,EPDM and Compriband,8,140.00,88.00
+INV50107,1,SIL-LMN-C,LMN silicone clear 310ml,Silicone,27,164.70,113.40
+INV50108,1,SCR-WF-430,Window fab screw 4.3x30 box 1000,Window fabrication screws,25,370.00,237.50
+INV50108,2,FIX-FR-100,Frame fixing 10x100 box 50,Fixings and bolting,3,28.20,18.00
+INV99999,1,SIL-LMN-C,LMN silicone clear 310ml,Silicone,5,30.50,21.00

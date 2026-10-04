@@ -60,7 +60,7 @@ merlin-sales/
 | # | Step | Status |
 |---|---|---|
 | 1 | Folder, README, vendor libraries, design tokens, empty screens with navigation | Done |
-| 2 | Fake test fixture files covering every cleaning rule | |
+| 2 | Fake test fixture files covering every cleaning rule | Done |
 | 3 | Importer: identify, map, join, clean, check, save, profiles, delete data. **Stop for review.** | |
 | 4 | Customers list and customer page, manual edits and bulk edit | |
 | 5 | Signals and the Needs attention home screen | |

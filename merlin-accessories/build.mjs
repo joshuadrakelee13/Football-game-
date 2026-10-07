@@ -755,7 +755,7 @@ ${pageHero(r, {
 </section>
 <section class="section section-alt">
   <div class="container">
-    <div class="section-head"><div><p class="kicker">Featured ranges</p><h2>Featured ranges</h2></div></div>
+    <div class="section-head"><div><p class="kicker">Products</p><h2>Featured ranges</h2></div></div>
     <ul class="spot-grid">${spotlights.map((s) => `
       <li><a class="spot" href="${r(P.spotlight(s.slug))}"><p class="kicker">${esc(s.kicker)}</p><h3>${esc(s.name)}</h3><p>${esc(s.summary)}</p><span class="text-link">View ${icon('arrow')}</span></a></li>`).join('')}
       <li><a class="spot spot-dark" href="${r(P.toolrepair)}"><p class="kicker">Service</p><h3>Tool Repair Service</h3><p>${esc(toolRepair.productsText)}</p><span class="text-link">Find out more ${icon('arrow')}</span></a></li>

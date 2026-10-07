@@ -92,9 +92,9 @@ try {
 
   // 4. Opened from disk
   const f = await desk.newPage();
-  await f.goto(pathToFileURL(join(SITE, 'index.html')).href);
+  await f.goto(pathToFileURL(join(SITE, 'index.html')).href, { waitUntil: 'domcontentloaded' });
   const fileLinks = [...new Set((await f.$$eval('a[href]', (as) => as.map((a) => a.href))).filter((h) => h.startsWith('file:')))];
-  for (const l of fileLinks) { await f.goto(l); if (!(await f.$('[data-navbar]'))) fail(`file:// link broken: ${l}`); }
+  for (const l of fileLinks) { await f.goto(l, { waitUntil: 'domcontentloaded' }); if (!(await f.$('[data-navbar]'))) fail(`file:// link broken: ${l}`); }
   ok(`${fileLinks.length} links work from disk`);
 
   jsErrors.forEach((e) => fail(`JS error ${e}`));

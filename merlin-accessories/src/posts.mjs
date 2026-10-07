@@ -167,7 +167,7 @@ export const posts = [
       },
       {
         "t": "p",
-        "text": "📍 Visit our trade counter at Winnall Trading Estate, Winchester📞 Call: 01962 842002"
+        "text": "Visit our trade counter at Winnall Trading Estate, Winchester | Call: 01962 842002"
       },
       {
         "t": "tags",
@@ -472,7 +472,7 @@ export const posts = [
       },
       {
         "t": "p",
-        "text": "📍 Visit our trade counter at Winnall Trading Estate, Winchester📞 Call: 01962 842002"
+        "text": "Visit our trade counter at Winnall Trading Estate, Winchester | Call: 01962 842002"
       },
       {
         "t": "p",

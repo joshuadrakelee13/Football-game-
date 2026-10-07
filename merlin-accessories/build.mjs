@@ -563,11 +563,11 @@ const dateText = (iso) => new Date(`${iso}T12:00:00Z`).toLocaleDateString('en-GB
 
 const enquiryCard = (subject, what) => `
     <aside class="enquiry-card">
-      <h2 class="h3">Ask about ${esc(what)}</h2>
-      <p>Stock, pricing or something specific? The team will point you to the right product.</p>
+      <h2 class="h3">To enquire or order</h2>
+      <p>Call the team on ${company.phone} or email us.</p>
       <div class="enquiry-actions">
         <a class="btn btn-primary" href="${company.phoneHref}">${icon('phone')} ${company.phone}</a>
-        <a class="btn btn-ghost" href="${enquire(subject)}">${icon('mail')} Email an enquiry</a>
+        <a class="btn btn-ghost" href="${enquire(subject)}">${icon('mail')} Email us</a>
       </div>
     </aside>`;
 
@@ -632,7 +632,7 @@ page({
       <p class="lead">${esc(introMore)}</p>
       <p class="lead lead-strong">${esc(company.productCount)}</p>
       <button class="hero-search" type="button" data-search-open>
-        ${icon('search')}<span>What are you looking for? Try “silicone” or “post spikes”</span><kbd>/</kbd>
+        ${icon('search')}<span>Search products, brands &amp; pages</span><kbd>/</kbd>
       </button>
     </div>
     <aside class="visit-card" aria-label="Trade counter">
@@ -676,7 +676,7 @@ page({
 
 <section class="section">
   <div class="container">
-    <div class="section-head"><div><p class="kicker">Services &amp; resources</p><h2>More than a trade counter</h2></div></div>
+    <div class="section-head"><div><p class="kicker">Resources</p><h2>Helpful advice</h2></div></div>
     <ul class="feature-grid">
       <li><a class="feature feature-primary" href="${r(P.toolrepair)}">
         ${icon('wrench', 'icon icon-lg')}
@@ -755,7 +755,7 @@ ${pageHero(r, {
 </section>
 <section class="section section-alt">
   <div class="container">
-    <div class="section-head"><div><p class="kicker">Featured ranges</p><h2>Spotlight</h2></div></div>
+    <div class="section-head"><div><p class="kicker">Featured ranges</p><h2>Featured ranges</h2></div></div>
     <ul class="spot-grid">${spotlights.map((s) => `
       <li><a class="spot" href="${r(P.spotlight(s.slug))}"><p class="kicker">${esc(s.kicker)}</p><h3>${esc(s.name)}</h3><p>${esc(s.summary)}</p><span class="text-link">View ${icon('arrow')}</span></a></li>`).join('')}
       <li><a class="spot spot-dark" href="${r(P.toolrepair)}"><p class="kicker">Service</p><h3>Tool Repair Service</h3><p>${esc(toolRepair.productsText)}</p><span class="text-link">Find out more ${icon('arrow')}</span></a></li>
@@ -773,7 +773,7 @@ ${pageHero(r, {
 </section>
 <section class="section">
   <div class="container">
-    <div class="section-head"><div><p class="kicker">Online catalogue</p><h2>Browse by product type</h2></div><a class="text-link"${external(store.all)}>All products ${icon('external')}</a></div>
+    <div class="section-head"><div><p class="kicker">Online catalogue</p><h2>Browse the online catalogue</h2></div><a class="text-link"${external(store.all)}>All products ${icon('external')}</a></div>
     <p class="prose">${esc(store.note)} Each link below opens that category on the live site.</p>
     <ul class="chips chips-links">${store.categories.map(([s, label]) => `<li><a class="chip"${external(store.base + s)}>${esc(label)}</a></li>`).join('')}
     </ul>
@@ -816,7 +816,7 @@ function groupCard(r, c, g) {
             ${g.text.map((t) => `<p>${esc(t)}</p>`).join('')}
             ${g.items.length ? `<ul class="item-tags">${g.items.map((it) => `<li>${esc(it)}</li>`).join('')}</ul>` : ''}
             ${g.logos.length ? `<ul class="logo-row" aria-label="Brands">${g.logos.map((l) => `<li>${img(r, l.file, l.name)}</li>`).join('')}</ul>` : ''}
-            <div class="group-actions">${cta}${bro}${extra}<a class="text-link" href="${enquire(`${c.name} – ${g.name} enquiry`)}">Email an enquiry ${icon('arrow')}</a></div>
+            <div class="group-actions">${cta}${bro}${extra}<a class="text-link" href="${enquire(`${c.name} – ${g.name} enquiry`)}">Email us ${icon('arrow')}</a></div>
           </div>
         </li>`;
 }
@@ -836,7 +836,7 @@ ${pageHero(r, {
       title: c.name,
       lead: c.lead,
       iconName: c.icon,
-      actions: `<a class="btn btn-primary" href="${enquire(`${c.name} enquiry`)}">${icon('mail')} Ask about stock</a>
+      actions: `<a class="btn btn-primary" href="${enquire(`${c.name} enquiry`)}">${icon('mail')} Email us</a>
         <a class="btn btn-ghost" href="${company.phoneHref}">${icon('phone')} ${company.phone}</a>`,
     })}
 <section class="section">
@@ -883,7 +883,7 @@ ${pageHero(r, {
       ${(c.related || []).includes('toolrepairservice') ? `
       <a class="banner" href="${r(P.toolrepair)}">
         ${icon('wrench', 'icon icon-lg')}
-        <span><strong>Tool not working?</strong> Our in-house technician repairs ${esc(toolRepair.brands.join(', '))} and more.</span>
+        <span><strong>Tool Repair Service:</strong> our in-house technician fixes ${esc(toolRepair.brands.join(', '))} and more.</span>
         ${icon('arrow')}
       </a>` : ''}
 
@@ -963,7 +963,7 @@ ${pageHero(r, {
       kicker: s.kicker,
       title: s.heading || s.pageTitle || (isClean ? 'Introducing Soudaclean' : s.name),
       lead: s.body[0],
-      actions: `<a class="btn btn-primary" href="${enquire(`${s.name} enquiry`)}">${icon('mail')} Ask about ${esc(s.name)}</a>
+      actions: `<a class="btn btn-primary" href="${enquire(`${s.name} enquiry`)}">${icon('mail')} Email us</a>
         <a class="btn btn-ghost" href="${company.phoneHref}">${icon('phone')} ${company.phone}</a>`,
     })}
 <section class="section">
@@ -1295,7 +1295,7 @@ page({
   section: 'brands',
   description: `Brands and trading partners of ${company.name}.`,
   body: (r) => `
-${pageHero(r, { trail: [[P.brands, 'Brands']], kicker: 'Brands', title: 'Our brands', lead: 'Some of our trading partnerships, and the brands with their own page.' })}
+${pageHero(r, { trail: [[P.brands, 'Brands']], kicker: 'Brands', title: 'Our brands', lead: 'Some of our trading partnerships' })}
 <section class="section">
   <div class="container">
     <ul class="spot-grid">${brandMenu.map((b) => {
@@ -1315,8 +1315,8 @@ ${pageHero(r, { trail: [[P.brands, 'Brands']], kicker: 'Brands', title: 'Our bra
 </section>
 <section class="section">
   <div class="container">
-    <div class="section-head"><div><p class="kicker">By range</p><h2>Brands shown on each product page</h2></div></div>
-    <p class="prose">Each product range lists the brands we supply for it, with their logos. Start from a category:</p>
+    <div class="section-head"><div><p class="kicker">By range</p><h2>Brands by range</h2></div></div>
+    <p class="prose">The brands we supply for each range are shown on its product page:</p>
     <ul class="chips chips-links">${categories.filter((c) => c.groups.some((g) => g.logos.length)).map((c) => `<li><a class="chip" href="${r(P.category(c.slug))}">${esc(c.name)}</a></li>`).join('')}</ul>
   </div>
 </section>`,
@@ -1397,7 +1397,7 @@ ${pageHero(r, { trail: [[P.contact, 'Contact']], kicker: 'We are here to help', 
 
     <form class="enquiry-form" data-form data-email="${company.email}" data-subject="Website enquiry">
       <h2 class="h3">${esc(contactForm.title)}</h2>
-      <p class="muted">Fill this in and it will open in your email app, ready to send.</p>
+      <p class="muted">This opens your email app with your message ready to send.</p>
       <div class="form-row">${formField('Name', 'name', { required: true })}${formField('Company name', 'company')}</div>
       <div class="form-row">${formField('Phone', 'phone', { type: 'tel' })}${formField('Email', 'email', { type: 'email', required: true })}</div>
       ${formField('Message / Order required', 'message', { rows: 5, required: true, placeholder: 'Product, quantity, sizes…' })}

@@ -102,7 +102,7 @@
     }
     active = 0;
     if (!results.length) {
-      list.innerHTML = `<li class="search-empty">No matches for “${escapeHtml(input.value)}”. We stock far more than we list —
+      list.innerHTML = `<li class="search-empty">No matches for “${escapeHtml(input.value)}”. We have access to thousands more products:
         <a class="text-link" href="tel:+441962842002">call 01962 842 002</a> or <a class="text-link" href="${local(`${root}contact/`)}">send an enquiry</a>.</li>`;
       return;
     }

@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gibraltar — 1:1 walking simulator (validation viewer)</title>
+<link rel="stylesheet" href="style.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three/build/three.module.js",
+    "three/addons/": "./vendor/three/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+<canvas id="view"></canvas>
+
+<!-- ============================================================ HUD -->
+<div id="hud" class="hidden">
+  <div id="crosshair"></div>
+  <div id="compass"><div id="compass-strip"></div><div id="compass-mark"></div></div>
+  <div id="info"></div>
+  <div id="poi-near"></div>
+  <div id="prompt"></div>
+  <div id="loading" class="hidden"><span class="spinner"></span><span id="loading-text">Loading tiles…</span></div>
+  <div id="legend" class="hidden">
+    <div class="legend-title">Data confidence (building heights)</div>
+    <div><span class="sw" style="background:#33cc44"></span>measured — from a height tag / survey</div>
+    <div><span class="sw" style="background:#f2b01e"></span>derived — from number of levels</div>
+    <div><span class="sw" style="background:#d9473a"></span>estimated — default for building type</div>
+    <div id="legend-counts" class="muted"></div>
+  </div>
+  <div id="toast" class="hidden"></div>
+  <div id="panel" class="hidden"></div>
+</div>
+
+<!-- ============================================================ START SCREEN -->
+<div id="start" class="overlay">
+  <div class="card">
+    <h1>Gibraltar <span class="muted">— 1:1 walking simulator (validation viewer)</span></h1>
+    <p class="lead">Walk the real Gibraltar at true scale. Every metre here is a metre on the ground:
+      terrain from the Spanish national elevation model, streets and buildings from OpenStreetMap.</p>
+    <div class="cols">
+      <table class="keys">
+        <tr><td><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></td><td>walk</td></tr>
+        <tr><td><kbd>Mouse</kbd></td><td>look around</td></tr>
+        <tr><td><kbd>Shift</kbd></td><td>run (hold)</td></tr>
+        <tr><td><kbd>Space</kbd></td><td>jump</td></tr>
+        <tr><td><kbd>C</kbd></td><td>crouch (toggle)</td></tr>
+        <tr><td><kbd>E</kbd></td><td>inspect building / place</td></tr>
+        <tr><td><kbd>Esc</kbd></td><td>pause menu, settings, teleport</td></tr>
+      </table>
+      <table class="keys">
+        <tr><td><kbd>V</kbd></td><td>data-confidence view</td></tr>
+        <tr><td><kbd>M</kbd></td><td>show / hide place markers</td></tr>
+        <tr><td><kbd>F3</kbd></td><td>location readout</td></tr>
+        <tr><td><kbd>[</kbd> <kbd>]</kbd></td><td>time −1 h / +1 h</td></tr>
+        <tr><td><kbd>T</kbd></td><td>pause / resume time of day</td></tr>
+        <tr><td><kbd>H</kbd></td><td>hide HUD (screenshots)</td></tr>
+      </table>
+    </div>
+    <button id="btn-start" class="primary">Click to start</button>
+    <button id="btn-continue" class="hidden">Continue where I left off</button>
+    <div id="start-status" class="muted">Loading world description…</div>
+    <p class="footer">Validation viewer for the Unreal Engine 5 project. Real sun position for Gibraltar
+      (Europe/Gibraltar time). In data-confidence mode (<kbd>V</kbd>) buildings shown <b style="color:#e8695d">red</b>
+      have <b>estimated</b> heights (a default for their type, not a measurement); amber are derived from
+      storey counts; green are measured.</p>
+  </div>
+</div>
+
+<!-- ============================================================ PAUSE MENU -->
+<div id="menu" class="overlay hidden">
+  <div class="card menu">
+    <h2>Paused</h2>
+    <div class="menu-main">
+      <button data-act="resume" class="primary">Resume</button>
+      <button data-page="settings">Settings</button>
+      <button data-act="save">Save position</button>
+      <button data-act="load">Load position</button>
+      <button data-page="teleport">Teleport to a place</button>
+      <button data-act="spawn">Back to Casemates Square</button>
+      <button data-page="controls">Controls</button>
+      <button data-page="credits">Credits &amp; data sources</button>
+    </div>
+
+    <div class="page hidden" id="page-settings">
+      <label>Render distance <select id="set-render">
+        <option value="600">600 m (fast)</option><option value="900">900 m</option>
+        <option value="1200">1.2 km (default)</option><option value="1800">1.8 km</option>
+        <option value="2500">2.5 km (slow)</option></select></label>
+      <label>Shadows <input type="checkbox" id="set-shadows"></label>
+      <label>Resolution scale <input type="range" id="set-res" min="0.5" max="1.5" step="0.05"><span id="set-res-v"></span></label>
+      <label>Field of view <input type="range" id="set-fov" min="50" max="100" step="1"><span id="set-fov-v"></span></label>
+      <label>Mouse sensitivity <input type="range" id="set-sens" min="0.2" max="3" step="0.1"><span id="set-sens-v"></span></label>
+      <label>Invert mouse Y <input type="checkbox" id="set-invert"></label>
+      <label>Time speed <select id="set-time">
+        <option value="0">stopped</option><option value="1">real time (×1)</option>
+        <option value="20">×20 (default)</option><option value="60">×60</option><option value="300">×300</option></select></label>
+      <label>Master volume <input type="range" id="set-vol" min="0" max="1" step="0.05"><span id="set-vol-v"></span></label>
+      <button data-page="main">Back</button>
+    </div>
+
+    <div class="page hidden" id="page-teleport">
+      <input id="tp-search" type="search" placeholder="Search places (e.g. lighthouse, castle, Main Street)…" autocomplete="off">
+      <div id="tp-list"></div>
+      <button data-page="main">Back</button>
+    </div>
+
+    <div class="page hidden" id="page-controls">
+      <table class="keys">
+        <tr><td><kbd>W A S D</kbd></td><td>walk (1.4 m/s)</td></tr>
+        <tr><td><kbd>Shift</kbd></td><td>run (4.5 m/s)</td></tr>
+        <tr><td><kbd>Space</kbd></td><td>jump</td></tr>
+        <tr><td><kbd>C</kbd></td><td>crouch toggle (eye height 1.65 m → 1.0 m)</td></tr>
+        <tr><td><kbd>E</kbd></td><td>inspect the building or place you look at (or stand next to)</td></tr>
+        <tr><td><kbd>V</kbd></td><td>data-confidence colours for buildings</td></tr>
+        <tr><td><kbd>M</kbd></td><td>toggle place markers</td></tr>
+        <tr><td><kbd>F3</kbd></td><td>toggle location readout</td></tr>
+        <tr><td><kbd>[</kbd> / <kbd>]</kbd></td><td>time of day −1 h / +1 h</td></tr>
+        <tr><td><kbd>T</kbd></td><td>pause / resume the clock</td></tr>
+        <tr><td><kbd>H</kbd></td><td>hide the whole HUD</td></tr>
+        <tr><td><kbd>Esc</kbd></td><td>this menu</td></tr>
+      </table>
+      <button data-page="main">Back</button>
+    </div>
+
+    <div class="page hidden" id="page-credits">
+      <div id="credits"></div>
+      <button data-page="main">Back</button>
+    </div>
+  </div>
+</div>
+
+<div id="fatal" class="overlay hidden"><div class="card"><h2>Something went wrong</h2><pre id="fatal-msg"></pre></div></div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

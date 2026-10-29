@@ -1,6 +1,6 @@
 # Lantern Wall
 
-A single-screen-at-a-time arcade platformer on a castle wall at night. Run the
+An arcade platformer on a castle wall at night. Run the
 battlements, ring the bells and rescue the queen from her tower.
 
 Open `index.html` in a browser. There is no build step; the three scripts are plain

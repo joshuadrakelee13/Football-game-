@@ -225,7 +225,11 @@ async function main() {
     if (e.code === 'F3') { e.preventDefault(); hud.showInfo = !hud.showInfo; return; }
     if (e.code === 'Escape') {
       if (!started) return;
-      if (menu.open) resume(); else if (document.pointerLockElement !== canvas) menu.show();
+      if (menu.open) resume();
+      else {
+        menu.show();
+        if (document.pointerLockElement === canvas) document.exitPointerLock?.();
+      }
       return;
     }
     if (!playing()) return;

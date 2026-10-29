@@ -1,0 +1,171 @@
+{
+ "generated_utc": "2026-10-29T16:20:20Z",
+ "manifest_generated_utc": "2026-10-29T16:14:14Z",
+ "checks": [
+  {
+   "check": "Projection round trip (lon/lat -> GIB-LTM -> lon/lat), max error",
+   "value": 2.8270250997094675e-06,
+   "unit": "mm",
+   "status": "pass",
+   "detail": "22180 OSM nodes"
+  },
+  {
+   "check": "Engine distance vs WGS 84 geodesic distance, max relative error",
+   "value": 0.1415971965306144,
+   "unit": "ppm",
+   "status": "pass",
+   "detail": "2000 random node pairs, 1993 longer than 100 m; ellipsoid-surface scale, heights ignored"
+  },
+  {
+   "check": "Gibraltar land area (OSM coastline within OSM territory boundary)",
+   "value": 6.591,
+   "unit": "km²",
+   "status": "pass",
+   "detail": "official planar area 6.55 km² (GeoPortal); difference +0.6% — reclamation since the official figure is a likely cause"
+  },
+  {
+   "check": "Terrain mesh area vs land polygon area (all built tiles)",
+   "value": -0.0,
+   "unit": "%",
+   "status": "pass",
+   "detail": "mesh 8.8334 km², land polygon 8.8334 km²"
+  },
+  {
+   "check": "Highest terrain point in build",
+   "value": 418.65,
+   "unit": "m",
+   "status": "warn",
+   "detail": "official summit 426.0 m; 5 m grid under-samples the knife-edge ridge"
+  },
+  {
+   "check": "Peak height: Rock of Gibraltar (osm:node/243843850)",
+   "value": -9.05,
+   "unit": "m (terrain max within 100 m − OSM ele)",
+   "status": "warn",
+   "detail": "OSM ele 426.0 m; terrain 416.95 m at 90.3 m from the OSM node (402.97 m at the node itself)"
+  },
+  {
+   "check": "Peak height: Signal Hill (osm:node/8910097389)",
+   "value": -0.28,
+   "unit": "m (terrain max within 100 m − OSM ele)",
+   "status": "pass",
+   "detail": "OSM ele 387.0 m; terrain 386.72 m at 95.1 m from the OSM node (380.79 m at the node itself)"
+  },
+  {
+   "check": "Gibraltar land with a DTM measurement (not gap-filled)",
+   "value": 92.12,
+   "unit": "%",
+   "status": "info",
+   "detail": "the rest is land newer than the DTM survey (reclamations, new quays): filled from nearest land height"
+  },
+  {
+   "check": "Copernicus GLO-30 (30 m DSM) minus terrain, median absolute difference (Gibraltar land)",
+   "value": 3.04,
+   "unit": "m",
+   "status": "info",
+   "detail": "p5 -35.8 m, p50 0.0 m, p95 8.3 m. Independent coarse cross-check only: the DSM includes buildings and trees, and its 30 m cells smear the cliffs (large negative values on the ridge)"
+  },
+  {
+   "check": "Terrain tile seams, max height mismatch between neighbours",
+   "value": 0.0,
+   "unit": "mm",
+   "status": "pass",
+   "detail": "6918 shared edge vertices compared"
+  },
+  {
+   "check": "Road/path centreline points lying on rendered surfaces",
+   "value": 100.0,
+   "unit": "%",
+   "status": "pass",
+   "detail": "51534 sample points every 5 m on land"
+  },
+  {
+   "check": "Carriageway length in Gibraltar (OSM, excluding tunnels)",
+   "value": 115.2,
+   "unit": "km",
+   "status": "info",
+   "detail": "official: 'more than 48 km' of roads (GeoPortal)"
+  },
+  {
+   "check": "Tunnel ways recorded but not drawn on the surface",
+   "value": 171,
+   "unit": "ways",
+   "status": "info",
+   "detail": "8.6 km; official tunnel total ~52 km (mostly military, unmapped)"
+  },
+  {
+   "check": "Road network: largest connected component share of nodes",
+   "value": 98.13,
+   "unit": "%",
+   "status": "info",
+   "detail": "39 components in source OSM network (incl. tunnels); topology copied 1:1 from OSM"
+  },
+  {
+   "check": "Building roofs: rendered footprint area vs source, max relative error",
+   "value": 0.224,
+   "unit": "%",
+   "status": "pass",
+   "detail": "5586 buildings read back from buildings.glb"
+  },
+  {
+   "check": "Building roofs: centroid offset vs source, max",
+   "value": 0.7,
+   "unit": "mm",
+   "status": "pass",
+   "detail": "float32 storage relative to tile origin"
+  },
+  {
+   "check": "Footprint area in GIB-LTM vs ellipsoidal (geodesic) area, max relative error",
+   "value": 0.432,
+   "unit": "ppm",
+   "status": "pass",
+   "detail": "400 footprints"
+  },
+  {
+   "check": "Building heights by confidence",
+   "value": {
+    "measured": 50,
+    "derived": 120,
+    "estimated": 5416
+   },
+   "unit": "buildings",
+   "status": "info",
+   "detail": "measured = OSM height tag; derived = OSM building:levels × 3 m; estimated = type default"
+  },
+  {
+   "check": "Layer files whose bounds disagree with manifest bounds_m",
+   "value": 0,
+   "unit": "files",
+   "status": "pass",
+   "detail": ""
+  }
+ ],
+ "landmark_distances": [
+  {
+   "a": "Grand Casemates Square",
+   "b": "Grand Casemates Gates",
+   "engine_m": 57.608,
+   "geodesic_m": 57.608
+  }
+ ],
+ "spot_heights": [
+  {
+   "id": "osm:node/243843850",
+   "name": "Rock of Gibraltar",
+   "osm_ele_m": 426.0,
+   "terrain_at_node_m": 402.97,
+   "terrain_max_100m": 416.95,
+   "max_offset_m": 90.3,
+   "diff_m": -9.05
+  },
+  {
+   "id": "osm:node/8910097389",
+   "name": "Signal Hill",
+   "osm_ele_m": 387.0,
+   "terrain_at_node_m": 380.79,
+   "terrain_max_100m": 386.72,
+   "max_offset_m": 95.1,
+   "diff_m": -0.28
+  }
+ ]
+}

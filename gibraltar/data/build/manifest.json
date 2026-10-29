@@ -1,0 +1,10530 @@
+{
+ "schema": 1,
+ "pipeline_version": "0.1.0",
+ "generated_utc": "2026-10-29T16:14:14Z",
+ "crs": {
+  "engine_proj": "+proj=tmerc +lat_0=36.13 +lon_0=-5.35 +k=1 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+  "engine_name": "GIB-LTM",
+  "interchange": "EPSG:25830",
+  "origin_lonlat": [
+   -5.35,
+   36.13
+  ],
+  "vertical": "orthometric height above mean sea level (IGN MDT05, Alicante/REDNAP datum)"
+ },
+ "tile_size_m": 500.0,
+ "terrain_cell_m": 5.0,
+ "sea_level_m": 0.0,
+ "project_bounds_m": [
+  -2500.0,
+  -2500.0,
+  1500.0,
+  4000.0
+ ],
+ "land_bounds_m": [
+  -1566.57,
+  -2346.63,
+  1112.2,
+  2776.84
+ ],
+ "gibraltar_land_area_m2": 6590913.7,
+ "spawn": {
+  "name": "Grand Casemates Square",
+  "position_m": [
+   -246.942,
+   1648.743,
+   1.248
+  ],
+  "heading_deg": 180.0,
+  "source": "osm:way/951715814"
+ },
+ "pois": [
+  {
+   "id": "osm:node/366741701",
+   "name": "Trabajadores Españoles en Gibraltar",
+   "kind": "historic=monument",
+   "position_m": [
+    152.463,
+    2904.611,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/535634220",
+   "name": "Great Siege Tunnels",
+   "kind": "tourism=attraction",
+   "position_m": [
+    436.932,
+    1686.016,
+    208.176
+   ],
+   "description": "pictures of the interior https://photos.app.goo.gl/bt5acXyKpir7nBkP8 Wikipedia: en:Great Siege Tunnels",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/874026058",
+   "name": "Pío XII",
+   "kind": "place=neighbourhood",
+   "position_m": [
+    -830.338,
+    3990.623,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/1347038372",
+   "name": "North Mole",
+   "kind": "man_made=tower",
+   "position_m": [
+    -1432.676,
+    2039.425,
+    3.0
+   ],
+   "description": "Wikipedia: en:Gibraltar North Mole Elbow Lighthouse",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/1841585739",
+   "name": "John Mackintosh Hall Theatre",
+   "kind": "amenity=theatre",
+   "position_m": [
+    -310.351,
+    619.215,
+    7.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/3008793311",
+   "name": "Estatua Camarón de la Isla",
+   "kind": "tourism=artwork",
+   "position_m": [
+    -393.838,
+    3345.626,
+    2.731
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/3167291051",
+   "name": "John Mackintosh Hall Library",
+   "kind": "amenity=library",
+   "position_m": [
+    -293.349,
+    624.185,
+    8.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/4756647221",
+   "name": "Royal Engineers Memorial",
+   "kind": "historic=memorial",
+   "position_m": [
+    -337.859,
+    1056.016,
+    8.77
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/4843941187",
+   "name": "Gibraltar War Memorial",
+   "kind": "historic=memorial",
+   "position_m": [
+    -431.862,
+    1198.107,
+    7.0
+   ],
+   "description": "Wikipedia: en:Gibraltar War Memorial",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5280928139",
+   "name": "Gibraltarian Women Monument",
+   "kind": "historic=monument",
+   "position_m": [
+    -552.992,
+    1004.397,
+    1.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5364790675",
+   "name": "Memorial to World War II Evacuation of the Gibraltarians",
+   "kind": "historic=memorial",
+   "position_m": [
+    -802.818,
+    1995.215,
+    1.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5364804348",
+   "name": "Lion's Club Memorial",
+   "kind": "historic=memorial",
+   "position_m": [
+    -547.722,
+    1932.247,
+    1.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5364804349",
+   "name": "Royal Marines Memorial",
+   "kind": "historic=memorial",
+   "position_m": [
+    -308.279,
+    1965.656,
+    1.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5364804352",
+   "name": "George Don",
+   "kind": "historic=memorial",
+   "position_m": [
+    -330.501,
+    1194.196,
+    8.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5364834640",
+   "name": "Queen Victoria Memorial",
+   "kind": "historic=monument",
+   "position_m": [
+    -243.202,
+    1034.42,
+    16.493
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5364834647",
+   "name": "Gibraltar: Cradle of History",
+   "kind": "historic=memorial",
+   "position_m": [
+    77.556,
+    2230.373,
+    1.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5370927982",
+   "name": "World War II Tunnels",
+   "kind": "tourism=attraction",
+   "position_m": [
+    89.036,
+    1592.032,
+    128.003
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5370927995",
+   "name": "City Under Siege Exhibition",
+   "kind": "tourism=attraction",
+   "position_m": [
+    130.573,
+    1410.977,
+    151.887
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5370927997",
+   "name": "Governor's Lookout Battery",
+   "kind": "tourism=attraction",
+   "position_m": [
+    246.636,
+    1518.878,
+    196.83
+   ],
+   "description": "Wikipedia: en:Governor's Lookout Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5375147403",
+   "name": "Forbes' Quarry",
+   "kind": "historic=archaeological_site",
+   "position_m": [
+    365.718,
+    1850.946,
+    34.331
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5379575008",
+   "name": "Referendum Gate",
+   "kind": "historic=city_gate",
+   "position_m": [
+    -259.886,
+    542.361,
+    9.096
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5379575009",
+   "name": "St. Jago's Arch",
+   "kind": "historic=archaeological_site",
+   "position_m": [
+    -262.513,
+    574.773,
+    8.875
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5379575386",
+   "name": "Mario Finlayson National Art Gallery",
+   "kind": "tourism=gallery",
+   "position_m": [
+    -407.083,
+    1214.15,
+    5.256
+   ],
+   "description": "Built: 2015-06.",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5387556228",
+   "name": "Devil's Gap Battery",
+   "kind": "tourism=attraction",
+   "position_m": [
+    -20.837,
+    762.96,
+    139.725
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5395626187",
+   "name": "Admiral Sir George Rooke",
+   "kind": "historic=memorial",
+   "position_m": [
+    -451.937,
+    1812.702,
+    1.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5527872411",
+   "name": "John Mackintosh",
+   "kind": "historic=memorial",
+   "position_m": [
+    -344.883,
+    1197.015,
+    8.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5566789926",
+   "name": "Viewing terrace",
+   "kind": "tourism=viewpoint",
+   "position_m": [
+    244.382,
+    2600.445,
+    3.312
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5674614744",
+   "name": "Old Spanish Fountain",
+   "kind": "historic=monument",
+   "position_m": [
+    -436.855,
+    1248.539,
+    6.188
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5674626223",
+   "name": "Gibraltar Defence Force Memorial",
+   "kind": "historic=memorial",
+   "position_m": [
+    -285.953,
+    1613.019,
+    5.375
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5674626224",
+   "name": "Koehler Depression Carriage",
+   "kind": "historic=monument",
+   "position_m": [
+    -280.462,
+    1651.09,
+    1.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5674630533",
+   "name": "Black Watch Memorial",
+   "kind": "historic=memorial",
+   "position_m": [
+    886.882,
+    1551.054,
+    8.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/6187459092",
+   "name": "Ramón Vilariño García",
+   "kind": "historic=memorial",
+   "position_m": [
+    300.869,
+    3364.796,
+    4.0
+   ],
+   "description": "El Excelentísimo Ayuntamiento de La Líinea de la Concepción, el pueblo y su gente, en Honor al Caballero Legionario Paracaidista Ramón Vilariño García, Héroe de Ifni.",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/6353352119",
+   "name": "Lime Kiln",
+   "kind": "tourism=attraction",
+   "position_m": [
+    147.924,
+    1493.743,
+    154.628
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8594976526",
+   "name": "Monumento Locos del Parque",
+   "kind": "tourism=artwork",
+   "position_m": [
+    282.768,
+    2995.903,
+    2.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/8797484433",
+   "name": "gun",
+   "kind": "historic=cannon",
+   "position_m": [
+    -34.338,
+    779.249,
+    135.811
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8806370792",
+   "name": "Tovey Battery",
+   "kind": "tourism=attraction",
+   "position_m": [
+    185.851,
+    1436.499,
+    169.56
+   ],
+   "description": "Wikipedia: en:Tovey Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807129136",
+   "name": "Gun 3",
+   "kind": "historic=cannon",
+   "position_m": [
+    282.115,
+    1763.084,
+    142.692
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807129137",
+   "name": "Gun 1",
+   "kind": "historic=cannon",
+   "position_m": [
+    177.868,
+    1921.068,
+    1.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807129138",
+   "name": "Gun 2",
+   "kind": "historic=cannon",
+   "position_m": [
+    302.903,
+    1793.422,
+    141.97
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807129139",
+   "name": "Gun 4",
+   "kind": "historic=cannon",
+   "position_m": [
+    270.587,
+    1728.386,
+    148.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807129146",
+   "name": "gun",
+   "kind": "historic=cannon",
+   "position_m": [
+    -38.973,
+    748.202,
+    135.544
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807359662",
+   "name": "Jones' Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    0.549,
+    1477.542,
+    87.57
+   ],
+   "description": "Wikipedia: en:Jones' Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807359663",
+   "name": "Castle Batteries",
+   "kind": "historic=fort",
+   "position_m": [
+    -112.867,
+    1624.034,
+    41.238
+   ],
+   "description": "Wikipedia: en:Castle Batteries",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807359675",
+   "name": "Couvreport Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    -98.719,
+    1670.704,
+    15.87
+   ],
+   "description": "Wikipedia: en:Couvreport Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807359681",
+   "name": "Orillon Batteries",
+   "kind": "historic=fort",
+   "position_m": [
+    82.455,
+    1774.065,
+    39.961
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807359682",
+   "name": "Queen Charlotte's Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    37.305,
+    1564.813,
+    107.178
+   ],
+   "description": "Built: 1727. Wikipedia: en:Queen Charlotte's Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807411600",
+   "name": "Forbes' Batteries",
+   "kind": "historic=fort",
+   "position_m": [
+    290.138,
+    1893.975,
+    44.417
+   ],
+   "description": "Wikipedia: en:Forbes' Batteries",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807421073",
+   "name": "Middle Hill Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    521.526,
+    1151.452,
+    301.866
+   ],
+   "description": "Wikipedia: en:Middle Hill Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807421074",
+   "name": "Princess Amelia's Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    232.951,
+    1696.195,
+    153.072
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807421075",
+   "name": "Princess Royal's Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    353.103,
+    1791.881,
+    149.65
+   ],
+   "description": "Wikipedia: en:Princess Royal's Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8808449601",
+   "name": "Princess Anne's Battery",
+   "kind": "tourism=attraction",
+   "position_m": [
+    289.206,
+    1771.539,
+    142.0
+   ],
+   "description": "Wikipedia: en:Princess Anne's Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8808524639",
+   "name": "Zoca Flank Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    -440.795,
+    1291.803,
+    2.769
+   ],
+   "description": "Wikipedia: en:Zoca Flank Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8808524640",
+   "name": "Lewis' Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    108.643,
+    1198.84,
+    149.224
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8809037724",
+   "name": "Cathedral Square",
+   "kind": "place=square",
+   "position_m": [
+    -408.808,
+    909.849,
+    7.781
+   ],
+   "description": "Wikipedia: en:Cathedral Square, Gibraltar",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8816684407",
+   "name": "Gibraltar Methodist Church",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    -270.285,
+    738.076,
+    7.947
+   ],
+   "description": "Wikipedia: en:Gibraltar Methodist Church",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8816732789",
+   "name": "Gibraltar Museum",
+   "kind": "tourism=museum",
+   "position_m": [
+    -404.276,
+    995.966,
+    7.0
+   ],
+   "description": "Wikipedia: en:Gibraltar National Museum",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8816781158",
+   "name": "St Andrew",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    -234.978,
+    945.062,
+    16.088
+   ],
+   "description": "Wikipedia: en:St Andrew's Church, Gibraltar",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8942474796",
+   "name": "Ocean Village Marina",
+   "kind": "leisure=marina",
+   "position_m": [
+    -415.976,
+    1974.56,
+    3.0
+   ],
+   "description": "Wikipedia: en:Ocean Village Marina, Gibraltar",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8943563106",
+   "name": "Devil's Tower Cave",
+   "kind": "natural=cave_entrance",
+   "position_m": [
+    671.719,
+    1688.827,
+    73.01
+   ],
+   "description": "Wikipedia: en:Devil's Tower Cave",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8943782050",
+   "name": "Poca Roca Cave",
+   "kind": "natural=cave_entrance",
+   "position_m": [
+    338.192,
+    1289.135,
+    229.018
+   ],
+   "description": "Wikipedia: en:Poca Roca Cave",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8943880334",
+   "name": "Gustavo Bacarisas Exhibition Gallery",
+   "kind": "tourism=gallery",
+   "position_m": [
+    -243.444,
+    1701.488,
+    2.0
+   ],
+   "description": "Built: 2011.",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8945019750",
+   "name": "Ocean Village",
+   "kind": "place=neighbourhood",
+   "position_m": [
+    -299.929,
+    1900.111,
+    1.0
+   ],
+   "description": "Wikipedia: en:Ocean Village, Gibraltar",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8951267642",
+   "name": "Catalan Bay Cave",
+   "kind": "natural=cave_entrance",
+   "position_m": [
+    809.864,
+    1226.839,
+    37.577
+   ],
+   "description": "Wikipedia: en:Catalan Bay Cave",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8953412322",
+   "name": "Green's Lodge Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    582.81,
+    1681.231,
+    260.271
+   ],
+   "description": "Wikipedia: en:Green's Lodge Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8953743213",
+   "name": "Hanover Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    -37.007,
+    1628.228,
+    52.479
+   ],
+   "description": "Wikipedia: en:Hanover Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8953769940",
+   "name": "Upper All's Well Cave",
+   "kind": "natural=cave_entrance",
+   "position_m": [
+    343.148,
+    1842.146,
+    108.07
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8953794043",
+   "name": "Abudarham Synagogue",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    -320.429,
+    1453.169,
+    3.613
+   ],
+   "description": "Wikipedia: en:Synagogues of Gibraltar#The Abudarham Synagogue",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8953819107",
+   "name": "The Flemish Synagogue",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    -404.77,
+    1019.679,
+    6.785
+   ],
+   "description": "Wikipedia: en:Synagogues of Gibraltar#K K Nefusot Yehuda Synagogue (The Flemish Synagogue)",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8958397552",
+   "name": "Moorish Castle Estate",
+   "kind": "place=neighbourhood",
+   "position_m": [
+    -100.53,
+    1527.075,
+    61.406
+   ],
+   "description": "Wikipedia: en:Moorish Castle",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8958397556",
+   "name": "Villa Vieja",
+   "kind": "place=neighbourhood",
+   "position_m": [
+    -166.147,
+    1605.56,
+    29.521
+   ],
+   "description": "Wikipedia: en:Moorish Castle",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/9458282542",
+   "name": "The Gibraltar Art Gallery",
+   "kind": "tourism=gallery",
+   "position_m": [
+    -301.129,
+    1051.743,
+    10.468
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/9458282543",
+   "name": "GEMA Art Gallery",
+   "kind": "tourism=gallery",
+   "position_m": [
+    -385.285,
+    1618.66,
+    3.928
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/9458282544",
+   "name": "Gibraltar Fine Arts Gallery",
+   "kind": "tourism=gallery",
+   "position_m": [
+    -249.871,
+    1692.445,
+    2.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/10146571022",
+   "name": "Mirador Rocamar",
+   "kind": "tourism=viewpoint",
+   "position_m": [
+    -1799.934,
+    4314.712,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/10820232287",
+   "name": "Eastern Beach",
+   "kind": "natural=beach",
+   "position_m": [
+    910.117,
+    2009.295,
+    2.995
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/11336516664",
+   "name": "Barriada Sagrado Corazón de Jesús",
+   "kind": "place=neighbourhood",
+   "position_m": [
+    -865.83,
+    4284.876,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11343131498",
+   "name": "Ciudad Inclusiva",
+   "kind": "historic=memorial",
+   "position_m": [
+    629.861,
+    3302.476,
+    2.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11359993775",
+   "name": "San Felipe",
+   "kind": "place=neighbourhood",
+   "position_m": [
+    85.548,
+    3019.045,
+    6.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11377472459",
+   "name": "Julián Besteiro",
+   "kind": "place=neighbourhood",
+   "position_m": [
+    -172.05,
+    3012.4,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11399871905",
+   "name": "Maestro Jaén",
+   "kind": "tourism=artwork",
+   "position_m": [
+    -53.674,
+    3345.662,
+    3.0
+   ],
+   "description": "Rafael Jaén García",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11415352840",
+   "name": "La Colonia",
+   "kind": "place=neighbourhood",
+   "position_m": [
+    -1459.245,
+    4397.637,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11432986591",
+   "name": "Galería Manuel Alés",
+   "kind": "tourism=gallery",
+   "position_m": [
+    -61.357,
+    3458.366,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11434627389",
+   "name": "Antiguo Cuartel de Infantería",
+   "kind": "historic=memorial",
+   "position_m": [
+    -11.644,
+    3379.227,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11434634060",
+   "name": "Barriada San Pedro",
+   "kind": "place=neighbourhood",
+   "position_m": [
+    -164.349,
+    3877.038,
+    4.948
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11434634062",
+   "name": "Santiago",
+   "kind": "place=neighbourhood",
+   "position_m": [
+    701.365,
+    3581.262,
+    3.985
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11434634063",
+   "name": "El Conchal-El Castillo",
+   "kind": "place=neighbourhood",
+   "position_m": [
+    906.235,
+    3692.787,
+    3.77
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11434634064",
+   "name": "Mondéjar",
+   "kind": "place=neighbourhood",
+   "position_m": [
+    -791.691,
+    3818.806,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11473380227",
+   "name": "Quino Román",
+   "kind": "historic=memorial",
+   "position_m": [
+    99.672,
+    3328.308,
+    4.659
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11511589420",
+   "name": "La Fuente y La Serpiente",
+   "kind": "tourism=artwork",
+   "position_m": [
+    510.125,
+    3421.608,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11514775691",
+   "name": "The Mario Finlayson Art Gallery",
+   "kind": "tourism=gallery",
+   "position_m": [
+    -410.558,
+    1208.558,
+    5.747
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/11525721155",
+   "name": "Inmaculada Concepción",
+   "kind": "tourism=artwork",
+   "position_m": [
+    -87.767,
+    3387.95,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11525721163",
+   "name": "Fuente de los Jardines Saccone",
+   "kind": "tourism=artwork",
+   "position_m": [
+    -116.426,
+    3395.972,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11533967082",
+   "name": "Ballesteros",
+   "kind": "place=neighbourhood",
+   "position_m": [
+    -73.911,
+    3331.858,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11546990631",
+   "name": "Plaza de la Iglesia",
+   "kind": "place=square",
+   "position_m": [
+    -139.944,
+    3551.453,
+    2.715
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11552058401",
+   "name": "Luis Ramírez",
+   "kind": "tourism=artwork",
+   "position_m": [
+    -73.109,
+    3385.464,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11554335494",
+   "name": "Centro Ciudad",
+   "kind": "place=neighbourhood",
+   "position_m": [
+    -142.256,
+    3611.428,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11596352433",
+   "name": "Bésame en Este Rincón",
+   "kind": "tourism=attraction",
+   "position_m": [
+    257.504,
+    3482.393,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11599783488",
+   "name": "Museo Taurino Pepe Cabrera",
+   "kind": "tourism=museum",
+   "position_m": [
+    328.338,
+    4140.023,
+    3.846
+   ],
+   "description": "Wikipedia: es:Museo Taurino (La Línea de la Concepción)",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11634669719",
+   "name": "Barriada Santa Bárbara",
+   "kind": "place=neighbourhood",
+   "position_m": [
+    355.836,
+    3409.794,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11658213935",
+   "name": "Doctor Juanito",
+   "kind": "tourism=artwork",
+   "position_m": [
+    -373.432,
+    3511.214,
+    2.026
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11717200704",
+   "name": "Huerta Fava",
+   "kind": "place=neighbourhood",
+   "position_m": [
+    322.901,
+    3710.821,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11728807572",
+   "name": "Los Navegantes",
+   "kind": "place=neighbourhood",
+   "position_m": [
+    -510.678,
+    3505.229,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11741671775",
+   "name": "Parque en Honor al Donante",
+   "kind": "historic=memorial",
+   "position_m": [
+    328.676,
+    3285.038,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11741671776",
+   "name": "Víctor Sánchez Sánchez",
+   "kind": "historic=memorial",
+   "position_m": [
+    350.919,
+    3076.53,
+    2.0
+   ],
+   "description": "El Excmo. Ayuntamiento de La Línea de la Concepción, su alcalde, el cuerpo de la Policía Local del municipio, sus compañeros y el pueblo de La Línea de la Concepción en memoria del policía local fallecido en acto de servicio Víctor Sánchez Sánchez.",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11765905381",
+   "name": "Bolas Blancas",
+   "kind": "tourism=attraction",
+   "position_m": [
+    84.429,
+    3358.833,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11897592026",
+   "name": "Mezquita Badr",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    98.791,
+    3248.936,
+    5.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11897592033",
+   "name": "Iglesia Adventista Séptimo Día",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    79.284,
+    3177.954,
+    5.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/11935246373",
+   "name": "Bellavista",
+   "kind": "place=neighbourhood",
+   "position_m": [
+    4.364,
+    3197.305,
+    5.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/12023779264",
+   "name": "Santa Isabel",
+   "kind": "place=neighbourhood",
+   "position_m": [
+    -271.318,
+    4266.706,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/12139658990",
+   "name": "Biblioteca Pública Central José Riquelme",
+   "kind": "amenity=library",
+   "position_m": [
+    198.711,
+    3473.348,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/12223008935",
+   "name": "Las Tres Gracias",
+   "kind": "tourism=artwork",
+   "position_m": [
+    -140.403,
+    3546.016,
+    2.865
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/12291597615",
+   "name": "Plaza El Arenal",
+   "kind": "historic=memorial",
+   "position_m": [
+    304.601,
+    4198.388,
+    3.679
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/12377303557",
+   "name": "El Velero de Rafael Trujillo",
+   "kind": "historic=memorial",
+   "position_m": [
+    -1672.125,
+    4246.423,
+    3.0
+   ],
+   "description": "En honor al medallista olímpico linense en vela, Rafael Joaquín Trujillo Villar, del Real Club Náutico de La Línea de la Concepción.",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/12392077848",
+   "name": "Don Bosco",
+   "kind": "tourism=artwork",
+   "position_m": [
+    394.603,
+    3731.552,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/12513945405",
+   "name": "Capilla de María Auxiliadora",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    499.889,
+    3678.673,
+    4.041
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/12537395732",
+   "name": "Baluarte de San Benito",
+   "kind": "historic=monument",
+   "position_m": [
+    718.055,
+    3373.476,
+    3.061
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/12544318185",
+   "name": "Mezquita Al-Takwa",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    -232.105,
+    3724.211,
+    3.497
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/12853636938",
+   "name": "Mercado Municipal",
+   "kind": "historic=memorial",
+   "position_m": [
+    -30.799,
+    3699.575,
+    3.778
+   ],
+   "description": "Mercado Municipal, Propiedad del Municipio",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/12853636939",
+   "name": "Mercado de La Concepción",
+   "kind": "historic=memorial",
+   "position_m": [
+    -34.623,
+    3650.796,
+    3.947
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/12857997978",
+   "name": "Biblioteca Carmen Gil",
+   "kind": "amenity=library",
+   "position_m": [
+    -407.719,
+    3413.125,
+    3.009
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/12891905427",
+   "name": "Monumento al Volaor",
+   "kind": "historic=memorial",
+   "position_m": [
+    420.929,
+    3573.044,
+    4.0
+   ],
+   "description": "Monumento al Volaor Linense",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/12892348901",
+   "name": "Escudo de la Ciudad",
+   "kind": "historic=memorial",
+   "position_m": [
+    -591.16,
+    3570.024,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/12946787818",
+   "name": "Padre Justo Martínez",
+   "kind": "tourism=artwork",
+   "position_m": [
+    601.8,
+    3635.326,
+    3.0
+   ],
+   "description": "Del Pueblo de La Línea de la Concepción al Padre Justo Martínez. En La Línea de la Concepción a 20 de Julio de 1996.",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/12988569252",
+   "name": "Benito Cabrera Vallecillo",
+   "kind": "tourism=artwork",
+   "position_m": [
+    277.422,
+    4164.521,
+    3.018
+   ],
+   "description": "En Homenaje a Benito Cabrera Vallecillo, siendo Alcalde de la Ciudad D. Juan Carlos Juárez Arriola. En La Línea de la Concepción a 20 de Julio de 2009.",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/12992031028",
+   "name": "Propaganda sobre Gibraltar durante el franquismo",
+   "kind": "tourism=information",
+   "position_m": [
+    131.886,
+    2717.318,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/12992132826",
+   "name": "RML gun",
+   "kind": "historic=cannon",
+   "position_m": [
+    -253.989,
+    564.897,
+    10.218
+   ],
+   "description": "RML gun",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/13017282918",
+   "name": "Monumento a la Mujer",
+   "kind": "historic=memorial",
+   "position_m": [
+    490.305,
+    3206.174,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/13017283029",
+   "name": "El Caracol del Parque",
+   "kind": "historic=memorial",
+   "position_m": [
+    287.097,
+    2980.013,
+    2.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/13039062391",
+   "name": "Maestro Francisco Soro",
+   "kind": "historic=memorial",
+   "position_m": [
+    -56.445,
+    3359.909,
+    3.0
+   ],
+   "description": "Maestro del Conservatorio Profesional de Música Muñoz Molleda, Don Francisco Soro Soler y su esposa María Serra. Refundó la Banda Municipal y fundó la Banda de la Cruz Roja además de crear la Agrupación Artística Linense.",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/13074203702",
+   "name": "Bda. Santiago-Conchal-Castillo",
+   "kind": "historic=memorial",
+   "position_m": [
+    381.384,
+    3563.732,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/13074203703",
+   "name": "Urb. Bellavista",
+   "kind": "historic=memorial",
+   "position_m": [
+    -88.93,
+    3220.896,
+    4.127
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/13082733821",
+   "name": "Bda. San Pedro",
+   "kind": "historic=memorial",
+   "position_m": [
+    -119.92,
+    3837.956,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/13084401352",
+   "name": "Nuevo El Conchal",
+   "kind": "place=neighbourhood",
+   "position_m": [
+    908.284,
+    3975.263,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/13145906531",
+   "name": "Drago Centenario",
+   "kind": "historic=memorial",
+   "position_m": [
+    254.36,
+    3273.662,
+    3.181
+   ],
+   "description": "Explicación de la historia sobre el Drago Centenario",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/13145906587",
+   "name": "Camino de Santiago (Vía Serrana)",
+   "kind": "historic=memorial",
+   "position_m": [
+    247.899,
+    3288.342,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/13176539364",
+   "name": "Real Balompédica Linense",
+   "kind": "historic=memorial",
+   "position_m": [
+    -309.874,
+    3170.07,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/13198640868",
+   "name": "Aula dJaque",
+   "kind": "tourism=artwork",
+   "position_m": [
+    -272.606,
+    3356.24,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/13231796194",
+   "name": "Teatro de Salesianos",
+   "kind": "amenity=theatre",
+   "position_m": [
+    493.972,
+    3763.836,
+    3.943
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/13533136683",
+   "name": "West Place of Arms",
+   "kind": "historic=fort",
+   "position_m": [
+    -273.807,
+    1803.995,
+    1.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/13533136684",
+   "name": "Waterport Casemates",
+   "kind": "historic=fort",
+   "position_m": [
+    -301.815,
+    1752.232,
+    1.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/13534937869",
+   "name": "Gun 1",
+   "kind": "historic=cannon",
+   "position_m": [
+    335.364,
+    1810.977,
+    143.808
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/13543661110",
+   "name": "Esquina Carreño",
+   "kind": "historic=memorial",
+   "position_m": [
+    -377.999,
+    4234.609,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/13760499900",
+   "name": "Plaza Común de la Zona 3",
+   "kind": "place=square",
+   "position_m": [
+    -748.006,
+    4159.711,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/13783593166",
+   "name": "Los Rocking Boys",
+   "kind": "historic=memorial",
+   "position_m": [
+    -126.27,
+    3394.308,
+    3.0
+   ],
+   "description": "Paseo de Los Rocking Boys",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/13794106251",
+   "name": "Plaza Común de la Zona 4",
+   "kind": "place=square",
+   "position_m": [
+    -700.913,
+    4394.292,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/13825894701",
+   "name": "El Templo del Flamenco",
+   "kind": "historic=memorial",
+   "position_m": [
+    -768.82,
+    3812.091,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/13825931298",
+   "name": "Plaza Juan José García Cabreros",
+   "kind": "historic=memorial",
+   "position_m": [
+    -140.857,
+    3333.79,
+    3.88
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/13829510736",
+   "name": "Biblioteca Escolar Acelerada",
+   "kind": "amenity=library",
+   "position_m": [
+    486.218,
+    3416.724,
+    3.738
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/13831327513",
+   "name": "Wellington Front Left Bastion",
+   "kind": "historic=fort",
+   "position_m": [
+    -399.745,
+    691.011,
+    1.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/13831327514",
+   "name": "Wellington Front Right Bastion",
+   "kind": "historic=fort",
+   "position_m": [
+    -441.727,
+    825.176,
+    1.233
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/13831327515",
+   "name": "Living Waters Church",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    -390.455,
+    718.44,
+    1.304
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/13954584124",
+   "name": "Jones' Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    -172.342,
+    1456.76,
+    42.992
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/13961820297",
+   "name": "Bda. La Colonia",
+   "kind": "historic=memorial",
+   "position_m": [
+    -1299.03,
+    4125.089,
+    3.0
+   ],
+   "description": "Barriada La Colonia",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:node/13970855661",
+   "name": "Moorish Castle",
+   "kind": "historic=castle",
+   "position_m": [
+    -13.617,
+    1538.005,
+    93.225
+   ],
+   "description": "Wikipedia: en:Moorish Castle",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/13997667237",
+   "name": "Jock's Balcony",
+   "kind": "tourism=viewpoint",
+   "position_m": [
+    383.252,
+    1796.376,
+    100.261
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/14298138265",
+   "name": "Gibraltar International Airport Departures and Arrivals",
+   "kind": "aeroway=terminal",
+   "position_m": [
+    259.049,
+    2654.816,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/243843850",
+   "name": "Rock of Gibraltar",
+   "kind": "tourism=attraction",
+   "position_m": [
+    502.881,
+    -158.716,
+    402.972
+   ],
+   "description": "Elevation (OSM): 426 m. Wikipedia: en:Rock of Gibraltar",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/243847822",
+   "name": "Southport Gates",
+   "kind": "historic=city_gate",
+   "position_m": [
+    -247.653,
+    543.704,
+    9.381
+   ],
+   "description": "Wikipedia: en:Southport Gates",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/535634179",
+   "name": "St Michael's Cave",
+   "kind": "tourism=attraction",
+   "position_m": [
+    401.426,
+    -434.382,
+    301.72
+   ],
+   "description": "Pictures of the interior of the cave   https://photos.app.goo.gl/JvThNEmAZAkhzi2E8 Wikipedia: en:St. Michael's Cave",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/675275200",
+   "name": "100 Ton Gun",
+   "kind": "tourism=attraction",
+   "position_m": [
+    -366.154,
+    -811.974,
+    20.22
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/1267151420",
+   "name": "Shrine of Our Lady of Europe",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    153.54,
+    -2070.336,
+    31.997
+   ],
+   "description": "Wikipedia: en:Shrine of Our Lady of Europe",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/1938586372",
+   "name": "Nun's Well",
+   "kind": "historic=archaeological_site",
+   "position_m": [
+    393.306,
+    -2042.732,
+    28.0
+   ],
+   "description": "Wikipedia: en:Nun's Well, Gibraltar",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/2547617555",
+   "name": "Gorham's Cave",
+   "kind": "tourism=attraction",
+   "position_m": [
+    719.797,
+    -1058.786,
+    22.18
+   ],
+   "description": "World Heritate site. Considered to be one of the last known habitations of the Neanderthals in Europe. Source: Wikipedia Wikipedia: en:Gorham's Cave",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/2630099019",
+   "name": "The Alameda Open Air Theatre",
+   "kind": "amenity=theatre",
+   "position_m": [
+    -96.208,
+    42.21,
+    38.455
+   ],
+   "description": "Wikipedia: en:Gibraltar Botanic Gardens#Events",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/2630099255",
+   "name": "The Eliott Memorial",
+   "kind": "historic=monument",
+   "position_m": [
+    -145.065,
+    209.23,
+    26.936
+   ],
+   "description": "Memorial to General George Augustus Eliott, later Lord Heathfield, who defended Gibraltar during the Great Siege 1779 - 1782. ELIOTT Built: 1858. Wikipedia: en:Gibraltar Botanic Gardens#The Eliott Memorial",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/2630099287",
+   "name": "Duke of Wellington Monument",
+   "kind": "historic=monument",
+   "position_m": [
+    -80.672,
+    25.655,
+    41.496
+   ],
+   "description": "Bronze bust on an Aswan Pink column, 2 13 inch mortars a replica 1758 bronze 12-pounder gun. The bust had been cast in bronze from guns captured by the Duke of Wellington. It stands on a marble pillar that had been brought from the Roman ruins of Lepida Built: 1819-04.",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/2785523717",
+   "name": "Goat's Hair Twin Caves",
+   "kind": "natural=cave_entrance",
+   "position_m": [
+    784.564,
+    -786.403,
+    108.255
+   ],
+   "description": "Wikipedia: en:Goat's Hair Twin Caves",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/3085909294",
+   "name": "Centro Emisor AM Radio Gibraltar",
+   "kind": "man_made=tower",
+   "position_m": [
+    103.438,
+    -68.707,
+    105.022
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/4109394589",
+   "name": "Rosia Mole",
+   "kind": "tourism=viewpoint",
+   "position_m": [
+    -342.546,
+    -949.179,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/4709982909",
+   "name": "Sikorski Memorial",
+   "kind": "historic=memorial",
+   "position_m": [
+    373.283,
+    -2274.409,
+    28.9
+   ],
+   "description": "Wikipedia: en:Sikorski Memorial",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/4764660821",
+   "name": "Top Monkey Feeding Station",
+   "kind": "tourism=attraction",
+   "position_m": [
+    382.763,
+    221.343,
+    345.543
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5023685830",
+   "name": "Bellman's Cave",
+   "kind": "natural=cave_entrance",
+   "position_m": [
+    347.542,
+    426.853,
+    363.984
+   ],
+   "description": "Wikipedia: en:Bellman's Cave",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5371292444",
+   "name": "Admiral Lord Nelson",
+   "kind": "historic=monument",
+   "position_m": [
+    -260.471,
+    518.505,
+    10.942
+   ],
+   "description": "The statue shows Nelson as he was when he last arrived at Gibraltar. The sculpture was commissioned by the Government of Gibraltar and is cast in part from copper taken from HMS Victory which visited the harbour on a number of occasions.",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5379575041",
+   "name": "RFA Bedenham Memorial",
+   "kind": "historic=memorial",
+   "position_m": [
+    -407.82,
+    466.935,
+    1.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5379575062",
+   "name": "Apes' Den",
+   "kind": "tourism=attraction",
+   "position_m": [
+    116.936,
+    248.565,
+    194.275
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5387556224",
+   "name": "Queen's Balcony",
+   "kind": "tourism=viewpoint",
+   "position_m": [
+    264.874,
+    -102.58,
+    246.946
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5387556232",
+   "name": "Douglas Lookout",
+   "kind": "tourism=viewpoint",
+   "position_m": [
+    409.223,
+    105.856,
+    335.689
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/5674675424",
+   "name": "Victorian Rifled Muzzle Loader (RML)",
+   "kind": "historic=cannon",
+   "position_m": [
+    -128.906,
+    346.622,
+    22.034
+   ],
+   "description": "RML Guns",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/6296504947",
+   "name": "The Trafalgar Cemetery",
+   "kind": "historic=memorial",
+   "position_m": [
+    -198.022,
+    546.698,
+    13.199
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/6296504964",
+   "name": "West Terrace",
+   "kind": "tourism=viewpoint",
+   "position_m": [
+    367.838,
+    449.646,
+    373.336
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/6297348436",
+   "name": "Led by shepherd 500 Spanish soldiers...",
+   "kind": "historic=memorial",
+   "position_m": [
+    403.264,
+    124.186,
+    334.281
+   ],
+   "description": "Led by shepherd 500 Spanish soldiers climbed the east face of the rock in 704 from Catalan Bay to surprise the garrison, but they were discovered and made prisioner. The shepher's path from near this spot was scraped away soon afterwards.",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/6297348449",
+   "name": "Atlas moutains strait of Gibraltar Bay of Gibraltar",
+   "kind": "historic=memorial",
+   "position_m": [
+    407.261,
+    101.295,
+    337.307
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/6297348482",
+   "name": "Douglas Cave",
+   "kind": "natural=cave_entrance",
+   "position_m": [
+    444.858,
+    -212.646,
+    364.123
+   ],
+   "description": "Wikipedia: en:Douglas Cave",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/6297348606",
+   "name": "Start/End Point of Mediterranean Steps",
+   "kind": "tourism=attraction",
+   "position_m": [
+    590.425,
+    -604.054,
+    403.891
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/6297348616",
+   "name": "Heritage Awards 2008",
+   "kind": "historic=memorial",
+   "position_m": [
+    589.291,
+    -601.812,
+    403.195
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/6297591194",
+   "name": "St. Michael's Cave",
+   "kind": "historic=memorial",
+   "position_m": [
+    402.181,
+    -410.159,
+    304.05
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/6298044964",
+   "name": "Queen's Gate",
+   "kind": "historic=memorial",
+   "position_m": [
+    127.512,
+    236.737,
+    200.522
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/6535364385",
+   "name": "Windsor Suspension Bridge",
+   "kind": "tourism=attraction",
+   "position_m": [
+    214.47,
+    26.312,
+    192.438
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8791660324",
+   "name": "Harding's Battery",
+   "kind": "tourism=attraction",
+   "position_m": [
+    331.486,
+    -2252.262,
+    29.181
+   ],
+   "description": "Wikipedia: en:Harding's Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8791981947",
+   "name": "Siebe Aerts",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    314.57,
+    -2311.572,
+    9.177
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8797484429",
+   "name": "18th-century howitzer",
+   "kind": "historic=cannon",
+   "position_m": [
+    -145.767,
+    214.234,
+    26.521
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8806256936",
+   "name": "Rooke Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    205.914,
+    -136.436,
+    207.792
+   ],
+   "description": "Wikipedia: en:Rooke Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807148296",
+   "name": "Levant Battery",
+   "kind": "tourism=attraction",
+   "position_m": [
+    579.557,
+    -1113.134,
+    173.397
+   ],
+   "description": "Wikipedia: en:Levant Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807220739",
+   "name": "Lord Airey's Battery",
+   "kind": "tourism=attraction",
+   "position_m": [
+    597.968,
+    -580.84,
+    413.253
+   ],
+   "description": "Wikipedia: en:Lord Airey's Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807220744",
+   "name": "O'Hara's Battery",
+   "kind": "tourism=attraction",
+   "position_m": [
+    630.104,
+    -687.971,
+    417.519
+   ],
+   "description": "Wikipedia: en:O'Hara's Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807220754",
+   "name": "Hayne's Cave Battery",
+   "kind": "tourism=attraction",
+   "position_m": [
+    212.185,
+    -5.013,
+    208.532
+   ],
+   "description": "Wikipedia: en:Hayne's Cave Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807220755",
+   "name": "gun",
+   "kind": "historic=cannon",
+   "position_m": [
+    212.707,
+    -7.387,
+    208.561
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807394645",
+   "name": "Spy Glass Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    524.025,
+    -292.39,
+    412.742
+   ],
+   "description": "Wikipedia: en:Spy Glass Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807394650",
+   "name": "Spur Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    550.261,
+    -808.791,
+    345.549
+   ],
+   "description": "Wikipedia: en:Spur Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807394651",
+   "name": "Buena Vista Barracks and Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    5.042,
+    -1340.601,
+    78.927
+   ],
+   "description": "Wikipedia: en:Buena Vista Barracks and Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807394652",
+   "name": "Buffadero Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    490.453,
+    -1833.488,
+    99.364
+   ],
+   "description": "Wikipedia: en:Buffadero Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807394653",
+   "name": "South Batteries",
+   "kind": "historic=fort",
+   "position_m": [
+    473.493,
+    -1877.152,
+    87.981
+   ],
+   "description": "Wikipedia: en:South Batteries",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807394654",
+   "name": "Windmill Hill Batteries",
+   "kind": "historic=fort",
+   "position_m": [
+    317.634,
+    -1877.891,
+    86.961
+   ],
+   "description": "Wikipedia: en:Windmill Hill Batteries",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807394655",
+   "name": "West Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    272.579,
+    -1822.79,
+    90.161
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807394656",
+   "name": "Edward VII Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    236.466,
+    -1510.102,
+    105.991
+   ],
+   "description": "Wikipedia: en:Edward VII Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807394675",
+   "name": "Prince Ferdinand's Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    104.91,
+    246.157,
+    174.403
+   ],
+   "description": "Wikipedia: en:Prince Ferdinand's Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807394676",
+   "name": "Signal Hill Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    384.417,
+    486.419,
+    379.495
+   ],
+   "description": "Wikipedia: en:Signal Hill Battery, Gibraltar",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8807394677",
+   "name": "Genoese Batteries",
+   "kind": "historic=fort",
+   "position_m": [
+    14.717,
+    529.02,
+    151.844
+   ],
+   "description": "Wikipedia: en:Genoese Batteries",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8808524642",
+   "name": "Eliott's Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    -9.364,
+    -2038.924,
+    31.095
+   ],
+   "description": "Wikipedia: en:Eliott's Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8808524643",
+   "name": "Woodford's Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    32.981,
+    -2123.476,
+    27.412
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8809037723",
+   "name": "Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    199.05,
+    75.112,
+    210.63
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8814655918",
+   "name": "Coptic Cave",
+   "kind": "natural=cave_entrance",
+   "position_m": [
+    710.969,
+    -1331.573,
+    16.401
+   ],
+   "description": "Wikipedia: en:Coptic Cave",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8815741300",
+   "name": "Europa Pass Batteries",
+   "kind": "historic=fort",
+   "position_m": [
+    182.33,
+    -1489.276,
+    82.525
+   ],
+   "description": "Wikipedia: en:Europa Pass Batteries",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8816635977",
+   "name": "Martin's Cave",
+   "kind": "natural=cave_entrance",
+   "position_m": [
+    818.131,
+    -658.284,
+    102.047
+   ],
+   "description": "Wikipedia: en:Martin's Cave",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8816635978",
+   "name": "Fig Tree Cave",
+   "kind": "natural=cave_entrance",
+   "position_m": [
+    808.333,
+    -710.404,
+    87.965
+   ],
+   "description": "Wikipedia: en:Fig Tree Cave",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8816635979",
+   "name": "Boat Hoist",
+   "kind": "natural=cave_entrance",
+   "position_m": [
+    720.891,
+    -1003.493,
+    31.841
+   ],
+   "description": "Wikipedia: en:Boathoist Cave",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8816635980",
+   "name": "Bennett's Cave",
+   "kind": "natural=cave_entrance",
+   "position_m": [
+    707.034,
+    -1097.035,
+    39.389
+   ],
+   "description": "Wikipedia: en:Bennett's Cave",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8816635981",
+   "name": "Vanguard Cave",
+   "kind": "natural=cave_entrance",
+   "position_m": [
+    738.277,
+    -920.781,
+    24.865
+   ],
+   "description": "Wikipedia: en:Vanguard Cave",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8910097389",
+   "name": "Signal Hill",
+   "kind": "natural=peak",
+   "position_m": [
+    390.161,
+    439.86,
+    380.793
+   ],
+   "description": "Elevation (OSM): 387 m. Wikipedia: en:Rock of Gibraltar#Geology",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8941805537",
+   "name": "Crimean gun",
+   "kind": "historic=cannon",
+   "position_m": [
+    -159.764,
+    244.638,
+    21.777
+   ],
+   "description": "two of the four Russian guns given to Gibraltar by Britain, for Gibraltar’s help during the Crimean War, in 1858.",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8941824439",
+   "name": "Giuseppe Codali (1847-1917)",
+   "kind": "tourism=artwork",
+   "position_m": [
+    -102.517,
+    135.418,
+    36.655
+   ],
+   "description": "Built: 2014.",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8941824440",
+   "name": "Gibraltar Castle and Key",
+   "kind": "tourism=attraction",
+   "position_m": [
+    -99.969,
+    156.756,
+    35.272
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8942111691",
+   "name": "Monkey's Cave",
+   "kind": "natural=cave_entrance",
+   "position_m": [
+    709.651,
+    -946.982,
+    80.363
+   ],
+   "description": "Wikipedia: en:Monkey's Cave",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8942146157",
+   "name": "Great North Road",
+   "kind": "tourism=attraction",
+   "position_m": [
+    91.726,
+    -61.783,
+    97.775
+   ],
+   "description": "Wikipedia: en:Great North Road, Gibraltar",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8942459118",
+   "name": "Trafalgar memorial",
+   "kind": "historic=memorial",
+   "position_m": [
+    -180.129,
+    500.771,
+    15.888
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8942654770",
+   "name": "Nelson's Anchorage",
+   "kind": "historic=memorial",
+   "position_m": [
+    -299.059,
+    -801.535,
+    11.439
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8942724724",
+   "name": "Pillars of Hercules",
+   "kind": "historic=memorial",
+   "position_m": [
+    365.596,
+    -1041.22,
+    172.304
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8943616767",
+   "name": "Ibex Cave",
+   "kind": "natural=cave_entrance",
+   "position_m": [
+    410.158,
+    525.523,
+    312.394
+   ],
+   "description": "Wikipedia: en:Ibex Cave",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8943659627",
+   "name": "Beefsteak Cave",
+   "kind": "natural=cave_entrance",
+   "position_m": [
+    394.615,
+    -1914.661,
+    70.542
+   ],
+   "description": "Wikipedia: en:Beefsteak Cave",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8943765201",
+   "name": "Hyaena Cave",
+   "kind": "natural=cave_entrance",
+   "position_m": [
+    740.5,
+    -913.68,
+    30.527
+   ],
+   "description": "Wikipedia: en:Hyaena Cave",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8951231009",
+   "name": "Bray's Cave",
+   "kind": "natural=cave_entrance",
+   "position_m": [
+    420.553,
+    -21.738,
+    347.688
+   ],
+   "description": "Elevation (OSM): 400 m. Wikipedia: en:Bray's Cave",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8951414773",
+   "name": "Cave S",
+   "kind": "natural=cave_entrance",
+   "position_m": [
+    471.107,
+    298.61,
+    217.38
+   ],
+   "description": "Elevation (OSM): 240 m. Wikipedia: en:Cave S",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8951414774",
+   "name": "Holy Boy's Cave",
+   "kind": "natural=cave_entrance",
+   "position_m": [
+    478.99,
+    342.762,
+    221.708
+   ],
+   "description": "Wikipedia: en:Holy Boy's Cave",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8951585496",
+   "name": "Devil's Fall Cave",
+   "kind": "natural=cave_entrance",
+   "position_m": [
+    -21.589,
+    -1312.029,
+    34.668
+   ],
+   "description": "Wikipedia: en:Devil's Fall Cave",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8951852201",
+   "name": "George's Bottom Cave",
+   "kind": "natural=cave_entrance",
+   "position_m": [
+    527.154,
+    -986.73,
+    240.265
+   ],
+   "description": "Elevation (OSM): 310 m. Wikipedia: en:George's Bottom Cave",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8952296035",
+   "name": "Levant Cave",
+   "kind": "natural=cave_entrance",
+   "position_m": [
+    574.148,
+    -992.109,
+    231.934
+   ],
+   "description": "Wikipedia: en:Levant Cave",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8953327007",
+   "name": "Pete's Paradise Cave",
+   "kind": "natural=cave_entrance",
+   "position_m": [
+    52.548,
+    473.517,
+    152.901
+   ],
+   "description": "Wikipedia: en:Pete's Paradise Cave",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8953515372",
+   "name": "The Magazine Studio Theatre",
+   "kind": "amenity=theatre",
+   "position_m": [
+    -93.331,
+    549.493,
+    64.498
+   ],
+   "description": "Built: 1873.",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/8953727214",
+   "name": "Spider Cave",
+   "kind": "natural=cave_entrance",
+   "position_m": [
+    661.833,
+    -524.678,
+    292.941
+   ],
+   "description": "Wikipedia: en:Spider Cave (Gibraltar)",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/11645929366",
+   "name": "Gibraltar National Museum (Natural History)",
+   "kind": "tourism=museum",
+   "position_m": [
+    -204.485,
+    -1031.949,
+    10.623
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/13535051209",
+   "name": "Breakneck Battery",
+   "kind": "tourism=attraction",
+   "position_m": [
+    518.509,
+    -182.538,
+    414.155
+   ],
+   "description": "Wikipedia: en:Breakneck Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/13539513299",
+   "name": "Alexandra Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    -506.145,
+    -564.268,
+    2.0
+   ],
+   "description": "Wikipedia: en:Alexandra Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:node/13542437204",
+   "name": "7th Rosia Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    -203.097,
+    -943.835,
+    3.832
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/22413420",
+   "name": "Commonwealth Park",
+   "kind": "leisure=park",
+   "position_m": [
+    -469.678,
+    974.027,
+    1.015
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/22413711",
+   "name": "Westview Promenade",
+   "kind": "leisure=park",
+   "position_m": [
+    -1034.121,
+    1660.844,
+    1.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/31513490",
+   "name": "Marina Bay",
+   "kind": "leisure=marina",
+   "position_m": [
+    -428.516,
+    2066.02,
+    3.0
+   ],
+   "description": "Wikipedia: en:Marina Bay, Gibraltar",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/32614199",
+   "name": "Parque Municipal Princesa Sofia",
+   "kind": "leisure=park",
+   "position_m": [
+    427.964,
+    3083.736,
+    2.0
+   ],
+   "description": "Listed heritage site. Wikipedia: es:Parque Municipal Reina Sofía",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/42825487",
+   "name": "Princess Caroline's Battery",
+   "kind": "tourism=attraction",
+   "position_m": [
+    183.585,
+    1643.664,
+    167.637
+   ],
+   "description": "Wikipedia: en:Princess Caroline's Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/106806430",
+   "name": "Royal Air Force Gibraltar",
+   "kind": "aeroway=aerodrome",
+   "position_m": [
+    43.898,
+    2353.551,
+    1.685
+   ],
+   "description": "Elevation (OSM): 5 m. Wikipedia: en:RAF Gibraltar",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/111163399",
+   "name": "Catalan Bay",
+   "kind": "natural=beach",
+   "position_m": [
+    817.733,
+    996.883,
+    1.319
+   ],
+   "description": "Wikipedia: en:Catalan Bay",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/126855345",
+   "name": "Playa de Levante",
+   "kind": "natural=beach",
+   "position_m": [
+    1173.037,
+    4441.046,
+    1.409
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/133877064",
+   "name": "Old Central Police Station",
+   "kind": "historic=building",
+   "position_m": [
+    -374.9,
+    1258.994,
+    5.385
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/137335923",
+   "name": "Grand Casemates",
+   "kind": "historic=fort",
+   "position_m": [
+    -216.444,
+    1678.535,
+    2.955
+   ],
+   "description": "Fortified gun emplacement, (\"casemate\"), and bombproof barracks built by the British in 1817. Built: 1817. Wikipedia: en:Grand Casemates",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/167262263",
+   "name": "Cathedral of St. Mary the Crowned",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    -316.145,
+    1081.603,
+    10.519
+   ],
+   "description": "Wikipedia: en:Cathedral of St. Mary the Crowned",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/167270012",
+   "name": "City Hall",
+   "kind": "historic=building",
+   "position_m": [
+    -407.083,
+    1213.584,
+    5.259
+   ],
+   "description": "Built: 1819. Wikipedia: en:Gibraltar City Hall",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/173820164",
+   "name": "Garrison Library",
+   "kind": "amenity=library",
+   "position_m": [
+    -192.324,
+    998.09,
+    21.901
+   ],
+   "description": "Wikipedia: en:Garrison Library",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/173821531",
+   "name": "Cathedral of the Holy Trinity",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    -365.032,
+    915.39,
+    7.369
+   ],
+   "description": "Wikipedia: en:Cathedral of the Holy Trinity, Gibraltar",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/177684730",
+   "name": "General Aviation Terminal",
+   "kind": "aeroway=terminal",
+   "position_m": [
+    428.075,
+    2629.646,
+    2.992
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/177905310",
+   "name": "St Theresa's Church",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    354.454,
+    1990.68,
+    1.0
+   ],
+   "description": "Wikipedia: en:St. Theresa's Church, Gibraltar",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/183265994",
+   "name": "Joshua Hassan House",
+   "kind": "historic=building",
+   "position_m": [
+    -389.417,
+    820.064,
+    7.0
+   ],
+   "description": "Built: 1943.",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/233259890",
+   "name": "Gibraltar International Airport",
+   "kind": "aeroway=terminal",
+   "position_m": [
+    318.904,
+    2680.517,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/256821558",
+   "name": "King’s Bastion Leisure Centre",
+   "kind": "historic=building",
+   "position_m": [
+    -456.591,
+    1077.66,
+    2.503
+   ],
+   "description": "Wikipedia: en:King's Bastion#King's Bastion Leisure Centre",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/257425490",
+   "name": "Ince's Hall Theatre",
+   "kind": "amenity=theatre",
+   "position_m": [
+    -295.997,
+    561.903,
+    8.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/257431100",
+   "name": "Ayuntamiento de La Línea de la Concepción",
+   "kind": "amenity=townhall",
+   "position_m": [
+    -78.846,
+    3289.498,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/257433023",
+   "name": "Plaza de Andrés Rubio",
+   "kind": "leisure=park",
+   "position_m": [
+    645.717,
+    2828.164,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/257436455",
+   "name": "Gatehouse",
+   "kind": "historic=city_gate",
+   "position_m": [
+    -88.917,
+    1470.008,
+    62.811
+   ],
+   "description": "The kasbah could only be accessed via a single gate, which still survives; an inscription visible up to the 18th century recorded that it had been dedicated to Yusuf I, Sultan of Granada Moorish Castle Gatehouse Wikipedia: en:Moorish Castle",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/257446850",
+   "name": "Main Guard (Gibraltar Heritage Trust)",
+   "kind": "historic=building",
+   "position_m": [
+    -373.347,
+    1174.02,
+    6.461
+   ],
+   "description": "Built: 1750. Wikipedia: en:Main Guard (Gibraltar)",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/261776587",
+   "name": "RAF Gibraltar ATC",
+   "kind": "man_made=tower",
+   "position_m": [
+    168.659,
+    2506.835,
+    3.0
+   ],
+   "description": "Air Traffic Control Tower",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/297040658",
+   "name": "Saccone Gardens",
+   "kind": "leisure=park",
+   "position_m": [
+    -124.668,
+    3381.47,
+    3.0
+   ],
+   "description": "Listed heritage site.",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/297207493",
+   "name": "Constitución Square",
+   "kind": "place=square",
+   "position_m": [
+    151.119,
+    3393.916,
+    5.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/297237750",
+   "name": "Santuario de la Inmaculada Concepción",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    -130.255,
+    3584.791,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/297237751",
+   "name": "Teatro Paseo de La Velada",
+   "kind": "amenity=theatre",
+   "position_m": [
+    184.315,
+    3979.944,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/344730038",
+   "name": "Plaza María Santísima del Amor",
+   "kind": "leisure=park",
+   "position_m": [
+    495.771,
+    4415.661,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/419911915",
+   "name": "St. Paul's Church",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    -521.436,
+    1829.978,
+    1.0
+   ],
+   "description": "Wikipedia: en:St. Paul's Church, Gibraltar",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/449757981",
+   "name": "Alcaidesa Marina",
+   "kind": "leisure=marina",
+   "position_m": [
+    -680.609,
+    3169.131,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/462725331",
+   "name": "Fuerte de Santa Barbara",
+   "kind": "historic=castle",
+   "position_m": [
+    1006.675,
+    3349.926,
+    3.002
+   ],
+   "description": "Wikipedia: es:Fuerte de Santa Bárbara (España)",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/476702245",
+   "name": "Sacred Heart Church",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    -64.015,
+    1011.608,
+    53.925
+   ],
+   "description": "Wikipedia: en:Sacred Heart Church, Gibraltar",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/492370099",
+   "name": "King's Chapel",
+   "kind": "historic=church",
+   "position_m": [
+    -296.539,
+    809.874,
+    8.001
+   ],
+   "description": "Built: 1531. Wikipedia: en:King's Chapel, Gibraltar",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/492370100",
+   "name": "Great Synagogue",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    -222.113,
+    1313.449,
+    10.809
+   ],
+   "description": "Wikipedia: en:Great Synagogue (Gibraltar)",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/514873125",
+   "name": "Museo del Istmo (Comandancia)",
+   "kind": "tourism=museum",
+   "position_m": [
+    205.637,
+    3454.872,
+    4.0
+   ],
+   "description": "Wikipedia: es:Comandancia Militar de La Línea de la Concepción",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/520466007",
+   "name": "Universidad Internacional Menéndez Pelayo",
+   "kind": "amenity=university",
+   "position_m": [
+    236.729,
+    4092.628,
+    3.0
+   ],
+   "description": "Chalet D'Amatto",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/531349491",
+   "name": "Plaza Begoña",
+   "kind": "leisure=park",
+   "position_m": [
+    -698.314,
+    3744.436,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/531349500",
+   "name": "Escorial Square",
+   "kind": "leisure=park",
+   "position_m": [
+    -549.302,
+    3643.673,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/544490570",
+   "name": "Theatre Royal Park",
+   "kind": "leisure=park",
+   "position_m": [
+    -241.185,
+    1085.162,
+    17.985
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/548809868",
+   "name": "Catalan Bay Play Park",
+   "kind": "leisure=park",
+   "position_m": [
+    835.029,
+    1108.196,
+    6.846
+   ],
+   "description": "Outdoor park and football pitch.",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/554118855",
+   "name": "Mid Harbour Boat Owners' Marina",
+   "kind": "leisure=marina",
+   "position_m": [
+    -827.158,
+    1063.356,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/556134277",
+   "name": "Line Wall Promenade",
+   "kind": "leisure=park",
+   "position_m": [
+    -433.095,
+    936.076,
+    7.427
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/556824772",
+   "name": "Our Lady of Sorrows",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    749.763,
+    977.203,
+    14.79
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/557824655",
+   "name": "Tarik ibn Ziyad Mosque",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    -432.793,
+    845.576,
+    3.096
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/576323002",
+   "name": "Cross of Sacrifice",
+   "kind": "historic=memorial",
+   "position_m": [
+    88.278,
+    2084.786,
+    1.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/582340341",
+   "name": "Eastern Beach Pitch",
+   "kind": "leisure=park",
+   "position_m": [
+    870.374,
+    1792.944,
+    4.996
+   ],
+   "description": "Outdoor football pitch.",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/582346414",
+   "name": "Mid Harbours Outdoor Pitch",
+   "kind": "leisure=park",
+   "position_m": [
+    -683.445,
+    1055.171,
+    1.0
+   ],
+   "description": "Outdoor football pitch.",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/642336539",
+   "name": "Convent Garden",
+   "kind": "leisure=park",
+   "position_m": [
+    -290.723,
+    730.664,
+    7.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/660893855",
+   "name": "Plaza Juan Soisa",
+   "kind": "place=square",
+   "position_m": [
+    331.863,
+    4359.645,
+    5.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/672562509",
+   "name": "Military Heritage Centre",
+   "kind": "tourism=museum",
+   "position_m": [
+    201.515,
+    1644.303,
+    167.97
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/672708050",
+   "name": "Farringdon's Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    395.489,
+    1724.108,
+    181.468
+   ],
+   "description": "Wikipedia: en:Farringdon's Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/692428477",
+   "name": "Parroquia de Santiago Apóstol",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    796.219,
+    3574.592,
+    3.892
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/720874799",
+   "name": "Iglesia de San Miguel Arcángel",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    -1397.878,
+    4243.323,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/749410054",
+   "name": "Campion Park",
+   "kind": "leisure=park",
+   "position_m": [
+    -474.838,
+    1165.658,
+    2.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/877660206",
+   "name": "La Vivienda Unifamiliar",
+   "kind": "historic=manor",
+   "position_m": [
+    45.193,
+    3450.326,
+    3.023
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/877662509",
+   "name": "Casa de Ruperto Toledano Fernández",
+   "kind": "historic=manor",
+   "position_m": [
+    -165.114,
+    3580.858,
+    4.112
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/947611886",
+   "name": "Plaza José Chacón Vichino",
+   "kind": "leisure=park",
+   "position_m": [
+    933.407,
+    3525.564,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/950058970",
+   "name": "Tower of Homage",
+   "kind": "historic=castle",
+   "position_m": [
+    8.169,
+    1543.536,
+    96.565
+   ],
+   "description": "Wikipedia: en:Moorish Castle",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/950399539",
+   "name": "American War Memorial",
+   "kind": "historic=monument",
+   "position_m": [
+    -400.55,
+    1480.425,
+    6.542
+   ],
+   "description": "Wikipedia: en:American War Memorial, Gibraltar",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/950399540",
+   "name": "Orange Bastion",
+   "kind": "historic=fort",
+   "position_m": [
+    -408.717,
+    1509.946,
+    3.575
+   ],
+   "description": "Wikipedia: en:Orange Bastion",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/951522250",
+   "name": "Plaza Marina Martín Manuel",
+   "kind": "place=square",
+   "position_m": [
+    -384.612,
+    3790.361,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/951660527",
+   "name": "Landport",
+   "kind": "historic=city_gate",
+   "position_m": [
+    -131.824,
+    1680.658,
+    6.319
+   ],
+   "description": "Wikipedia: en:Landport (Gibraltar)",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/951930306",
+   "name": "Harbour Views Park",
+   "kind": "leisure=park",
+   "position_m": [
+    -814.146,
+    1710.898,
+    1.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/951936002",
+   "name": "Montagu Bastion",
+   "kind": "historic=fort",
+   "position_m": [
+    -399.087,
+    1643.1,
+    7.924
+   ],
+   "description": "Wikipedia: en:Montagu Bastion",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/952588383",
+   "name": "King's Bastion",
+   "kind": "historic=fort",
+   "position_m": [
+    -493.175,
+    1077.073,
+    2.0
+   ],
+   "description": "Wikipedia: en:King's Bastion",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/963231841",
+   "name": "Devil's Tower Emplacement",
+   "kind": "historic=yes",
+   "position_m": [
+    794.909,
+    1689.515,
+    7.787
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/963232890",
+   "name": "Rock Gun Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    623.893,
+    1488.671,
+    404.031
+   ],
+   "description": "Wikipedia: en:Rock Gun Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/963314875",
+   "name": "South Bastion",
+   "kind": "historic=fort",
+   "position_m": [
+    -308.08,
+    519.126,
+    10.588
+   ],
+   "description": "Wikipedia: en:South Bastion, Gibraltar",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/966708973",
+   "name": "Grand Casemates Gates",
+   "kind": "historic=city_gate",
+   "position_m": [
+    -273.713,
+    1699.752,
+    2.0
+   ],
+   "description": "Wikipedia: en:Grand Casemates Gates",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/967790701",
+   "name": "Prince Edward's Gate",
+   "kind": "historic=city_gate",
+   "position_m": [
+    -163.709,
+    553.006,
+    20.38
+   ],
+   "description": "Wikipedia: en:Prince Edward's Gate",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/968308091",
+   "name": "Almond Tower",
+   "kind": "man_made=tower",
+   "position_m": [
+    -51.746,
+    1481.425,
+    72.615
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/968308092",
+   "name": "North Bastion",
+   "kind": "historic=fort",
+   "position_m": [
+    -256.279,
+    1757.13,
+    2.0
+   ],
+   "description": "Wikipedia: en:North Bastion, Gibraltar",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/968308093",
+   "name": "Giralda Gardens",
+   "kind": "leisure=park",
+   "position_m": [
+    -263.911,
+    1740.719,
+    1.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/968308095",
+   "name": "Griffiths’ Hotel",
+   "kind": "historic=building",
+   "position_m": [
+    -338.961,
+    1168.642,
+    8.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/1087129347",
+   "name": "Casa de Maximiliano Rodríguez",
+   "kind": "historic=manor",
+   "position_m": [
+    49.386,
+    3480.198,
+    4.813
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1154599351",
+   "name": "Plaza Nueva",
+   "kind": "leisure=park",
+   "position_m": [
+    -66.491,
+    4273.599,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1154599352",
+   "name": "Plaza Nueva",
+   "kind": "leisure=park",
+   "position_m": [
+    -63.969,
+    4243.961,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1155128180",
+   "name": "Parque de La Velada",
+   "kind": "leisure=park",
+   "position_m": [
+    110.082,
+    3935.825,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1215533357",
+   "name": "Plaza Pío XII",
+   "kind": "leisure=park",
+   "position_m": [
+    -829.508,
+    3990.947,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1218473524",
+   "name": "Plaza Vista Alegre",
+   "kind": "leisure=park",
+   "position_m": [
+    -67.201,
+    3883.533,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1220983272",
+   "name": "San Pío X Church",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    35.423,
+    4101.74,
+    4.926
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1220988661",
+   "name": "Padre Justo Martínez Square",
+   "kind": "leisure=park",
+   "position_m": [
+    602.443,
+    3638.455,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1221004134",
+   "name": "Plaza Doctor Gómez Ulla",
+   "kind": "leisure=park",
+   "position_m": [
+    680.827,
+    4384.448,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1222774379",
+   "name": "Parroquia San José",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    416.382,
+    4443.086,
+    3.72
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1229252773",
+   "name": "Plaza Camarón de la Isla",
+   "kind": "leisure=park",
+   "position_m": [
+    -386.584,
+    3335.366,
+    2.875
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1232533749",
+   "name": "Iglesia Evangélica Flidadelfia - Cristo",
+   "kind": "building=church",
+   "position_m": [
+    -653.341,
+    4250.107,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1232643098",
+   "name": "Escenario Jardines Saccone",
+   "kind": "amenity=theatre",
+   "position_m": [
+    -190.212,
+    3412.402,
+    2.717
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1239744133",
+   "name": "Playa Príncipe Alfonso",
+   "kind": "natural=beach",
+   "position_m": [
+    -1850.035,
+    4370.886,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1240605977",
+   "name": "Plaza de Santa Lucía",
+   "kind": "leisure=park",
+   "position_m": [
+    -1017.111,
+    4054.651,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1245300347",
+   "name": "Plaza San Pablo",
+   "kind": "leisure=park",
+   "position_m": [
+    74.451,
+    3771.695,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1247820568",
+   "name": "Chalet D'Amato",
+   "kind": "historic=manor",
+   "position_m": [
+    231.553,
+    4077.32,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1251567467",
+   "name": "Escuela Universitaria de Magisterio \"Virgen de Europa\"",
+   "kind": "amenity=university",
+   "position_m": [
+    -3.098,
+    3341.822,
+    3.0
+   ],
+   "description": "Wikipedia: es:Universidad de Cádiz",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1253399689",
+   "name": "Baluarte de San Fernando",
+   "kind": "historic=monument",
+   "position_m": [
+    -121.007,
+    3303.497,
+    5.335
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1259462225",
+   "name": "Plaza San Cecilio",
+   "kind": "leisure=park",
+   "position_m": [
+    -122.5,
+    3839.238,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1294724044",
+   "name": "Chalet de Villa Laura",
+   "kind": "historic=manor",
+   "position_m": [
+    -1687.577,
+    4315.538,
+    2.711
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1295232157",
+   "name": "Plaza El Greco",
+   "kind": "leisure=park",
+   "position_m": [
+    -1517.964,
+    4363.103,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1296318896",
+   "name": "Iglesia Evangélica Esperanza de Vida",
+   "kind": "building=church",
+   "position_m": [
+    153.368,
+    4179.842,
+    4.284
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1320812918",
+   "name": "Plaza del Búnker",
+   "kind": "leisure=park",
+   "position_m": [
+    1080.167,
+    4195.736,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1327914034",
+   "name": "Parroquia de San Bernardo Abad",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    907.625,
+    4336.933,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1328537196",
+   "name": "Plaza de Toros El Arenal",
+   "kind": "leisure=stadium",
+   "position_m": [
+    260.911,
+    4206.675,
+    4.0
+   ],
+   "description": "Wikipedia: es:Plaza de toros de La Línea de la Concepción",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1337532854",
+   "name": "Plaza Jardines",
+   "kind": "leisure=park",
+   "position_m": [
+    433.415,
+    3570.045,
+    3.028
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1347193501",
+   "name": "Santuario Diocesano del Sagrado Corazón de Jesús",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    -898.935,
+    4388.901,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1347199962",
+   "name": "Iglesia Evangélica",
+   "kind": "building=church",
+   "position_m": [
+    -789.875,
+    3780.163,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1354218026",
+   "name": "Parroquia de San Pedro Apóstol",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    -420.344,
+    4042.335,
+    3.064
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1387264327",
+   "name": "Chalet Villa María Luisa",
+   "kind": "historic=manor",
+   "position_m": [
+    -1518.493,
+    4221.167,
+    2.324
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1416527970",
+   "name": "Anfiteatro del Parque",
+   "kind": "amenity=theatre",
+   "position_m": [
+    333.046,
+    2996.964,
+    3.071
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1427405887",
+   "name": "Plaza Europa",
+   "kind": "leisure=park",
+   "position_m": [
+    -27.015,
+    3063.685,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1513223811",
+   "name": "Estadio Ciudad de La Línea",
+   "kind": "leisure=stadium",
+   "position_m": [
+    855.728,
+    3153.273,
+    3.0
+   ],
+   "description": "Wikipedia: es:Estadio Ciudad de la Línea",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1515697121",
+   "name": "Plaza Doctor Juanito",
+   "kind": "leisure=park",
+   "position_m": [
+    -359.525,
+    3505.216,
+    2.992
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1530033665",
+   "name": "Estadio de Atletismo Ciudad de La Línea",
+   "kind": "leisure=stadium",
+   "position_m": [
+    889.712,
+    2891.994,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1531099042",
+   "name": "Inner Keep",
+   "kind": "place=square",
+   "position_m": [
+    -14.442,
+    1539.059,
+    93.065
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/1546039935",
+   "name": "Plazoleta Virgen de la Palma",
+   "kind": "leisure=park",
+   "position_m": [
+    -825.935,
+    4224.953,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1546039936",
+   "name": "Zonas Ajardinadas Las Torretas",
+   "kind": "leisure=park",
+   "position_m": [
+    -673.331,
+    4058.869,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1546041066",
+   "name": "Plaza El Bosque",
+   "kind": "leisure=park",
+   "position_m": [
+    995.293,
+    4318.029,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/1549640172",
+   "name": "Plaza Las Armas",
+   "kind": "leisure=park",
+   "position_m": [
+    372.369,
+    3372.208,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:way/167408399",
+   "name": "Windmill Hill Beach",
+   "kind": "natural=beach",
+   "position_m": [
+    655.283,
+    -1497.215,
+    27.14
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/170172239",
+   "name": "Europa Point Trinity Lighthouse",
+   "kind": "man_made=lighthouse",
+   "position_m": [
+    464.461,
+    -2257.96,
+    25.98
+   ],
+   "description": "Wikipedia: en:Europa Point Lighthouse",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/172517450",
+   "name": "Ibrahim-Al-Ibrahim Mosque",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    394.379,
+    -2003.459,
+    31.0
+   ],
+   "description": "Built: 1997-08-08. Wikipedia: en:Ibrahim-al-Ibrahim Mosque",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/178238623",
+   "name": "Parson's Lodge Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    -179.317,
+    -1096.712,
+    33.989
+   ],
+   "description": "Wikipedia: en:Parson's Lodge Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/186437099",
+   "name": "Signal Station",
+   "kind": "historic=building",
+   "position_m": [
+    387.96,
+    407.093,
+    384.419
+   ],
+   "description": "Wikipedia: en:Signal Hill Battery, Gibraltar",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/257481127",
+   "name": "The Hermitage",
+   "kind": "historic=building",
+   "position_m": [
+    -137.749,
+    -1081.422,
+    14.507
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/257481150",
+   "name": "Camp Bay",
+   "kind": "natural=beach",
+   "position_m": [
+    -123.789,
+    -1157.764,
+    1.042
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/257481151",
+   "name": "Napier of Magdala Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    -363.321,
+    -814.048,
+    20.026
+   ],
+   "description": "Wikipedia: en:Napier of Magdala Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/293976372",
+   "name": "St. Bernard's Church",
+   "kind": "amenity=place_of_worship",
+   "position_m": [
+    145.695,
+    -1744.421,
+    56.035
+   ],
+   "description": "Wikipedia: en:St. Bernard's Church, Gibraltar",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/305158842",
+   "name": "Algarrobo Beach",
+   "kind": "natural=beach",
+   "position_m": [
+    780.031,
+    96.806,
+    2.411
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/428278668",
+   "name": "Queensway Quay Marina",
+   "kind": "leisure=marina",
+   "position_m": [
+    -632.768,
+    685.073,
+    3.0
+   ],
+   "description": "Wikipedia: en:Queensway Quay Marina, Gibraltar",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/496146624",
+   "name": "La Bateria Boulevard",
+   "kind": "leisure=park",
+   "position_m": [
+    -256.806,
+    145.136,
+    6.006
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/582327988",
+   "name": "Dolphin Play Area",
+   "kind": "leisure=park",
+   "position_m": [
+    -63.944,
+    -1217.107,
+    3.133
+   ],
+   "description": "Playground and outdoor football/basketball pitch.",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/582330873",
+   "name": "Little Bay Play Area",
+   "kind": "leisure=park",
+   "position_m": [
+    84.716,
+    -1616.445,
+    7.981
+   ],
+   "description": "Play area and outdoor football/basketball court.",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/672478304",
+   "name": "\"Moorish\" lookout post",
+   "kind": "historic=building",
+   "position_m": [
+    448.532,
+    26.221,
+    358.251
+   ],
+   "description": "probably an early British construction, the oldest building on the upper rock",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/749414535",
+   "name": "Heritage Box Cart",
+   "kind": "historic=monument",
+   "position_m": [
+    -336.304,
+    402.43,
+    2.314
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/949669120",
+   "name": "Europa Sports Park",
+   "kind": "leisure=stadium",
+   "position_m": [
+    286.487,
+    -2160.546,
+    29.919
+   ],
+   "description": "Wikipedia: en:Europa Sports Park",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/949769573",
+   "name": "3rd Europa Advance Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    689.025,
+    -1246.408,
+    47.77
+   ],
+   "description": "Wikipedia: en:Europa Advance Batteries",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/950097403",
+   "name": "North Terrace",
+   "kind": "tourism=viewpoint",
+   "position_m": [
+    384.182,
+    486.83,
+    379.378
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/951524179",
+   "name": "Jews' Cemetery Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    373.659,
+    -1043.495,
+    172.425
+   ],
+   "description": "Wikipedia: en:Jews' Cemetery Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/963314881",
+   "name": "GBC Broadcasting House",
+   "kind": "historic=fort",
+   "position_m": [
+    -192.377,
+    -180.732,
+    6.012
+   ],
+   "description": "Fortification converted into broadcasting centre with modern extension atop.",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/963314883",
+   "name": "Engineer Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    -396.744,
+    -733.573,
+    14.16
+   ],
+   "description": "Wikipedia: en:Engineer Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/966591319",
+   "name": "Rosia Cottages",
+   "kind": "historic=building",
+   "position_m": [
+    -186.677,
+    -975.947,
+    8.835
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/966701155",
+   "name": "Europa Advance Batteries 1st & 2nd",
+   "kind": "historic=fort",
+   "position_m": [
+    718.555,
+    -1398.925,
+    40.307
+   ],
+   "description": "Wikipedia: en:Europa Advance Batteries",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/966701156",
+   "name": "Gorham's Cave Complex viewing platform",
+   "kind": "tourism=museum",
+   "position_m": [
+    711.818,
+    -1394.338,
+    41.006
+   ],
+   "description": "From the viewing platform there is a spectacular view of the whole World Heritage Site, from the sea caves to the highest point of the Rock at O’Hara’s Battery by the top of the Mediterranean Steps footpath and nature trail. There are interpretation panel Built: 2017-12.",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/967617734",
+   "name": "Genista Battery",
+   "kind": "historic=fort",
+   "position_m": [
+    217.344,
+    -1411.303,
+    111.711
+   ],
+   "description": "Wikipedia: en:Genista Battery",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/967792596",
+   "name": "Ragged Staff Gates",
+   "kind": "historic=city_gate",
+   "position_m": [
+    -335.815,
+    426.32,
+    2.267
+   ],
+   "description": "Wikipedia: en:Ragged Staff Gates",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/975227260",
+   "name": "Gorham's Cave Complex",
+   "kind": "historic=archaeological_site",
+   "position_m": [
+    678.829,
+    -994.793,
+    100.043
+   ],
+   "description": "https://t4.com.ua/science/vcheni-vyyavyly-pecheru-neandertalcziv-yaka-bula-zapechatana-protyagom-ostannih-40-000-rokiv/ Listed heritage site.",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/1475381586",
+   "name": "North Jumper's Bastion",
+   "kind": "historic=fort",
+   "position_m": [
+    -281.819,
+    106.061,
+    1.794
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:way/1481955967",
+   "name": "University of Gibraltar",
+   "kind": "amenity=university",
+   "position_m": [
+    186.264,
+    -2096.428,
+    30.447
+   ],
+   "description": "Wikipedia: en:University of Gibraltar",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:relation/1718972",
+   "name": "Playa de Santa Bárbara",
+   "kind": "natural=beach",
+   "position_m": [
+    1029.172,
+    2995.308,
+    3.0
+   ],
+   "description": "Wikipedia: es:Playa de Santa Bárbara",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:relation/1719450",
+   "name": "Playa de Poniente",
+   "kind": "natural=beach",
+   "position_m": [
+    -699.909,
+    3562.382,
+    2.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:relation/2230671",
+   "name": "The Convent",
+   "kind": "historic=building",
+   "position_m": [
+    -298.54,
+    787.955,
+    8.0
+   ],
+   "description": "Built: 1531. Wikipedia: en:The Convent (Gibraltar)",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:relation/8057920",
+   "name": "Plaza Cruz Herrera",
+   "kind": "tourism=attraction",
+   "position_m": [
+    83.856,
+    3452.18,
+    4.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:relation/8057924",
+   "name": "Plaza Fariñas",
+   "kind": "leisure=park",
+   "position_m": [
+    -108.982,
+    3482.95,
+    3.0
+   ],
+   "description": "",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:relation/8178901",
+   "name": "Cross of Sacrifice",
+   "kind": "tourism=attraction",
+   "position_m": [
+    94.399,
+    2090.051,
+    1.0
+   ],
+   "description": "Wikipedia: en:Gibraltar Cross of Sacrifice",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:relation/8178912",
+   "name": "John Macintosh Square",
+   "kind": "place=square",
+   "position_m": [
+    -371.127,
+    1198.476,
+    6.247
+   ],
+   "description": "Wikipedia: en:John Mackintosh Square",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:relation/19040558",
+   "name": "Museo José Cruz Herrera",
+   "kind": "tourism=museum",
+   "position_m": [
+    -102.12,
+    3354.644,
+    3.0
+   ],
+   "description": "Wikipedia: es:Museo José Cruz Herrera",
+   "source": "OpenStreetMap",
+   "in_gibraltar": false
+  },
+  {
+   "id": "osm:relation/3456296",
+   "name": "Europa Point",
+   "kind": "leisure=park",
+   "position_m": [
+    365.543,
+    -2241.923,
+    29.394
+   ],
+   "description": "Wikipedia: en:Europa Point",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  },
+  {
+   "id": "osm:relation/12823922",
+   "name": "Old Naval Hospital",
+   "kind": "historic=building",
+   "position_m": [
+    -15.231,
+    -1012.899,
+    42.878
+   ],
+   "description": "Wikipedia: en:Royal Naval Hospital Gibraltar",
+   "source": "OpenStreetMap",
+   "in_gibraltar": true
+  }
+ ],
+ "attribution": [
+  "MDT05 CC BY 4.0 scne.es (Instituto Geográfico Nacional)",
+  "© OpenStreetMap contributors. Available under the Open Database License (ODbL). https://www.openstreetmap.org/copyright"
+ ],
+ "stats": {
+  "buildings": 9714,
+  "buildings_by_confidence": {
+   "measured": 50,
+   "derived": 131,
+   "estimated": 9533
+  },
+  "road_ways": 4497,
+  "tunnels": 171,
+  "walls": 3614,
+  "piers": 173,
+  "pois": 400
+ },
+ "tiles": [
+  {
+   "id": "T_W1_S5",
+   "ix": -1,
+   "iy": -5,
+   "origin_m": [
+    -500.0,
+    -2500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       460.3481,
+       371.1151,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       34.829
+      ]
+     ],
+     "triangles": 470,
+     "file": "tiles/T_W1_S5/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       494.3277,
+       478.1863,
+       30.94
+      ],
+      [
+       504.2317,
+       520.9174,
+       49.94
+      ]
+     ],
+     "triangles": 10,
+     "file": "tiles/T_W1_S5/buildings.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       481.609,
+       442.607,
+       21.7474
+      ],
+      [
+       500.0,
+       500.0,
+       37.7627
+      ]
+     ],
+     "triangles": 316,
+     "file": "tiles/T_W1_S5/walls.glb"
+    }
+   },
+   "features": "tiles/T_W1_S5/features.json",
+   "counts": {
+    "buildings": 1,
+    "roads": 0,
+    "walls": 1,
+    "piers": 0,
+    "trees": 0
+   },
+   "land_area_m2": 3678.7
+  },
+  {
+   "id": "T_E0_S5",
+   "ix": 0,
+   "iy": -5,
+   "origin_m": [
+    0.0,
+    -2500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       153.366,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       37.0
+      ]
+     ],
+     "triangles": 11743,
+     "file": "tiles/T_E0_S5/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       6.0685,
+       185.8873,
+       6.47
+      ],
+      [
+       473.9902,
+       519.4335,
+       53.52
+      ]
+     ],
+     "triangles": 1536,
+     "file": "tiles/T_E0_S5/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       1.786,
+       190.4236,
+       3.7511
+      ],
+      [
+       484.1109,
+       500.0,
+       37.06
+      ]
+     ],
+     "triangles": 6101,
+     "file": "tiles/T_E0_S5/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       181.5026,
+       3.9789
+      ],
+      [
+       496.8291,
+       500.0,
+       38.689
+      ]
+     ],
+     "triangles": 6779,
+     "file": "tiles/T_E0_S5/walls.glb"
+    }
+   },
+   "features": "tiles/T_E0_S5/features.json",
+   "counts": {
+    "buildings": 52,
+    "roads": 70,
+    "walls": 21,
+    "piers": 0,
+    "trees": 12
+   },
+   "land_area_m2": 132873.1
+  },
+  {
+   "id": "T_E1_S5",
+   "ix": 1,
+   "iy": -5,
+   "origin_m": [
+    500.0,
+    -2500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       480.5985,
+       -4.0
+      ],
+      [
+       1.3667,
+       486.7698,
+       12.4679
+      ]
+     ],
+     "triangles": 8,
+     "file": "tiles/T_E1_S5/terrain.glb"
+    }
+   },
+   "features": "tiles/T_E1_S5/features.json",
+   "counts": {
+    "buildings": 0,
+    "roads": 0,
+    "walls": 0,
+    "piers": 0,
+    "trees": 0
+   },
+   "land_area_m2": 4.2
+  },
+  {
+   "id": "T_W1_S4",
+   "ix": -1,
+   "iy": -4,
+   "origin_m": [
+    -500.0,
+    -2000.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       455.2907,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       38.4819
+      ]
+     ],
+     "triangles": 1058,
+     "file": "tiles/T_W1_S4/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       489.3308,
+       32.7569,
+       34.26
+      ],
+      [
+       505.069,
+       128.816,
+       54.62
+      ]
+     ],
+     "triangles": 101,
+     "file": "tiles/T_W1_S4/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       469.6817,
+       52.2234,
+       1.06
+      ],
+      [
+       500.0,
+       500.0,
+       37.2145
+      ]
+     ],
+     "triangles": 247,
+     "file": "tiles/T_W1_S4/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       470.6589,
+       0.0,
+       2.9907
+      ],
+      [
+       500.0,
+       500.0,
+       40.9763
+      ]
+     ],
+     "triangles": 735,
+     "file": "tiles/T_W1_S4/walls.glb"
+    }
+   },
+   "features": "tiles/T_W1_S4/features.json",
+   "counts": {
+    "buildings": 5,
+    "roads": 3,
+    "walls": 3,
+    "piers": 0,
+    "trees": 0
+   },
+   "land_area_m2": 8723.8
+  },
+  {
+   "id": "T_E0_S4",
+   "ix": 0,
+   "iy": -4,
+   "origin_m": [
+    0.0,
+    -2000.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       119.9082
+      ]
+     ],
+     "triangles": 19732,
+     "file": "tiles/T_E0_S4/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       -4.6548,
+       -24.388,
+       4.0
+      ],
+      [
+       501.9144,
+       497.9948,
+       125.31
+      ]
+     ],
+     "triangles": 1979,
+     "file": "tiles/T_E0_S4/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       1.4376
+      ],
+      [
+       500.0,
+       500.0,
+       118.5373
+      ]
+     ],
+     "triangles": 7637,
+     "file": "tiles/T_E0_S4/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       4.5
+      ],
+      [
+       500.0,
+       500.0,
+       121.9082
+      ]
+     ],
+     "triangles": 4400,
+     "file": "tiles/T_E0_S4/walls.glb"
+    }
+   },
+   "features": "tiles/T_E0_S4/features.json",
+   "counts": {
+    "buildings": 117,
+    "roads": 78,
+    "walls": 47,
+    "piers": 0,
+    "trees": 36
+   },
+   "land_area_m2": 243617.3
+  },
+  {
+   "id": "T_E1_S4",
+   "ix": 1,
+   "iy": -4,
+   "origin_m": [
+    500.0,
+    -2000.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.2349,
+       -4.0
+      ],
+      [
+       157.4081,
+       500.0,
+       111.0
+      ]
+     ],
+     "triangles": 4290,
+     "file": "tiles/T_E1_S4/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       24.7656,
+       115.0765,
+       6.43
+      ],
+      [
+       90.2322,
+       422.3277,
+       58.87
+      ]
+     ],
+     "triangles": 155,
+     "file": "tiles/T_E1_S4/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       58.1517,
+       28.017
+      ],
+      [
+       135.7941,
+       500.0,
+       82.1636
+      ]
+     ],
+     "triangles": 1507,
+     "file": "tiles/T_E1_S4/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       4.4643,
+       4.7953
+      ],
+      [
+       137.013,
+       500.0,
+       109.4069
+      ]
+     ],
+     "triangles": 1620,
+     "file": "tiles/T_E1_S4/walls.glb"
+    }
+   },
+   "features": "tiles/T_E1_S4/features.json",
+   "counts": {
+    "buildings": 8,
+    "roads": 8,
+    "walls": 4,
+    "piers": 0,
+    "trees": 0
+   },
+   "land_area_m2": 46277.6
+  },
+  {
+   "id": "T_W1_S3",
+   "ix": -1,
+   "iy": -3,
+   "origin_m": [
+    -500.0,
+    -1500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       206.2559,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       76.0642
+      ]
+     ],
+     "triangles": 5959,
+     "file": "tiles/T_W1_S3/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       283.1448,
+       277.1178,
+       2.94
+      ],
+      [
+       508.3365,
+       509.6045,
+       52.0
+      ]
+     ],
+     "triangles": 669,
+     "file": "tiles/T_W1_S3/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       296.9483,
+       0.0,
+       4.1605
+      ],
+      [
+       500.0,
+       500.0,
+       43.2175
+      ]
+     ],
+     "triangles": 1652,
+     "file": "tiles/T_W1_S3/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       212.3883,
+       0.0,
+       0.5
+      ],
+      [
+       500.0,
+       500.0,
+       77.7007
+      ]
+     ],
+     "triangles": 3315,
+     "file": "tiles/T_W1_S3/walls.glb"
+    }
+   },
+   "features": "tiles/T_W1_S3/features.json",
+   "counts": {
+    "buildings": 36,
+    "roads": 11,
+    "walls": 20,
+    "piers": 0,
+    "trees": 1
+   },
+   "land_area_m2": 63585.7
+  },
+  {
+   "id": "T_E0_S3",
+   "ix": 0,
+   "iy": -3,
+   "origin_m": [
+    0.0,
+    -1500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       5.0
+      ],
+      [
+       500.0,
+       500.0,
+       225.8559
+      ]
+     ],
+     "triangles": 20000,
+     "file": "tiles/T_E0_S3/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       -25.9363,
+       -29.9322,
+       36.04
+      ],
+      [
+       524.0002,
+       542.7033,
+       188.5
+      ]
+     ],
+     "triangles": 2960,
+     "file": "tiles/T_E0_S3/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       5.06
+      ],
+      [
+       500.0,
+       500.0,
+       197.1695
+      ]
+     ],
+     "triangles": 8676,
+     "file": "tiles/T_E0_S3/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       4.5
+      ],
+      [
+       500.0,
+       500.0,
+       175.4581
+      ]
+     ],
+     "triangles": 5988,
+     "file": "tiles/T_E0_S3/walls.glb"
+    }
+   },
+   "features": "tiles/T_E0_S3/features.json",
+   "counts": {
+    "buildings": 148,
+    "roads": 77,
+    "walls": 29,
+    "piers": 0,
+    "trees": 6
+   },
+   "land_area_m2": 250000.0
+  },
+  {
+   "id": "T_E1_S3",
+   "ix": 1,
+   "iy": -3,
+   "origin_m": [
+    500.0,
+    -1500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       256.9511,
+       500.0,
+       233.899
+      ]
+     ],
+     "triangles": 9359,
+     "file": "tiles/T_E1_S3/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       14.8133,
+       18.32,
+       32.76
+      ],
+      [
+       217.9518,
+       507.3674,
+       176.81
+      ]
+     ],
+     "triangles": 418,
+     "file": "tiles/T_E1_S3/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       32.0193
+      ],
+      [
+       233.6537,
+       500.0,
+       210.6931
+      ]
+     ],
+     "triangles": 2428,
+     "file": "tiles/T_E1_S3/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       31.1246
+      ],
+      [
+       233.931,
+       481.0565,
+       180.2774
+      ]
+     ],
+     "triangles": 3928,
+     "file": "tiles/T_E1_S3/walls.glb"
+    }
+   },
+   "features": "tiles/T_E1_S3/features.json",
+   "counts": {
+    "buildings": 16,
+    "roads": 28,
+    "walls": 19,
+    "piers": 0,
+    "trees": 5
+   },
+   "land_area_m2": 108335.8
+  },
+  {
+   "id": "T_W2_S2",
+   "ix": -2,
+   "iy": -2,
+   "origin_m": [
+    -1000.0,
+    -1000.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       415.8748,
+       329.2529,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       3.0
+      ]
+     ],
+     "triangles": 535,
+     "file": "tiles/T_W2_S2/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       461.6925,
+       421.4289,
+       0.23
+      ],
+      [
+       504.0914,
+       468.7553,
+       11.0
+      ]
+     ],
+     "triangles": 337,
+     "file": "tiles/T_W2_S2/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       442.1907,
+       449.3715,
+       2.06
+      ],
+      [
+       500.0,
+       500.0,
+       2.9047
+      ]
+     ],
+     "triangles": 120,
+     "file": "tiles/T_W2_S2/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       429.8698,
+       431.9884,
+       0.5993
+      ],
+      [
+       500.0,
+       500.0,
+       4.0
+      ]
+     ],
+     "triangles": 411,
+     "file": "tiles/T_W2_S2/walls.glb"
+    }
+   },
+   "features": "tiles/T_W2_S2/features.json",
+   "counts": {
+    "buildings": 7,
+    "roads": 2,
+    "walls": 5,
+    "piers": 0,
+    "trees": 0
+   },
+   "land_area_m2": 4364.9
+  },
+  {
+   "id": "T_W1_S2",
+   "ix": -1,
+   "iy": -2,
+   "origin_m": [
+    -500.0,
+    -1000.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       77.1219
+      ]
+     ],
+     "triangles": 16372,
+     "file": "tiles/T_W1_S2/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       0.1833,
+       -6.1528,
+       0.0
+      ],
+      [
+       512.5401,
+       531.0648,
+       83.78
+      ]
+     ],
+     "triangles": 3051,
+     "file": "tiles/T_W1_S2/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       1.06
+      ],
+      [
+       500.0,
+       500.0,
+       69.2447
+      ]
+     ],
+     "triangles": 8223,
+     "file": "tiles/T_W1_S2/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       0.5
+      ],
+      [
+       479.3475,
+       500.0,
+       48.4659
+      ]
+     ],
+     "triangles": 9661,
+     "file": "tiles/T_W1_S2/walls.glb"
+    }
+   },
+   "features": "tiles/T_W1_S2/features.json",
+   "counts": {
+    "buildings": 172,
+    "roads": 85,
+    "walls": 31,
+    "piers": 0,
+    "trees": 56
+   },
+   "land_area_m2": 190976.2
+  },
+  {
+   "id": "T_E0_S2",
+   "ix": 0,
+   "iy": -2,
+   "origin_m": [
+    0.0,
+    -1000.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       42.0
+      ],
+      [
+       500.0,
+       500.0,
+       368.2246
+      ]
+     ],
+     "triangles": 20000,
+     "file": "tiles/T_E0_S2/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       -10.1816,
+       -11.6339,
+       41.6
+      ],
+      [
+       221.6365,
+       499.542,
+       143.0
+      ]
+     ],
+     "triangles": 1136,
+     "file": "tiles/T_E0_S2/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       42.249
+      ],
+      [
+       500.0,
+       500.0,
+       331.8994
+      ]
+     ],
+     "triangles": 6603,
+     "file": "tiles/T_E0_S2/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       23.419,
+       0.0,
+       42.749
+      ],
+      [
+       318.8164,
+       411.5862,
+       208.589
+      ]
+     ],
+     "triangles": 766,
+     "file": "tiles/T_E0_S2/walls.glb"
+    }
+   },
+   "features": "tiles/T_E0_S2/features.json",
+   "counts": {
+    "buildings": 65,
+    "roads": 25,
+    "walls": 4,
+    "piers": 0,
+    "trees": 8
+   },
+   "land_area_m2": 250000.0
+  },
+  {
+   "id": "T_E1_S2",
+   "ix": 1,
+   "iy": -2,
+   "origin_m": [
+    500.0,
+    -1000.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       426.4975,
+       500.0,
+       417.9439
+      ]
+     ],
+     "triangles": 13431,
+     "file": "tiles/T_E1_S2/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       33.2446,
+       41.8553,
+       254.91
+      ],
+      [
+       236.8743,
+       495.699,
+       422.43
+      ]
+     ],
+     "triangles": 699,
+     "file": "tiles/T_E1_S2/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       3.5422
+      ],
+      [
+       290.2804,
+       500.0,
+       417.5313
+      ]
+     ],
+     "triangles": 3748,
+     "file": "tiles/T_E1_S2/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       40.8618,
+       137.107,
+       302.8675
+      ],
+      [
+       139.7901,
+       474.4662,
+       417.977
+      ]
+     ],
+     "triangles": 1366,
+     "file": "tiles/T_E1_S2/walls.glb"
+    }
+   },
+   "features": "tiles/T_E1_S2/features.json",
+   "counts": {
+    "buildings": 24,
+    "roads": 39,
+    "walls": 8,
+    "piers": 0,
+    "trees": 0
+   },
+   "land_area_m2": 158513.3
+  },
+  {
+   "id": "T_W2_S1",
+   "ix": -2,
+   "iy": -1,
+   "origin_m": [
+    -1000.0,
+    -500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       27.8002,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       3.0
+      ]
+     ],
+     "triangles": 3876,
+     "file": "tiles/T_W2_S1/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       121.5284,
+       31.6299,
+       0.0
+      ],
+      [
+       430.6858,
+       401.4872,
+       11.0
+      ]
+     ],
+     "triangles": 66,
+     "file": "tiles/T_W2_S1/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       85.7993,
+       0.0,
+       1.06
+      ],
+      [
+       447.1479,
+       480.0413,
+       2.06
+      ]
+     ],
+     "triangles": 127,
+     "file": "tiles/T_W2_S1/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       39.1121,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       4.0
+      ]
+     ],
+     "triangles": 4648,
+     "file": "tiles/T_W2_S1/walls.glb"
+    }
+   },
+   "features": "tiles/T_W2_S1/features.json",
+   "counts": {
+    "buildings": 6,
+    "roads": 2,
+    "walls": 5,
+    "piers": 1,
+    "trees": 0
+   },
+   "land_area_m2": 30882.3
+  },
+  {
+   "id": "T_W1_S1",
+   "ix": -1,
+   "iy": -1,
+   "origin_m": [
+    -500.0,
+    -500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       83.5931
+      ]
+     ],
+     "triangles": 18141,
+     "file": "tiles/T_W1_S1/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       19.4031,
+       -22.3797,
+       0.0
+      ],
+      [
+       502.8805,
+       549.9168,
+       80.79
+      ]
+     ],
+     "triangles": 2187,
+     "file": "tiles/T_W1_S1/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       37.3682,
+       0.0,
+       1.06
+      ],
+      [
+       500.0,
+       500.0,
+       69.9902
+      ]
+     ],
+     "triangles": 8495,
+     "file": "tiles/T_W1_S1/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       486.4307,
+       500.0,
+       59.6455
+      ]
+     ],
+     "triangles": 8512,
+     "file": "tiles/T_W1_S1/walls.glb"
+    }
+   },
+   "features": "tiles/T_W1_S1/features.json",
+   "counts": {
+    "buildings": 121,
+    "roads": 64,
+    "walls": 12,
+    "piers": 1,
+    "trees": 75
+   },
+   "land_area_m2": 220021.0
+  },
+  {
+   "id": "T_E0_S1",
+   "ix": 0,
+   "iy": -1,
+   "origin_m": [
+    0.0,
+    -500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       43.7147
+      ],
+      [
+       500.0,
+       500.0,
+       403.6557
+      ]
+     ],
+     "triangles": 20000,
+     "file": "tiles/T_E0_S1/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       -9.749,
+       -6.9825,
+       56.41
+      ],
+      [
+       408.1324,
+       522.3367,
+       311.12
+      ]
+     ],
+     "triangles": 995,
+     "file": "tiles/T_E0_S1/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       53.5366
+      ],
+      [
+       500.0,
+       500.0,
+       379.3931
+      ]
+     ],
+     "triangles": 6422,
+     "file": "tiles/T_E0_S1/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       39.8269,
+       29.5912,
+       89.0753
+      ],
+      [
+       429.9423,
+       500.0,
+       355.629
+      ]
+     ],
+     "triangles": 1577,
+     "file": "tiles/T_E0_S1/walls.glb"
+    }
+   },
+   "features": "tiles/T_E0_S1/features.json",
+   "counts": {
+    "buildings": 53,
+    "roads": 43,
+    "walls": 10,
+    "piers": 0,
+    "trees": 8
+   },
+   "land_area_m2": 250000.0
+  },
+  {
+   "id": "T_E1_S1",
+   "ix": 1,
+   "iy": -1,
+   "origin_m": [
+    500.0,
+    -500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       415.2173,
+       500.0,
+       418.6464
+      ]
+     ],
+     "triangles": 14501,
+     "file": "tiles/T_E1_S1/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       10.8016,
+       87.0186,
+       13.67
+      ],
+      [
+       248.9075,
+       333.4179,
+       425.8
+      ]
+     ],
+     "triangles": 139,
+     "file": "tiles/T_E1_S1/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       4.0118
+      ],
+      [
+       377.148,
+       500.0,
+       413.0794
+      ]
+     ],
+     "triangles": 2242,
+     "file": "tiles/T_E1_S1/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       4.3663,
+       134.3654,
+       -4.0
+      ],
+      [
+       429.579,
+       500.0,
+       416.0
+      ]
+     ],
+     "triangles": 1657,
+     "file": "tiles/T_E1_S1/walls.glb"
+    }
+   },
+   "features": "tiles/T_E1_S1/features.json",
+   "counts": {
+    "buildings": 10,
+    "roads": 15,
+    "walls": 11,
+    "piers": 1,
+    "trees": 9
+   },
+   "land_area_m2": 166216.6
+  },
+  {
+   "id": "T_W3_N0",
+   "ix": -3,
+   "iy": 0,
+   "origin_m": [
+    -1500.0,
+    0.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       207.0085,
+       36.1342,
+       -4.0
+      ],
+      [
+       500.0,
+       444.3604,
+       2.0
+      ]
+     ],
+     "triangles": 2323,
+     "file": "tiles/T_W3_N0/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       207.1799,
+       372.0761,
+       0.0
+      ],
+      [
+       254.437,
+       444.3604,
+       10.0
+      ]
+     ],
+     "triangles": 97,
+     "file": "tiles/T_W3_N0/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       251.4889,
+       118.8842,
+       1.06
+      ],
+      [
+       479.9808,
+       414.9072,
+       1.0732
+      ]
+     ],
+     "triangles": 69,
+     "file": "tiles/T_W3_N0/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       210.0362,
+       50.7808,
+       -4.0
+      ],
+      [
+       500.0,
+       425.3944,
+       4.0
+      ]
+     ],
+     "triangles": 3130,
+     "file": "tiles/T_W3_N0/walls.glb"
+    }
+   },
+   "features": "tiles/T_W3_N0/features.json",
+   "counts": {
+    "buildings": 1,
+    "roads": 3,
+    "walls": 5,
+    "piers": 1,
+    "trees": 0
+   },
+   "land_area_m2": 16465.5
+  },
+  {
+   "id": "T_W2_N0",
+   "ix": -2,
+   "iy": 0,
+   "origin_m": [
+    -1000.0,
+    0.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       3.0
+      ]
+     ],
+     "triangles": 2319,
+     "file": "tiles/T_W2_N0/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       373.9144,
+       317.4235,
+       0.0
+      ],
+      [
+       528.9094,
+       498.3824,
+       10.0
+      ]
+     ],
+     "triangles": 204,
+     "file": "tiles/T_W2_N0/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       28.4674,
+       48.151,
+       1.06
+      ],
+      [
+       500.0,
+       500.0,
+       2.06
+      ]
+     ],
+     "triangles": 551,
+     "file": "tiles/T_W2_N0/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       3.9904
+      ]
+     ],
+     "triangles": 5155,
+     "file": "tiles/T_W2_N0/walls.glb"
+    }
+   },
+   "features": "tiles/T_W2_N0/features.json",
+   "counts": {
+    "buildings": 6,
+    "roads": 7,
+    "walls": 16,
+    "piers": 10,
+    "trees": 0
+   },
+   "land_area_m2": 15639.5
+  },
+  {
+   "id": "T_W1_N0",
+   "ix": -1,
+   "iy": 0,
+   "origin_m": [
+    -500.0,
+    0.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       128.6132
+      ]
+     ],
+     "triangles": 19038,
+     "file": "tiles/T_W1_N0/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       10.3265,
+       -27.9917,
+       0.0
+      ],
+      [
+       519.614,
+       509.0514,
+       99.34
+      ]
+     ],
+     "triangles": 2444,
+     "file": "tiles/T_W1_N0/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       1.06
+      ],
+      [
+       500.0,
+       500.0,
+       109.9577
+      ]
+     ],
+     "triangles": 15772,
+     "file": "tiles/T_W1_N0/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       55.1917
+      ]
+     ],
+     "triangles": 10240,
+     "file": "tiles/T_W1_N0/walls.glb"
+    }
+   },
+   "features": "tiles/T_W1_N0/features.json",
+   "counts": {
+    "buildings": 126,
+    "roads": 180,
+    "walls": 18,
+    "piers": 14,
+    "trees": 140
+   },
+   "land_area_m2": 227588.3
+  },
+  {
+   "id": "T_E0_N0",
+   "ix": 0,
+   "iy": 0,
+   "origin_m": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       52.9398
+      ],
+      [
+       500.0,
+       500.0,
+       386.8375
+      ]
+     ],
+     "triangles": 20000,
+     "file": "tiles/T_E0_N0/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       25.7713,
+       25.4106,
+       63.71
+      ],
+      [
+       449.4279,
+       497.1379,
+       392.76
+      ]
+     ],
+     "triangles": 619,
+     "file": "tiles/T_E0_N0/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       -7.9602,
+       54.2775
+      ],
+      [
+       500.0,
+       500.0,
+       382.9287
+      ]
+     ],
+     "triangles": 6872,
+     "file": "tiles/T_E0_N0/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       53.6803
+      ],
+      [
+       403.1284,
+       500.0,
+       387.2564
+      ]
+     ],
+     "triangles": 3836,
+     "file": "tiles/T_E0_N0/walls.glb"
+    }
+   },
+   "features": "tiles/T_E0_N0/features.json",
+   "counts": {
+    "buildings": 28,
+    "roads": 64,
+    "walls": 16,
+    "piers": 0,
+    "trees": 2
+   },
+   "land_area_m2": 250000.0
+  },
+  {
+   "id": "T_E1_N0",
+   "ix": 1,
+   "iy": 0,
+   "origin_m": [
+    500.0,
+    0.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       450.8863,
+       500.0,
+       257.6921
+      ]
+     ],
+     "triangles": 14248,
+     "file": "tiles/T_E1_N0/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       224.4393,
+       -12.1858,
+       3.91
+      ],
+      [
+       309.4113,
+       289.7342,
+       13.91
+      ]
+     ],
+     "triangles": 61,
+     "file": "tiles/T_E1_N0/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       5.3857
+      ],
+      [
+       320.8649,
+       500.0,
+       215.3187
+      ]
+     ],
+     "triangles": 3184,
+     "file": "tiles/T_E1_N0/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       423.1141,
+       0.0,
+       -4.0
+      ],
+      [
+       458.6788,
+       175.7711,
+       3.0
+      ]
+     ],
+     "triangles": 511,
+     "file": "tiles/T_E1_N0/walls.glb"
+    }
+   },
+   "features": "tiles/T_E1_N0/features.json",
+   "counts": {
+    "buildings": 1,
+    "roads": 16,
+    "walls": 0,
+    "piers": 1,
+    "trees": 0
+   },
+   "land_area_m2": 166608.6
+  },
+  {
+   "id": "T_W3_N1",
+   "ix": -3,
+   "iy": 1,
+   "origin_m": [
+    -1500.0,
+    500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       81.5065,
+       124.0505,
+       -4.0
+      ],
+      [
+       239.8386,
+       500.0,
+       3.0
+      ]
+     ],
+     "triangles": 1130,
+     "file": "tiles/T_W3_N1/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       215.1691,
+       124.0505,
+       2.0
+      ],
+      [
+       239.8386,
+       150.2828,
+       12.0
+      ]
+     ],
+     "triangles": 58,
+     "file": "tiles/T_W3_N1/buildings.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       78.299,
+       121.0526,
+       -4.0
+      ],
+      [
+       242.8386,
+       500.0,
+       2.0
+      ]
+     ],
+     "triangles": 2398,
+     "file": "tiles/T_W3_N1/walls.glb"
+    }
+   },
+   "features": "tiles/T_W3_N1/features.json",
+   "counts": {
+    "buildings": 1,
+    "roads": 0,
+    "walls": 0,
+    "piers": 4,
+    "trees": 0
+   },
+   "land_area_m2": 4295.8
+  },
+  {
+   "id": "T_W2_N1",
+   "ix": -2,
+   "iy": 1,
+   "origin_m": [
+    -1000.0,
+    500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       63.5618,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       3.0
+      ]
+     ],
+     "triangles": 8552,
+     "file": "tiles/T_W2_N1/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       245.2005,
+       -4.4457,
+       0.0
+      ],
+      [
+       516.4268,
+       515.8512,
+       19.0
+      ]
+     ],
+     "triangles": 738,
+     "file": "tiles/T_W2_N1/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       68.5862,
+       0.0,
+       1.06
+      ],
+      [
+       500.0,
+       500.0,
+       3.06
+      ]
+     ],
+     "triangles": 2822,
+     "file": "tiles/T_W2_N1/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       85.1258,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       3.8508
+      ]
+     ],
+     "triangles": 8118,
+     "file": "tiles/T_W2_N1/walls.glb"
+    }
+   },
+   "features": "tiles/T_W2_N1/features.json",
+   "counts": {
+    "buildings": 37,
+    "roads": 24,
+    "walls": 11,
+    "piers": 22,
+    "trees": 8
+   },
+   "land_area_m2": 80258.0
+  },
+  {
+   "id": "T_W1_N1",
+   "ix": -1,
+   "iy": 1,
+   "origin_m": [
+    -500.0,
+    500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       149.977
+      ]
+     ],
+     "triangles": 19422,
+     "file": "tiles/T_W1_N1/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       -2.9806,
+       -8.678,
+       0.0
+      ],
+      [
+       500.603,
+       511.2831,
+       155.34
+      ]
+     ],
+     "triangles": 4896,
+     "file": "tiles/T_W1_N1/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       1.06
+      ],
+      [
+       500.0,
+       500.0,
+       150.037
+      ]
+     ],
+     "triangles": 15707,
+     "file": "tiles/T_W1_N1/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       494.7068,
+       500.0,
+       142.7459
+      ]
+     ],
+     "triangles": 10158,
+     "file": "tiles/T_W1_N1/walls.glb"
+    }
+   },
+   "features": "tiles/T_W1_N1/features.json",
+   "counts": {
+    "buildings": 244,
+    "roads": 202,
+    "walls": 22,
+    "piers": 4,
+    "trees": 325
+   },
+   "land_area_m2": 240057.5
+  },
+  {
+   "id": "T_E0_N1",
+   "ix": 0,
+   "iy": 1,
+   "origin_m": [
+    0.0,
+    500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       81.9848
+      ],
+      [
+       500.0,
+       500.0,
+       378.8521
+      ]
+     ],
+     "triangles": 20000,
+     "file": "tiles/T_E0_N1/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       -2.9613,
+       -0.1741,
+       140.08
+      ],
+      [
+       389.4161,
+       343.5625,
+       369.8
+      ]
+     ],
+     "triangles": 297,
+     "file": "tiles/T_E0_N1/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       92.0739
+      ],
+      [
+       500.0,
+       500.0,
+       365.7398
+      ]
+     ],
+     "triangles": 3942,
+     "file": "tiles/T_E0_N1/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.8363,
+       0.0,
+       137.0659
+      ],
+      [
+       485.9196,
+       500.0,
+       366.8815
+      ]
+     ],
+     "triangles": 855,
+     "file": "tiles/T_E0_N1/walls.glb"
+    }
+   },
+   "features": "tiles/T_E0_N1/features.json",
+   "counts": {
+    "buildings": 24,
+    "roads": 21,
+    "walls": 5,
+    "piers": 0,
+    "trees": 0
+   },
+   "land_area_m2": 250000.0
+  },
+  {
+   "id": "T_E1_N1",
+   "ix": 1,
+   "iy": 1,
+   "origin_m": [
+    500.0,
+    500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       378.5034,
+       500.0,
+       331.1044
+      ]
+     ],
+     "triangles": 14719,
+     "file": "tiles/T_E1_N1/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       156.9605,
+       158.9538,
+       1.84
+      ],
+      [
+       361.2837,
+       506.0006,
+       112.02
+      ]
+     ],
+     "triangles": 424,
+     "file": "tiles/T_E1_N1/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       6.0107
+      ],
+      [
+       326.0497,
+       500.0,
+       225.4481
+      ]
+     ],
+     "triangles": 3369,
+     "file": "tiles/T_E1_N1/roads.glb"
+    }
+   },
+   "features": "tiles/T_E1_N1/features.json",
+   "counts": {
+    "buildings": 22,
+    "roads": 29,
+    "walls": 0,
+    "piers": 0,
+    "trees": 0
+   },
+   "land_area_m2": 173905.4
+  },
+  {
+   "id": "T_W4_N2",
+   "ix": -4,
+   "iy": 2,
+   "origin_m": [
+    -2000.0,
+    1000.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       433.4309,
+       215.441,
+       -4.0
+      ],
+      [
+       500.0,
+       401.361,
+       3.0
+      ]
+     ],
+     "triangles": 553,
+     "file": "tiles/T_W4_N2/terrain.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       430.4313,
+       206.9628,
+       -4.0
+      ],
+      [
+       500.0,
+       404.3593,
+       2.0
+      ]
+     ],
+     "triangles": 1170,
+     "file": "tiles/T_W4_N2/walls.glb"
+    }
+   },
+   "features": "tiles/T_W4_N2/features.json",
+   "counts": {
+    "buildings": 0,
+    "roads": 0,
+    "walls": 0,
+    "piers": 3,
+    "trees": 0
+   },
+   "land_area_m2": 2092.8
+  },
+  {
+   "id": "T_W3_N2",
+   "ix": -3,
+   "iy": 2,
+   "origin_m": [
+    -1500.0,
+    1000.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       3.0
+      ]
+     ],
+     "triangles": 1150,
+     "file": "tiles/T_W3_N2/terrain.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       456.1329,
+       191.0725,
+       1.06
+      ],
+      [
+       500.0,
+       500.0,
+       3.06
+      ]
+     ],
+     "triangles": 272,
+     "file": "tiles/T_W3_N2/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       96.1937,
+       254.8058,
+       2.0
+      ]
+     ],
+     "triangles": 1223,
+     "file": "tiles/T_W3_N2/walls.glb"
+    }
+   },
+   "features": "tiles/T_W3_N2/features.json",
+   "counts": {
+    "buildings": 0,
+    "roads": 8,
+    "walls": 0,
+    "piers": 2,
+    "trees": 0
+   },
+   "land_area_m2": 6375.4
+  },
+  {
+   "id": "T_W2_N2",
+   "ix": -2,
+   "iy": 2,
+   "origin_m": [
+    -1000.0,
+    1000.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       3.0
+      ]
+     ],
+     "triangles": 15180,
+     "file": "tiles/T_W2_N2/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       -41.1864,
+       -0.4993,
+       0.0
+      ],
+      [
+       510.1553,
+       500.1845,
+       67.0
+      ]
+     ],
+     "triangles": 1347,
+     "file": "tiles/T_W2_N2/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       1.06
+      ],
+      [
+       500.0,
+       500.0,
+       3.06
+      ]
+     ],
+     "triangles": 8244,
+     "file": "tiles/T_W2_N2/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       14.7991,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       491.7562,
+       8.0
+      ]
+     ],
+     "triangles": 5406,
+     "file": "tiles/T_W2_N2/walls.glb"
+    }
+   },
+   "features": "tiles/T_W2_N2/features.json",
+   "counts": {
+    "buildings": 66,
+    "roads": 99,
+    "walls": 7,
+    "piers": 24,
+    "trees": 63
+   },
+   "land_area_m2": 171326.6
+  },
+  {
+   "id": "T_W1_N2",
+   "ix": -1,
+   "iy": 2,
+   "origin_m": [
+    -500.0,
+    1000.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       1.0
+      ],
+      [
+       500.0,
+       500.0,
+       88.8894
+      ]
+     ],
+     "triangles": 20000,
+     "file": "tiles/T_W1_N2/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       -1.0907,
+       -23.9715,
+       0.0
+      ],
+      [
+       510.7192,
+       524.4351,
+       95.05
+      ]
+     ],
+     "triangles": 5661,
+     "file": "tiles/T_W1_N2/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       1.06
+      ],
+      [
+       500.0,
+       501.2609,
+       87.0281
+      ]
+     ],
+     "triangles": 18760,
+     "file": "tiles/T_W1_N2/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       0.5
+      ],
+      [
+       500.0,
+       500.0,
+       94.3952
+      ]
+     ],
+     "triangles": 4630,
+     "file": "tiles/T_W1_N2/walls.glb"
+    }
+   },
+   "features": "tiles/T_W1_N2/features.json",
+   "counts": {
+    "buildings": 211,
+    "roads": 239,
+    "walls": 18,
+    "piers": 0,
+    "trees": 182
+   },
+   "land_area_m2": 250000.0
+  },
+  {
+   "id": "T_E0_N2",
+   "ix": 0,
+   "iy": 2,
+   "origin_m": [
+    0.0,
+    1000.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       77.965
+      ],
+      [
+       500.0,
+       500.0,
+       351.2474
+      ]
+     ],
+     "triangles": 20000,
+     "file": "tiles/T_E0_N2/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       -14.3191,
+       8.0778,
+       78.97
+      ],
+      [
+       510.8689,
+       499.9683,
+       330.94
+      ]
+     ],
+     "triangles": 1070,
+     "file": "tiles/T_E0_N2/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       78.025
+      ],
+      [
+       500.0,
+       500.0,
+       348.106
+      ]
+     ],
+     "triangles": 6380,
+     "file": "tiles/T_E0_N2/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       78.7587
+      ],
+      [
+       488.1152,
+       500.0,
+       312.8649
+      ]
+     ],
+     "triangles": 2646,
+     "file": "tiles/T_E0_N2/walls.glb"
+    }
+   },
+   "features": "tiles/T_E0_N2/features.json",
+   "counts": {
+    "buildings": 73,
+    "roads": 55,
+    "walls": 14,
+    "piers": 0,
+    "trees": 0
+   },
+   "land_area_m2": 250000.0
+  },
+  {
+   "id": "T_E1_N2",
+   "ix": 1,
+   "iy": 2,
+   "origin_m": [
+    500.0,
+    1000.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       411.4066
+      ]
+     ],
+     "triangles": 19110,
+     "file": "tiles/T_E1_N2/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       8.059,
+       -10.1675,
+       6.29
+      ],
+      [
+       360.9702,
+       486.2644,
+       415.86
+      ]
+     ],
+     "triangles": 853,
+     "file": "tiles/T_E1_N2/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       1.1482
+      ],
+      [
+       486.8408,
+       500.0,
+       409.6825
+      ]
+     ],
+     "triangles": 4426,
+     "file": "tiles/T_E1_N2/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       15.6823,
+       135.8711,
+       288.9535
+      ],
+      [
+       152.8871,
+       500.0,
+       411.4907
+      ]
+     ],
+     "triangles": 1877,
+     "file": "tiles/T_E1_N2/walls.glb"
+    }
+   },
+   "features": "tiles/T_E1_N2/features.json",
+   "counts": {
+    "buildings": 38,
+    "roads": 48,
+    "walls": 18,
+    "piers": 0,
+    "trees": 15
+   },
+   "land_area_m2": 235977.4
+  },
+  {
+   "id": "T_E2_N2",
+   "ix": 2,
+   "iy": 2,
+   "origin_m": [
+    1000.0,
+    1000.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       95.5692,
+       -4.0
+      ],
+      [
+       90.6326,
+       500.0,
+       21.0
+      ]
+     ],
+     "triangles": 2346,
+     "file": "tiles/T_E2_N2/terrain.glb"
+    }
+   },
+   "features": "tiles/T_E2_N2/features.json",
+   "counts": {
+    "buildings": 0,
+    "roads": 0,
+    "walls": 0,
+    "piers": 0,
+    "trees": 0
+   },
+   "land_area_m2": 24923.4
+  },
+  {
+   "id": "T_W3_N3",
+   "ix": -3,
+   "iy": 3,
+   "origin_m": [
+    -1500.0,
+    1500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       63.5385,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       3.0
+      ]
+     ],
+     "triangles": 6133,
+     "file": "tiles/T_W3_N3/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       66.2726,
+       75.038,
+       0.0
+      ],
+      [
+       475.5208,
+       519.5003,
+       12.0
+      ]
+     ],
+     "triangles": 300,
+     "file": "tiles/T_W3_N3/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       64.8473,
+       0.0,
+       1.06
+      ],
+      [
+       500.0,
+       500.0,
+       3.06
+      ]
+     ],
+     "triangles": 2531,
+     "file": "tiles/T_W3_N3/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       60.5385,
+       55.8493,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       2.0
+      ]
+     ],
+     "triangles": 6078,
+     "file": "tiles/T_W3_N3/walls.glb"
+    }
+   },
+   "features": "tiles/T_W3_N3/features.json",
+   "counts": {
+    "buildings": 12,
+    "roads": 25,
+    "walls": 1,
+    "piers": 3,
+    "trees": 56
+   },
+   "land_area_m2": 50652.7
+  },
+  {
+   "id": "T_W2_N3",
+   "ix": -2,
+   "iy": 3,
+   "origin_m": [
+    -1000.0,
+    1500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       3.0
+      ]
+     ],
+     "triangles": 19920,
+     "file": "tiles/T_W2_N3/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       -10.6522,
+       -25.7619,
+       0.0
+      ],
+      [
+       546.9327,
+       512.6921,
+       37.0
+      ]
+     ],
+     "triangles": 3140,
+     "file": "tiles/T_W2_N3/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       1.06
+      ],
+      [
+       500.0,
+       500.0,
+       3.06
+      ]
+     ],
+     "triangles": 14285,
+     "file": "tiles/T_W2_N3/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       165.3295,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       3.8822
+      ]
+     ],
+     "triangles": 3336,
+     "file": "tiles/T_W2_N3/walls.glb"
+    }
+   },
+   "features": "tiles/T_W2_N3/features.json",
+   "counts": {
+    "buildings": 117,
+    "roads": 169,
+    "walls": 11,
+    "piers": 9,
+    "trees": 152
+   },
+   "land_area_m2": 243954.5
+  },
+  {
+   "id": "T_W1_N3",
+   "ix": -1,
+   "iy": 3,
+   "origin_m": [
+    -500.0,
+    1500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       95.0
+      ]
+     ],
+     "triangles": 19187,
+     "file": "tiles/T_W1_N3/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       -59.418,
+       -35.171,
+       0.0
+      ],
+      [
+       514.3722,
+       522.3556,
+       103.1
+      ]
+     ],
+     "triangles": 4139,
+     "file": "tiles/T_W1_N3/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       1.06
+      ],
+      [
+       500.0,
+       500.0,
+       79.9799
+      ]
+     ],
+     "triangles": 15330,
+     "file": "tiles/T_W1_N3/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       99.9749
+      ]
+     ],
+     "triangles": 12897,
+     "file": "tiles/T_W1_N3/walls.glb"
+    }
+   },
+   "features": "tiles/T_W1_N3/features.json",
+   "counts": {
+    "buildings": 166,
+    "roads": 221,
+    "walls": 42,
+    "piers": 12,
+    "trees": 165
+   },
+   "land_area_m2": 234209.8
+  },
+  {
+   "id": "T_E0_N3",
+   "ix": 0,
+   "iy": 3,
+   "origin_m": [
+    0.0,
+    1500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       1.0
+      ],
+      [
+       500.0,
+       500.0,
+       315.6748
+      ]
+     ],
+     "triangles": 20000,
+     "file": "tiles/T_E0_N3/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       -4.8958,
+       8.6997,
+       0.0
+      ],
+      [
+       520.5231,
+       516.45,
+       215.03
+      ]
+     ],
+     "triangles": 3121,
+     "file": "tiles/T_E0_N3/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       1.06
+      ],
+      [
+       500.0,
+       500.0,
+       258.1524
+      ]
+     ],
+     "triangles": 8808,
+     "file": "tiles/T_E0_N3/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       3.6941,
+       0.0,
+       0.5
+      ],
+      [
+       500.0,
+       500.0,
+       260.4124
+      ]
+     ],
+     "triangles": 5318,
+     "file": "tiles/T_E0_N3/walls.glb"
+    }
+   },
+   "features": "tiles/T_E0_N3/features.json",
+   "counts": {
+    "buildings": 121,
+    "roads": 83,
+    "walls": 36,
+    "piers": 0,
+    "trees": 16
+   },
+   "land_area_m2": 250000.0
+  },
+  {
+   "id": "T_E1_N3",
+   "ix": 1,
+   "iy": 3,
+   "origin_m": [
+    500.0,
+    1500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       407.335
+      ]
+     ],
+     "triangles": 18869,
+     "file": "tiles/T_E1_N3/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       -10.3369,
+       -1.8732,
+       1.0
+      ],
+      [
+       511.1331,
+       529.6588,
+       415.34
+      ]
+     ],
+     "triangles": 2058,
+     "file": "tiles/T_E1_N3/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       2.06
+      ],
+      [
+       500.0,
+       500.0,
+       405.1609
+      ]
+     ],
+     "triangles": 6086,
+     "file": "tiles/T_E1_N3/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       3.5
+      ],
+      [
+       418.9257,
+       500.0,
+       405.7799
+      ]
+     ],
+     "triangles": 2155,
+     "file": "tiles/T_E1_N3/walls.glb"
+    }
+   },
+   "features": "tiles/T_E1_N3/features.json",
+   "counts": {
+    "buildings": 119,
+    "roads": 60,
+    "walls": 11,
+    "piers": 0,
+    "trees": 0
+   },
+   "land_area_m2": 231081.7
+  },
+  {
+   "id": "T_E2_N3",
+   "ix": 2,
+   "iy": 3,
+   "origin_m": [
+    1000.0,
+    1500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       112.2005,
+       222.4382,
+       21.0
+      ]
+     ],
+     "triangles": 1987,
+     "file": "tiles/T_E2_N3/terrain.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       14.8187,
+       1.06
+      ],
+      [
+       80.5121,
+       128.8903,
+       20.06
+      ]
+     ],
+     "triangles": 230,
+     "file": "tiles/T_E2_N3/roads.glb"
+    }
+   },
+   "features": "tiles/T_E2_N3/features.json",
+   "counts": {
+    "buildings": 0,
+    "roads": 2,
+    "walls": 0,
+    "piers": 0,
+    "trees": 0
+   },
+   "land_area_m2": 21119.4
+  },
+  {
+   "id": "T_W3_N4",
+   "ix": -3,
+   "iy": 4,
+   "origin_m": [
+    -1500.0,
+    2000.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       63.6467,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       171.6253,
+       3.0
+      ]
+     ],
+     "triangles": 5830,
+     "file": "tiles/T_W3_N4/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       65.5974,
+       -14.8286,
+       0.0
+      ],
+      [
+       504.4389,
+       141.3746,
+       13.0
+      ]
+     ],
+     "triangles": 242,
+     "file": "tiles/T_W3_N4/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       64.7163,
+       0.0,
+       1.06
+      ],
+      [
+       500.0,
+       161.0037,
+       3.06
+      ]
+     ],
+     "triangles": 2744,
+     "file": "tiles/T_W3_N4/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       61.0258,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       51.1137,
+       2.0
+      ]
+     ],
+     "triangles": 1100,
+     "file": "tiles/T_W3_N4/walls.glb"
+    }
+   },
+   "features": "tiles/T_W3_N4/features.json",
+   "counts": {
+    "buildings": 20,
+    "roads": 29,
+    "walls": 0,
+    "piers": 2,
+    "trees": 9
+   },
+   "land_area_m2": 61639.7
+  },
+  {
+   "id": "T_W2_N4",
+   "ix": -2,
+   "iy": 4,
+   "origin_m": [
+    -1000.0,
+    2000.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       3.0
+      ]
+     ],
+     "triangles": 10929,
+     "file": "tiles/T_W2_N4/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       -10.5366,
+       -10.6857,
+       0.0
+      ],
+      [
+       483.3673,
+       469.3113,
+       21.0
+      ]
+     ],
+     "triangles": 523,
+     "file": "tiles/T_W2_N4/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       1.06
+      ],
+      [
+       500.0,
+       349.0254,
+       3.06
+      ]
+     ],
+     "triangles": 4500,
+     "file": "tiles/T_W2_N4/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       412.5628,
+       3.8986
+      ]
+     ],
+     "triangles": 2699,
+     "file": "tiles/T_W2_N4/walls.glb"
+    }
+   },
+   "features": "tiles/T_W2_N4/features.json",
+   "counts": {
+    "buildings": 22,
+    "roads": 33,
+    "walls": 1,
+    "piers": 10,
+    "trees": 11
+   },
+   "land_area_m2": 116300.8
+  },
+  {
+   "id": "T_W1_N4",
+   "ix": -1,
+   "iy": 4,
+   "origin_m": [
+    -500.0,
+    2000.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       3.0
+      ]
+     ],
+     "triangles": 14380,
+     "file": "tiles/T_W1_N4/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       -7.3189,
+       -30.7193,
+       0.0
+      ],
+      [
+       491.046,
+       468.297,
+       22.41
+      ]
+     ],
+     "triangles": 645,
+     "file": "tiles/T_W1_N4/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       1.06
+      ],
+      [
+       500.0,
+       500.0,
+       3.06
+      ]
+     ],
+     "triangles": 5283,
+     "file": "tiles/T_W1_N4/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       471.885,
+       5.0
+      ]
+     ],
+     "triangles": 6759,
+     "file": "tiles/T_W1_N4/walls.glb"
+    }
+   },
+   "features": "tiles/T_W1_N4/features.json",
+   "counts": {
+    "buildings": 21,
+    "roads": 39,
+    "walls": 5,
+    "piers": 27,
+    "trees": 6
+   },
+   "land_area_m2": 163764.1
+  },
+  {
+   "id": "T_E0_N4",
+   "ix": 0,
+   "iy": 4,
+   "origin_m": [
+    0.0,
+    2000.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       1.0
+      ],
+      [
+       500.0,
+       500.0,
+       4.0
+      ]
+     ],
+     "triangles": 20000,
+     "file": "tiles/T_E0_N4/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       -1.9799,
+       -16.1783,
+       0.0
+      ],
+      [
+       466.9291,
+       500.9757,
+       34.0
+      ]
+     ],
+     "triangles": 768,
+     "file": "tiles/T_E0_N4/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       1.06
+      ],
+      [
+       500.0,
+       500.0,
+       3.2908
+      ]
+     ],
+     "triangles": 11771,
+     "file": "tiles/T_E0_N4/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       0.5
+      ],
+      [
+       452.9065,
+       477.1745,
+       5.0
+      ]
+     ],
+     "triangles": 3209,
+     "file": "tiles/T_E0_N4/walls.glb"
+    }
+   },
+   "features": "tiles/T_E0_N4/features.json",
+   "counts": {
+    "buildings": 44,
+    "roads": 93,
+    "walls": 12,
+    "piers": 0,
+    "trees": 26
+   },
+   "land_area_m2": 250000.0
+  },
+  {
+   "id": "T_E1_N4",
+   "ix": 1,
+   "iy": 4,
+   "origin_m": [
+    500.0,
+    2000.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       5.0
+      ]
+     ],
+     "triangles": 19253,
+     "file": "tiles/T_E1_N4/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       2.9093,
+       -12.3442,
+       0.35
+      ],
+      [
+       380.9313,
+       273.3301,
+       23.0
+      ]
+     ],
+     "triangles": 719,
+     "file": "tiles/T_E1_N4/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       1.06
+      ],
+      [
+       450.8145,
+       500.0,
+       5.06
+      ]
+     ],
+     "triangles": 7372,
+     "file": "tiles/T_E1_N4/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       350.7317,
+       0.0,
+       0.5
+      ],
+      [
+       488.2288,
+       313.2162,
+       7.0
+      ]
+     ],
+     "triangles": 2948,
+     "file": "tiles/T_E1_N4/walls.glb"
+    }
+   },
+   "features": "tiles/T_E1_N4/features.json",
+   "counts": {
+    "buildings": 20,
+    "roads": 47,
+    "walls": 6,
+    "piers": 0,
+    "trees": 18
+   },
+   "land_area_m2": 234171.8
+  },
+  {
+   "id": "T_E2_N4",
+   "ix": 2,
+   "iy": 4,
+   "origin_m": [
+    1000.0,
+    2000.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       294.6138,
+       -4.0
+      ],
+      [
+       34.4105,
+       500.0,
+       3.0
+      ]
+     ],
+     "triangles": 190,
+     "file": "tiles/T_E2_N4/terrain.glb"
+    }
+   },
+   "features": "tiles/T_E2_N4/features.json",
+   "counts": {
+    "buildings": 0,
+    "roads": 0,
+    "walls": 0,
+    "piers": 0,
+    "trees": 0
+   },
+   "land_area_m2": 583.7
+  },
+  {
+   "id": "T_W4_N5",
+   "ix": -4,
+   "iy": 5,
+   "origin_m": [
+    -2000.0,
+    2500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       424.8362,
+       424.4856,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       2.0
+      ]
+     ],
+     "triangles": 294,
+     "file": "tiles/T_W4_N5/terrain.glb"
+    }
+   },
+   "features": "tiles/T_W4_N5/features.json",
+   "counts": {
+    "buildings": 0,
+    "roads": 0,
+    "walls": 0,
+    "piers": 0,
+    "trees": 0
+   },
+   "land_area_m2": 1287.0
+  },
+  {
+   "id": "T_W3_N5",
+   "ix": -3,
+   "iy": 5,
+   "origin_m": [
+    -1500.0,
+    2500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       278.7022,
+       -4.0
+      ],
+      [
+       500.0,
+       443.4136,
+       2.0
+      ]
+     ],
+     "triangles": 1882,
+     "file": "tiles/T_W3_N5/terrain.glb"
+    }
+   },
+   "features": "tiles/T_W3_N5/features.json",
+   "counts": {
+    "buildings": 0,
+    "roads": 0,
+    "walls": 0,
+    "piers": 0,
+    "trees": 0
+   },
+   "land_area_m2": 9480.9
+  },
+  {
+   "id": "T_W2_N5",
+   "ix": -2,
+   "iy": 5,
+   "origin_m": [
+    -1000.0,
+    2500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       3.0
+      ]
+     ],
+     "triangles": 6988,
+     "file": "tiles/T_W2_N5/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       335.3202,
+       335.3377,
+       0.35
+      ],
+      [
+       546.4196,
+       473.4749,
+       10.35
+      ]
+     ],
+     "triangles": 16,
+     "file": "tiles/T_W2_N5/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       96.9376,
+       287.3341,
+       1.06
+      ],
+      [
+       500.0,
+       500.0,
+       3.06
+      ]
+     ],
+     "triangles": 1365,
+     "file": "tiles/T_W2_N5/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       72.5455,
+       295.4798,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       3.0
+      ]
+     ],
+     "triangles": 2222,
+     "file": "tiles/T_W2_N5/walls.glb"
+    }
+   },
+   "features": "tiles/T_W2_N5/features.json",
+   "counts": {
+    "buildings": 1,
+    "roads": 5,
+    "walls": 0,
+    "piers": 7,
+    "trees": 25
+   },
+   "land_area_m2": 72032.7
+  },
+  {
+   "id": "T_W1_N5",
+   "ix": -1,
+   "iy": 5,
+   "origin_m": [
+    -500.0,
+    2500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       5.0
+      ]
+     ],
+     "triangles": 12398,
+     "file": "tiles/T_W1_N5/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       24.5737,
+       5.592,
+       0.0
+      ],
+      [
+       539.5036,
+       494.0352,
+       15.03
+      ]
+     ],
+     "triangles": 1004,
+     "file": "tiles/T_W1_N5/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       1.06
+      ],
+      [
+       500.0,
+       500.0,
+       4.06
+      ]
+     ],
+     "triangles": 10126,
+     "file": "tiles/T_W1_N5/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       4.2839,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       5.0
+      ]
+     ],
+     "triangles": 3186,
+     "file": "tiles/T_W1_N5/walls.glb"
+    }
+   },
+   "features": "tiles/T_W1_N5/features.json",
+   "counts": {
+    "buildings": 44,
+    "roads": 104,
+    "walls": 7,
+    "piers": 15,
+    "trees": 177
+   },
+   "land_area_m2": 144500.4
+  },
+  {
+   "id": "T_E0_N5",
+   "ix": 0,
+   "iy": 5,
+   "origin_m": [
+    0.0,
+    2500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       2.0
+      ],
+      [
+       500.0,
+       500.0,
+       6.9209
+      ]
+     ],
+     "triangles": 20000,
+     "file": "tiles/T_E0_N5/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       -5.5972,
+       -8.4011,
+       1.0
+      ],
+      [
+       514.0293,
+       507.0866,
+       21.0
+      ]
+     ],
+     "triangles": 1778,
+     "file": "tiles/T_E0_N5/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       2.06
+      ],
+      [
+       500.0,
+       500.0,
+       6.06
+      ]
+     ],
+     "triangles": 18177,
+     "file": "tiles/T_E0_N5/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       8.2922,
+       1.7404
+      ],
+      [
+       432.2023,
+       500.0,
+       8.6011
+      ]
+     ],
+     "triangles": 2786,
+     "file": "tiles/T_E0_N5/walls.glb"
+    }
+   },
+   "features": "tiles/T_E0_N5/features.json",
+   "counts": {
+    "buildings": 74,
+    "roads": 217,
+    "walls": 20,
+    "piers": 0,
+    "trees": 119
+   },
+   "land_area_m2": 250000.0
+  },
+  {
+   "id": "T_E1_N5",
+   "ix": 1,
+   "iy": 5,
+   "origin_m": [
+    500.0,
+    2500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       1.0
+      ],
+      [
+       500.0,
+       500.0,
+       5.0
+      ]
+     ],
+     "triangles": 20000,
+     "file": "tiles/T_E1_N5/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       36.4517,
+       16.7397,
+       1.0
+      ],
+      [
+       491.8068,
+       504.6452,
+       13.0
+      ]
+     ],
+     "triangles": 713,
+     "file": "tiles/T_E1_N5/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       1.06
+      ],
+      [
+       500.0,
+       500.0,
+       4.4981
+      ]
+     ],
+     "triangles": 10931,
+     "file": "tiles/T_E1_N5/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       81.7447,
+       31.236,
+       0.5
+      ],
+      [
+       473.0669,
+       500.0,
+       6.7489
+      ]
+     ],
+     "triangles": 8001,
+     "file": "tiles/T_E1_N5/walls.glb"
+    }
+   },
+   "features": "tiles/T_E1_N5/features.json",
+   "counts": {
+    "buildings": 51,
+    "roads": 65,
+    "walls": 15,
+    "piers": 0,
+    "trees": 67
+   },
+   "land_area_m2": 250000.0
+  },
+  {
+   "id": "T_E2_N5",
+   "ix": 2,
+   "iy": 5,
+   "origin_m": [
+    1000.0,
+    2500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       57.0092,
+       500.0,
+       4.0
+      ]
+     ],
+     "triangles": 1319,
+     "file": "tiles/T_E2_N5/terrain.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       319.909,
+       2.3946
+      ],
+      [
+       38.3434,
+       500.0,
+       4.06
+      ]
+     ],
+     "triangles": 101,
+     "file": "tiles/T_E2_N5/roads.glb"
+    }
+   },
+   "features": "tiles/T_E2_N5/features.json",
+   "counts": {
+    "buildings": 0,
+    "roads": 4,
+    "walls": 0,
+    "piers": 0,
+    "trees": 0
+   },
+   "land_area_m2": 11243.2
+  },
+  {
+   "id": "T_W4_N6",
+   "ix": -4,
+   "iy": 6,
+   "origin_m": [
+    -2000.0,
+    3000.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       421.7967,
+       0.0,
+       -4.0
+      ],
+      [
+       449.2514,
+       161.9483,
+       2.0
+      ]
+     ],
+     "triangles": 514,
+     "file": "tiles/T_W4_N6/terrain.glb"
+    }
+   },
+   "features": "tiles/T_W4_N6/features.json",
+   "counts": {
+    "buildings": 0,
+    "roads": 0,
+    "walls": 0,
+    "piers": 0,
+    "trees": 0
+   },
+   "land_area_m2": 2753.7
+  },
+  {
+   "id": "T_W3_N6",
+   "ix": -3,
+   "iy": 6,
+   "origin_m": [
+    -1500.0,
+    3000.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       459.9561,
+       232.2841,
+       -4.0
+      ],
+      [
+       500.0,
+       304.5964,
+       2.762
+      ]
+     ],
+     "triangles": 255,
+     "file": "tiles/T_W3_N6/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       467.4149,
+       243.3803,
+       0.69
+      ],
+      [
+       506.9768,
+       290.4719,
+       10.69
+      ]
+     ],
+     "triangles": 10,
+     "file": "tiles/T_W3_N6/buildings.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       459.7641,
+       286.2056,
+       -4.0
+      ],
+      [
+       500.0,
+       305.374,
+       3.0
+      ]
+     ],
+     "triangles": 157,
+     "file": "tiles/T_W3_N6/walls.glb"
+    }
+   },
+   "features": "tiles/T_W3_N6/features.json",
+   "counts": {
+    "buildings": 1,
+    "roads": 0,
+    "walls": 0,
+    "piers": 1,
+    "trees": 0
+   },
+   "land_area_m2": 1828.1
+  },
+  {
+   "id": "T_W2_N6",
+   "ix": -2,
+   "iy": 6,
+   "origin_m": [
+    -1000.0,
+    3000.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       3.0
+      ]
+     ],
+     "triangles": 7396,
+     "file": "tiles/T_W2_N6/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       117.4249,
+       98.7927,
+       0.1
+      ],
+      [
+       483.4848,
+       476.6749,
+       11.03
+      ]
+     ],
+     "triangles": 150,
+     "file": "tiles/T_W2_N6/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       2.066,
+       0.0,
+       1.06
+      ],
+      [
+       500.0,
+       500.0,
+       3.06
+      ]
+     ],
+     "triangles": 3291,
+     "file": "tiles/T_W2_N6/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       5.0
+      ]
+     ],
+     "triangles": 10107,
+     "file": "tiles/T_W2_N6/walls.glb"
+    }
+   },
+   "features": "tiles/T_W2_N6/features.json",
+   "counts": {
+    "buildings": 11,
+    "roads": 31,
+    "walls": 7,
+    "piers": 34,
+    "trees": 54
+   },
+   "land_area_m2": 64882.3
+  },
+  {
+   "id": "T_W1_N6",
+   "ix": -1,
+   "iy": 6,
+   "origin_m": [
+    -500.0,
+    3000.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       6.0
+      ]
+     ],
+     "triangles": 17863,
+     "file": "tiles/T_W1_N6/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       -3.3656,
+       -9.6932,
+       0.69
+      ],
+      [
+       570.3119,
+       518.821,
+       36.58
+      ]
+     ],
+     "triangles": 3372,
+     "file": "tiles/T_W1_N6/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       1.1243
+      ],
+      [
+       500.0,
+       500.0,
+       5.06
+      ]
+     ],
+     "triangles": 21008,
+     "file": "tiles/T_W1_N6/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       11.388
+      ]
+     ],
+     "triangles": 12178,
+     "file": "tiles/T_W1_N6/walls.glb"
+    }
+   },
+   "features": "tiles/T_W1_N6/features.json",
+   "counts": {
+    "buildings": 84,
+    "roads": 272,
+    "walls": 56,
+    "piers": 9,
+    "trees": 617
+   },
+   "land_area_m2": 215380.4
+  },
+  {
+   "id": "T_E0_N6",
+   "ix": 0,
+   "iy": 6,
+   "origin_m": [
+    0.0,
+    3000.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       2.0
+      ],
+      [
+       500.0,
+       500.0,
+       7.0
+      ]
+     ],
+     "triangles": 20000,
+     "file": "tiles/T_E0_N6/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       -8.3861,
+       -58.0621,
+       1.52
+      ],
+      [
+       512.005,
+       511.805,
+       51.45
+      ]
+     ],
+     "triangles": 6174,
+     "file": "tiles/T_E0_N6/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       2.06
+      ],
+      [
+       500.0,
+       500.0,
+       6.1949
+      ]
+     ],
+     "triangles": 19453,
+     "file": "tiles/T_E0_N6/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       1.9696
+      ],
+      [
+       500.0,
+       500.0,
+       7.1293
+      ]
+     ],
+     "triangles": 5801,
+     "file": "tiles/T_E0_N6/walls.glb"
+    }
+   },
+   "features": "tiles/T_E0_N6/features.json",
+   "counts": {
+    "buildings": 222,
+    "roads": 295,
+    "walls": 46,
+    "piers": 0,
+    "trees": 250
+   },
+   "land_area_m2": 250000.0
+  },
+  {
+   "id": "T_E1_N6",
+   "ix": 1,
+   "iy": 6,
+   "origin_m": [
+    500.0,
+    3000.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       1.3335
+      ],
+      [
+       500.0,
+       500.0,
+       6.0
+      ]
+     ],
+     "triangles": 20000,
+     "file": "tiles/T_E1_N6/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       -41.416,
+       -9.9239,
+       1.0
+      ],
+      [
+       500.0055,
+       509.6744,
+       15.93
+      ]
+     ],
+     "triangles": 3039,
+     "file": "tiles/T_E1_N6/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       2.06
+      ],
+      [
+       500.0,
+       500.0,
+       6.0572
+      ]
+     ],
+     "triangles": 12785,
+     "file": "tiles/T_E1_N6/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       1.5
+      ],
+      [
+       500.0,
+       500.0,
+       10.8276
+      ]
+     ],
+     "triangles": 11048,
+     "file": "tiles/T_E1_N6/walls.glb"
+    }
+   },
+   "features": "tiles/T_E1_N6/features.json",
+   "counts": {
+    "buildings": 88,
+    "roads": 145,
+    "walls": 83,
+    "piers": 0,
+    "trees": 433
+   },
+   "land_area_m2": 250000.0
+  },
+  {
+   "id": "T_E2_N6",
+   "ix": 2,
+   "iy": 6,
+   "origin_m": [
+    1000.0,
+    3000.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       108.2342,
+       500.0,
+       5.0
+      ]
+     ],
+     "triangles": 3559,
+     "file": "tiles/T_E2_N6/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       -34.0841,
+       27.8705,
+       1.0
+      ],
+      [
+       44.5953,
+       377.5498,
+       12.0
+      ]
+     ],
+     "triangles": 105,
+     "file": "tiles/T_E2_N6/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       2.6085
+      ],
+      [
+       73.6656,
+       500.0,
+       4.8458
+      ]
+     ],
+     "triangles": 1324,
+     "file": "tiles/T_E2_N6/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       285.3478,
+       1.5
+      ],
+      [
+       56.0176,
+       500.0,
+       10.8072
+      ]
+     ],
+     "triangles": 904,
+     "file": "tiles/T_E2_N6/walls.glb"
+    }
+   },
+   "features": "tiles/T_E2_N6/features.json",
+   "counts": {
+    "buildings": 3,
+    "roads": 15,
+    "walls": 4,
+    "piers": 0,
+    "trees": 2
+   },
+   "land_area_m2": 39115.3
+  },
+  {
+   "id": "T_W5_N7",
+   "ix": -5,
+   "iy": 7,
+   "origin_m": [
+    -2500.0,
+    3500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       111.5648,
+       250.3804,
+       -4.0
+      ],
+      [
+       500.0,
+       444.9125,
+       10.0
+      ]
+     ],
+     "triangles": 3819,
+     "file": "tiles/T_W5_N7/terrain.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       261.5196,
+       396.8864,
+       2.06
+      ],
+      [
+       283.894,
+       444.9125,
+       2.06
+      ]
+     ],
+     "triangles": 86,
+     "file": "tiles/T_W5_N7/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       174.8539,
+       443.4247,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       3.0
+      ]
+     ],
+     "triangles": 263,
+     "file": "tiles/T_W5_N7/walls.glb"
+    }
+   },
+   "features": "tiles/T_W5_N7/features.json",
+   "counts": {
+    "buildings": 0,
+    "roads": 1,
+    "walls": 0,
+    "piers": 2,
+    "trees": 0
+   },
+   "land_area_m2": 37672.1
+  },
+  {
+   "id": "T_W4_N7",
+   "ix": -4,
+   "iy": 7,
+   "origin_m": [
+    -2000.0,
+    3500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       429.5671,
+       -4.0
+      ],
+      [
+       12.6275,
+       444.9125,
+       2.9405
+      ]
+     ],
+     "triangles": 30,
+     "file": "tiles/T_W4_N7/terrain.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       444.9125,
+       -4.0
+      ],
+      [
+       57.9584,
+       500.0,
+       3.0
+      ]
+     ],
+     "triangles": 211,
+     "file": "tiles/T_W4_N7/walls.glb"
+    }
+   },
+   "features": "tiles/T_W4_N7/features.json",
+   "counts": {
+    "buildings": 0,
+    "roads": 0,
+    "walls": 0,
+    "piers": 1,
+    "trees": 0
+   },
+   "land_area_m2": 96.9
+  },
+  {
+   "id": "T_W3_N7",
+   "ix": -3,
+   "iy": 7,
+   "origin_m": [
+    -1500.0,
+    3500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       375.3264,
+       333.382,
+       -4.0
+      ],
+      [
+       500.0,
+       444.9125,
+       3.0
+      ]
+     ],
+     "triangles": 747,
+     "file": "tiles/T_W3_N7/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       394.9974,
+       422.7887,
+       1.0
+      ],
+      [
+       500.0549,
+       516.2993,
+       17.83
+      ]
+     ],
+     "triangles": 323,
+     "file": "tiles/T_W3_N7/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       388.3979,
+       347.0176,
+       1.9346
+      ],
+      [
+       500.0,
+       444.9125,
+       3.06
+      ]
+     ],
+     "triangles": 858,
+     "file": "tiles/T_W3_N7/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       372.4209,
+       405.1017,
+       1.5
+      ],
+      [
+       500.0,
+       500.0,
+       5.8837
+      ]
+     ],
+     "triangles": 1585,
+     "file": "tiles/T_W3_N7/walls.glb"
+    }
+   },
+   "features": "tiles/T_W3_N7/features.json",
+   "counts": {
+    "buildings": 9,
+    "roads": 14,
+    "walls": 14,
+    "piers": 0,
+    "trees": 15
+   },
+   "land_area_m2": 6114.2
+  },
+  {
+   "id": "T_W2_N7",
+   "ix": -2,
+   "iy": 7,
+   "origin_m": [
+    -1000.0,
+    3500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       444.9125,
+       5.0
+      ]
+     ],
+     "triangles": 13409,
+     "file": "tiles/T_W2_N7/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       -15.1015,
+       -12.2022,
+       0.0
+      ],
+      [
+       520.3064,
+       516.1985,
+       21.0
+      ]
+     ],
+     "triangles": 4840,
+     "file": "tiles/T_W2_N7/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       1.06
+      ],
+      [
+       500.0,
+       444.9125,
+       4.06
+      ]
+     ],
+     "triangles": 13613,
+     "file": "tiles/T_W2_N7/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       500.0,
+       6.9494
+      ]
+     ],
+     "triangles": 6081,
+     "file": "tiles/T_W2_N7/walls.glb"
+    }
+   },
+   "features": "tiles/T_W2_N7/features.json",
+   "counts": {
+    "buildings": 226,
+    "roads": 239,
+    "walls": 79,
+    "piers": 1,
+    "trees": 318
+   },
+   "land_area_m2": 157669.4
+  },
+  {
+   "id": "T_W1_N7",
+   "ix": -1,
+   "iy": 7,
+   "origin_m": [
+    -500.0,
+    3500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       444.9125,
+       7.0
+      ]
+     ],
+     "triangles": 18100,
+     "file": "tiles/T_W1_N7/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       -10.1468,
+       -11.0389,
+       1.0
+      ],
+      [
+       511.4363,
+       508.5606,
+       20.0
+      ]
+     ],
+     "triangles": 25678,
+     "file": "tiles/T_W1_N7/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       2.06
+      ],
+      [
+       500.0,
+       444.9125,
+       5.06
+      ]
+     ],
+     "triangles": 13394,
+     "file": "tiles/T_W1_N7/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       1.5
+      ],
+      [
+       499.4982,
+       500.0,
+       7.6846
+      ]
+     ],
+     "triangles": 12548,
+     "file": "tiles/T_W1_N7/walls.glb"
+    }
+   },
+   "features": "tiles/T_W1_N7/features.json",
+   "counts": {
+    "buildings": 951,
+    "roads": 176,
+    "walls": 261,
+    "piers": 0,
+    "trees": 112
+   },
+   "land_area_m2": 222456.2
+  },
+  {
+   "id": "T_E0_N7",
+   "ix": 0,
+   "iy": 7,
+   "origin_m": [
+    0.0,
+    3500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       444.9125,
+       9.9011
+      ]
+     ],
+     "triangles": 18100,
+     "file": "tiles/T_E0_N7/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       -4.9399,
+       -17.7633,
+       2.0
+      ],
+      [
+       529.4951,
+       508.6159,
+       16.0
+      ]
+     ],
+     "triangles": 17541,
+     "file": "tiles/T_E0_N7/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       3.06
+      ],
+      [
+       500.0,
+       444.9125,
+       7.3409
+      ]
+     ],
+     "triangles": 12515,
+     "file": "tiles/T_E0_N7/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       4.6857,
+       0.0,
+       2.4646
+      ],
+      [
+       500.0,
+       500.0,
+       7.0
+      ]
+     ],
+     "triangles": 7523,
+     "file": "tiles/T_E0_N7/walls.glb"
+    }
+   },
+   "features": "tiles/T_E0_N7/features.json",
+   "counts": {
+    "buildings": 591,
+    "roads": 169,
+    "walls": 135,
+    "piers": 0,
+    "trees": 347
+   },
+   "land_area_m2": 222456.2
+  },
+  {
+   "id": "T_E1_N7",
+   "ix": 1,
+   "iy": 7,
+   "origin_m": [
+    500.0,
+    3500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       500.0,
+       444.9125,
+       8.447
+      ]
+     ],
+     "triangles": 18100,
+     "file": "tiles/T_E1_N7/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       -23.2535,
+       -30.4003,
+       1.39
+      ],
+      [
+       507.2111,
+       507.3721,
+       15.77
+      ]
+     ],
+     "triangles": 18906,
+     "file": "tiles/T_E1_N7/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       2.06
+      ],
+      [
+       500.0,
+       444.9125,
+       5.9961
+      ]
+     ],
+     "triangles": 10940,
+     "file": "tiles/T_E1_N7/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       1.5
+      ],
+      [
+       500.0,
+       500.0,
+       7.6964
+      ]
+     ],
+     "triangles": 22426,
+     "file": "tiles/T_E1_N7/walls.glb"
+    }
+   },
+   "features": "tiles/T_E1_N7/features.json",
+   "counts": {
+    "buildings": 811,
+    "roads": 139,
+    "walls": 546,
+    "piers": 0,
+    "trees": 117
+   },
+   "land_area_m2": 222456.2
+  },
+  {
+   "id": "T_E2_N7",
+   "ix": 2,
+   "iy": 7,
+   "origin_m": [
+    1000.0,
+    3500.0,
+    0.0
+   ],
+   "layers": {
+    "terrain": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       -4.0
+      ],
+      [
+       143.2619,
+       444.9125,
+       6.4679
+      ]
+     ],
+     "triangles": 4583,
+     "file": "tiles/T_E2_N7/terrain.glb"
+    },
+    "buildings": {
+     "bounds_m": [
+      [
+       -18.3483,
+       28.043,
+       3.0
+      ],
+      [
+       61.4295,
+       408.776,
+       19.0
+      ]
+     ],
+     "triangles": 1072,
+     "file": "tiles/T_E2_N7/buildings.glb"
+    },
+    "roads": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       4.0431
+      ],
+      [
+       84.2535,
+       444.9125,
+       5.4122
+      ]
+     ],
+     "triangles": 2713,
+     "file": "tiles/T_E2_N7/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       0.0,
+       3.5
+      ],
+      [
+       56.5388,
+       339.4386,
+       7.7985
+      ]
+     ],
+     "triangles": 1268,
+     "file": "tiles/T_E2_N7/walls.glb"
+    }
+   },
+   "features": "tiles/T_E2_N7/features.json",
+   "counts": {
+    "buildings": 38,
+    "roads": 27,
+    "walls": 18,
+    "piers": 0,
+    "trees": 84
+   },
+   "land_area_m2": 50872.8
+  }
+ ]
+}

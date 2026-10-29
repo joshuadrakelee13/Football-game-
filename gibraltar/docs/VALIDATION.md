@@ -1,6 +1,6 @@
 # Validation report
 
-Generated 2026-10-29T16:07:37Z by `python -m gibpipe.validate` from the build made at 2026-10-29T15:57:35Z. Regenerate it after every build; do not edit by hand.
+Generated 2026-10-29T16:20:20Z by `python -m gibpipe.validate` from the build made at 2026-10-29T16:14:14Z. Regenerate it after every build; do not edit by hand.
 
 | Status | Check | Value | Notes |
 |---|---|---|---|
@@ -9,10 +9,10 @@ Generated 2026-10-29T16:07:37Z by `python -m gibpipe.validate` from the build ma
 | pass | Gibraltar land area (OSM coastline within OSM territory boundary) | 6.591 km² | official planar area 6.55 km² (GeoPortal); difference +0.6% — reclamation since the official figure is a likely cause |
 | pass | Terrain mesh area vs land polygon area (all built tiles) | -0.0 % | mesh 8.8334 km², land polygon 8.8334 km² |
 | warn | Highest terrain point in build | 418.65 m | official summit 426.0 m; 5 m grid under-samples the knife-edge ridge |
-| warn | Spot height: Rock of Gibraltar (osm:node/243843850) | -23.03 m (terrain − OSM ele) | OSM ele 426.0 m, terrain 402.97 m |
-| pass | Spot height: Signal Hill (osm:node/8910097389) | -6.21 m (terrain − OSM ele) | OSM ele 387.0 m, terrain 380.79 m |
+| warn | Peak height: Rock of Gibraltar (osm:node/243843850) | -9.05 m (terrain max within 100 m − OSM ele) | OSM ele 426.0 m; terrain 416.95 m at 90.3 m from the OSM node (402.97 m at the node itself) |
+| pass | Peak height: Signal Hill (osm:node/8910097389) | -0.28 m (terrain max within 100 m − OSM ele) | OSM ele 387.0 m; terrain 386.72 m at 95.1 m from the OSM node (380.79 m at the node itself) |
 | info | Gibraltar land with a DTM measurement (not gap-filled) | 92.12 % | the rest is land newer than the DTM survey (reclamations, new quays): filled from nearest land height |
-| info | Copernicus GLO-30 DSM minus terrain, median (Gibraltar land) | 0.0 m | p5 -35.8 m, p95 8.3 m; DSM includes buildings and vegetation |
+| info | Copernicus GLO-30 (30 m DSM) minus terrain, median absolute difference (Gibraltar land) | 3.04 m | p5 -35.8 m, p50 0.0 m, p95 8.3 m. Independent coarse cross-check only: the DSM includes buildings and trees, and its 30 m cells smear the cliffs (large negative values on the ridge) |
 | pass | Terrain tile seams, max height mismatch between neighbours | 0.0 mm | 6918 shared edge vertices compared |
 | pass | Road/path centreline points lying on rendered surfaces | 100.0 % | 51534 sample points every 5 m on land |
 | info | Carriageway length in Gibraltar (OSM, excluding tunnels) | 115.2 km | official: 'more than 48 km' of roads (GeoPortal) |

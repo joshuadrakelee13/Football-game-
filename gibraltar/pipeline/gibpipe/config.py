@@ -35,3 +35,14 @@ SKIRT_DEPTH = -4.0        # how far coastline skirts drop below sea level
 PROJECT_MARGIN = 400.0    # sea margin around land when choosing tiles
 
 USER_AGENT = "GibraltarWalkingSim-pipeline/0.1 (+https://github.com/joshuadrakelee13/Football-game-)"
+
+# The historic walled town, used only to choose façade styles (shutters and
+# ironwork balconies). APPROXIMATE: drawn through OSM landmarks, clockwise
+# from the north-west: Grand Casemates Gates, Landport, the Moorish Castle's
+# Tower of Homage, Castle Steps, Hospital Hill, Castle Road, Flat Bastion,
+# Prince Edward's Gate, Southport Gates, South Bastion, then north along the
+# Line Wall (King's Bastion) back to Casemates. GIB-LTM metres.
+OLD_TOWN_POLYGON = [(-288, 1717), (-130, 1690), (15, 1560), (10, 1300), (-80, 1160), (-80, 980),
+                    (-105, 580), (-165, 545), (-250, 530), (-340, 450), (-430, 800), (-445, 1100),
+                    (-380, 1400), (-310, 1640)]
+FACADE_OVERRIDES = DATA / "facade_overrides.json"

@@ -14,7 +14,7 @@ data/build/
   tiles/<tile_id>/buildings.glb building masses
   tiles/<tile_id>/walls.glb     walls, fortifications, fences, hedges, barriers, piers
   tiles/<tile_id>/props.glb     trees and street furniture at their OSM positions
-  tiles/<tile_id>/facades.glb   doors and windows (cosmetic: no collision)
+  tiles/<tile_id>/facades.glb   doors, windows, shutters, balconies (cosmetic: no collision)
   tiles/<tile_id>/features.json per-feature records for that tile
   catalogue.json                every source dataset: licence, hash, date
 data/overrides.json             hand-made replacements for specific buildings
@@ -91,10 +91,10 @@ The import script checks this to within 1 cm.
 | `M_BuildingWall` | building façades |
 | `M_BuildingRoof` | building roofs |
 | `M_Wall` | walls, city walls, retaining walls, fences, jersey barriers, guard rails |
-| `M_Prop` | street furniture: benches, bollards, post boxes, phone kiosks, lamps, cannons, memorials, bus stops, tree trunks |
+| `M_Prop` | balcony slabs and railings (facades.glb); street furniture: benches, bollards, post boxes, phone kiosks, lamps, cannons, memorials, bus stops, tree trunks |
 | `M_Foliage` | tree crowns (props.glb) and hedges (walls.glb) |
 | `M_Window` | window glass, 5 cm in front of the façade (facades.glb) |
-| `M_Door` | door panels and frames (facades.glb) |
+| `M_Door` | door panels and frames; window shutters (facades.glb) |
 
 * Every primitive also carries a custom attribute `_FEATURE_ID` (float,
   exact integer) indexing the matching array in `features.json`
@@ -127,7 +127,10 @@ Coordinates here are **world GIB-LTM metres** (not tile-local).
         "doors_mapped": 1, "doors_procedural": 0, "windows": 42,
         "windows_source": "procedural v1: … | none",
         "doors": [ { "position_m": [x, y], "width_m": 1.6,
-                     "source": "osm:node/123 entrance=main | procedural: wall nearest a street" } ]
+                     "source": "osm:node/123 entrance=main | procedural: wall nearest a street" } ],
+        "shutters": "green | brown | white | … | null", "balconies": "ironwork | concrete | null",
+        "detail_source": "rule: old town | rule: residential block (12 m+) | rule: house | rule: none for this building type | recorded: <source>",
+        "balcony_count": 12, "shuttered_windows": 20
       },
       "override": null          // or the entry from overrides.json
     }

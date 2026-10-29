@@ -92,7 +92,10 @@ def write_glb(path, node_name, primitives):
                            .astype(np.uint8), 34962, 5121, "VEC4"),
             "_FEATURE_ID": add(p.feature_ids.reshape(-1, 1).astype(np.float32).ravel(), 34962, 5126, "SCALAR"),
         }
-        ind = add(p.indices.astype(np.uint32), 34963, 5125, "SCALAR")
+        if len(pos) < 65536:      # 16-bit indices where they fit: half the index bytes
+            ind = add(p.indices.astype(np.uint16), 34963, 5123, "SCALAR")
+        else:
+            ind = add(p.indices.astype(np.uint32), 34963, 5125, "SCALAR")
         gl_prims.append({"attributes": attrs, "indices": ind, "material": mat_names.index(p.material), "mode": 4})
     while len(blob) % 4:
         blob.append(0)
@@ -126,7 +129,7 @@ def read_glb(path):
     for prim in doc["meshes"][0]["primitives"]:
         def acc(i):
             a = doc["accessors"][i]; bv = doc["bufferViews"][a["bufferView"]]
-            dt = {5126: np.float32, 5125: np.uint32}[a["componentType"]]
+            dt = {5126: np.float32, 5125: np.uint32, 5123: np.uint16}[a["componentType"]]
             n = {"SCALAR": 1, "VEC3": 3}[a["type"]]
             arr = np.frombuffer(data, dt, a["count"] * n, bin_off + bv["byteOffset"])
             return arr.reshape(-1, n) if n > 1 else arr

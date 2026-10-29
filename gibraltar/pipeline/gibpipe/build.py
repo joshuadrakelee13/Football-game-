@@ -135,7 +135,9 @@ def build_tile(ixy):
         "id": tid, "ix": ix, "iy": iy, "origin_m": [ox, oy, 0.0], "layers": layers,
         "features": f"tiles/{tid}/features.json",
         "counts": {"buildings": len(blds), "roads": len(road_recs), "walls": len(walls), "piers": len(piers),
-                   "props": len(prs), "windows": sum(b["facade"]["windows"] for b in blds)},
+                   "props": len(prs), "windows": sum(b["facade"]["windows"] for b in blds),
+                   "balconies": sum(b["facade"]["balcony_count"] for b in blds),
+                   "shuttered_windows": sum(b["facade"]["shuttered_windows"] for b in blds)},
         "land_area_m2": round(T.land.intersection(tbox).area, 1),
     }
 
@@ -220,6 +222,10 @@ def main():
             "doors_mapped": sum(b["facade"]["doors_mapped"] for b in G["all_blds"]),
             "doors_procedural": sum(b["facade"]["doors_procedural"] for b in G["all_blds"]),
             "windows_procedural": sum(r["counts"].get("windows", 0) for r in results),
+            "balconies": sum(r["counts"].get("balconies", 0) for r in results),
+            "shuttered_windows": sum(r["counts"].get("shuttered_windows", 0) for r in results),
+            "facade_styles": dict(sorted(Counter(b["facade"].get("detail_source", "none") for b in G["all_blds"]
+                                                 if b["in_gibraltar"]).items())),
         },
         "tiles": results,
     }

@@ -1,0 +1,4 @@
+{
+  "_comment": "Record real balconies and shutters for individual buildings; these replace the generated Gibraltar-style rules. Key = building id from features.json. balconies: none | ironwork | concrete. shutters: none | green | brown | white | blue | a #rrggbb colour. Give a source (e.g. 'own photo 2026-11-02'). Entries whose key starts with an underscore are ignored. Example:",
+  "_osm:way/123456789": {"balconies": "ironwork", "shutters": "green", "source": "own photo, 2026-11-02"}
+}

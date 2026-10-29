@@ -1,6 +1,6 @@
 {
- "generated_utc": "2026-10-29T17:31:42Z",
- "manifest_generated_utc": "2026-10-29T17:29:00Z",
+ "generated_utc": "2026-10-29T18:12:26Z",
+ "manifest_generated_utc": "2026-10-29T18:11:34Z",
  "checks": [
   {
    "check": "Projection round trip (lon/lat -> GIB-LTM -> lon/lat), max error",

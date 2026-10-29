@@ -27,7 +27,7 @@ Run the commands from this `pipeline` folder. `build` and `validate` only read
 | `buildings.py` | Footprints → extruded masses, using measured, derived or estimated heights (recorded per building); `building:part` support; tagged roof shapes (gabled, hipped, pyramidal, skillion); wall and roof colours from colour and material tags; an optional LiDAR surface-model hook. |
 | `roads.py` | Highways → surfaces at their mapped or default widths, coloured by OSM `surface`, merged by class and cut against the terrain triangles so they lie exactly on the ground; zebra crossings; bridge decks; tunnels listed. |
 | `structures.py` | Walls, city walls, retaining walls, fences, hedges, jersey barriers and guard rails; piers and breakwaters; points of interest. |
-| `facades.py` | Doors at mapped OSM entrances (else one procedural door on the wall facing the nearest street) and procedural windows on 3 m storeys; skips party walls. Output goes to its own `facades` layer. |
+| `facades.py` | Doors at mapped OSM entrances (else one procedural door on the wall facing the nearest street), procedural windows on 3 m storeys, and balconies and shutters by Gibraltar style rules (old town, residential blocks, houses); skips party walls. `data/facade_overrides.json` records real details per building. Output goes to its own `facades` layer. |
 | `props.py` | Trees and street furniture (benches, bollards, post boxes, phone kiosks, lamps, cannons, memorials, bus stops, …) as generic models at their OSM positions. |
 | `glb.py` | Dependency-free glTF 2.0 writer and reader (vertex welding, 8-bit vertex colours, `_FEATURE_ID`). |
 | `build.py` | Orchestrates everything, in parallel by tile; writes `manifest.json` and per-tile `features.json`. |

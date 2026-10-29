@@ -1,7 +1,7 @@
 {
  "schema": 1,
  "pipeline_version": "0.1.0",
- "generated_utc": "2026-10-29T17:29:00Z",
+ "generated_utc": "2026-10-29T18:11:34Z",
  "crs": {
   "engine_proj": "+proj=tmerc +lat_0=36.13 +lon_0=-5.35 +k=1 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
   "engine_name": "GIB-LTM",
@@ -5287,7 +5287,15 @@
   "building_colours_from_tags": 36,
   "doors_mapped": 29,
   "doors_procedural": 2344,
-  "windows_procedural": 171412
+  "windows_procedural": 171412,
+  "balconies": 14476,
+  "shuttered_windows": 19491,
+  "facade_styles": {
+   "rule: house": 37,
+   "rule: none for this building type": 1815,
+   "rule: old town": 411,
+   "rule: residential block (12 m+)": 203
+  }
  },
  "tiles": [
   {
@@ -5335,17 +5343,17 @@
     "facades": {
      "bounds_m": [
       [
-       494.3594,
+       493.4305,
        478.221,
        32.84
       ],
       [
-       504.2,
+       505.1289,
        520.8843,
        49.34
       ]
      ],
-     "triangles": 328,
+     "triangles": 1224,
      "file": "tiles/T_W1_S5/facades.glb"
     },
     "walls": {
@@ -5372,7 +5380,9 @@
     "walls": 1,
     "piers": 0,
     "props": 0,
-    "windows": 162
+    "windows": 162,
+    "balconies": 56,
+    "shuttered_windows": 0
    },
    "land_area_m2": 3678.7
   },
@@ -5421,7 +5431,7 @@
     "facades": {
      "bounds_m": [
       [
-       6.0345,
+       4.8723,
        185.8711,
        9.97
       ],
@@ -5431,7 +5441,7 @@
        52.92
       ]
      ],
-     "triangles": 9896,
+     "triangles": 17000,
      "file": "tiles/T_E0_S5/facades.glb"
     },
     "roads": {
@@ -5490,7 +5500,9 @@
     "walls": 29,
     "piers": 0,
     "props": 25,
-    "windows": 4856
+    "windows": 4856,
+    "balconies": 444,
+    "shuttered_windows": 0
    },
    "land_area_m2": 132873.1
   },
@@ -5528,7 +5540,9 @@
     "walls": 0,
     "piers": 0,
     "props": 0,
-    "windows": 0
+    "windows": 0,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 4.2
   },
@@ -5577,17 +5591,17 @@
     "facades": {
      "bounds_m": [
       [
-       489.3111,
-       33.5647,
+       488.1396,
+       32.9211,
        36.16
       ],
       [
        505.0743,
-       128.8307,
+       130.0092,
        54.02
       ]
      ],
-     "triangles": 476,
+     "triangles": 1452,
      "file": "tiles/T_W1_S4/facades.glb"
     },
     "roads": {
@@ -5630,7 +5644,9 @@
     "walls": 3,
     "piers": 0,
     "props": 0,
-    "windows": 228
+    "windows": 228,
+    "balconies": 61,
+    "shuttered_windows": 0
    },
    "land_area_m2": 8723.8
   },
@@ -5689,7 +5705,7 @@
        124.71
       ]
      ],
-     "triangles": 12388,
+     "triangles": 27128,
      "file": "tiles/T_E0_S4/facades.glb"
     },
     "roads": {
@@ -5748,7 +5764,9 @@
     "walls": 49,
     "piers": 0,
     "props": 38,
-    "windows": 5970
+    "windows": 5970,
+    "balconies": 909,
+    "shuttered_windows": 49
    },
    "land_area_m2": 243617.3
   },
@@ -5850,7 +5868,9 @@
     "walls": 4,
     "piers": 0,
     "props": 0,
-    "windows": 242
+    "windows": 242,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 46277.6
   },
@@ -5909,7 +5929,7 @@
        51.4
       ]
      ],
-     "triangles": 2274,
+     "triangles": 2334,
      "file": "tiles/T_W1_S3/facades.glb"
     },
     "roads": {
@@ -5968,7 +5988,9 @@
     "walls": 21,
     "piers": 0,
     "props": 2,
-    "windows": 1081
+    "windows": 1081,
+    "balconies": 0,
+    "shuttered_windows": 15
    },
    "land_area_m2": 63585.7
   },
@@ -6027,7 +6049,7 @@
        187.9
       ]
      ],
-     "triangles": 13368,
+     "triangles": 14464,
      "file": "tiles/T_E0_S3/facades.glb"
     },
     "roads": {
@@ -6086,7 +6108,9 @@
     "walls": 34,
     "piers": 0,
     "props": 12,
-    "windows": 6390
+    "windows": 6390,
+    "balconies": 49,
+    "shuttered_windows": 78
    },
    "land_area_m2": 250000.0
   },
@@ -6204,7 +6228,9 @@
     "walls": 20,
     "piers": 0,
     "props": 5,
-    "windows": 546
+    "windows": 546,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 108335.8
   },
@@ -6306,7 +6332,9 @@
     "walls": 5,
     "piers": 0,
     "props": 0,
-    "windows": 155
+    "windows": 155,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 4364.9
   },
@@ -6365,7 +6393,7 @@
        83.18
       ]
      ],
-     "triangles": 19932,
+     "triangles": 29216,
      "file": "tiles/T_W1_S2/facades.glb"
     },
     "roads": {
@@ -6424,7 +6452,9 @@
     "walls": 32,
     "piers": 0,
     "props": 66,
-    "windows": 9630
+    "windows": 9630,
+    "balconies": 573,
+    "shuttered_windows": 29
    },
    "land_area_m2": 190976.2
   },
@@ -6483,7 +6513,7 @@
        142.4
       ]
      ],
-     "triangles": 5056,
+     "triangles": 6200,
      "file": "tiles/T_E0_S2/facades.glb"
     },
     "roads": {
@@ -6542,7 +6572,9 @@
     "walls": 4,
     "piers": 0,
     "props": 12,
-    "windows": 2400
+    "windows": 2400,
+    "balconies": 63,
+    "shuttered_windows": 34
    },
    "land_area_m2": 250000.0
   },
@@ -6660,7 +6692,9 @@
     "walls": 12,
     "piers": 0,
     "props": 4,
-    "windows": 363
+    "windows": 363,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 158513.3
   },
@@ -6778,7 +6812,9 @@
     "walls": 6,
     "piers": 1,
     "props": 6,
-    "windows": 259
+    "windows": 259,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 30882.3
   },
@@ -6837,7 +6873,7 @@
        80.19
       ]
      ],
-     "triangles": 14296,
+     "triangles": 14840,
      "file": "tiles/T_W1_S1/facades.glb"
     },
     "roads": {
@@ -6896,7 +6932,9 @@
     "walls": 16,
     "piers": 1,
     "props": 81,
-    "windows": 6912
+    "windows": 6912,
+    "balconies": 34,
+    "shuttered_windows": 0
    },
    "land_area_m2": 220021.0
   },
@@ -7014,7 +7052,9 @@
     "walls": 13,
     "piers": 0,
     "props": 19,
-    "windows": 1804
+    "windows": 1804,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 250000.0
   },
@@ -7132,7 +7172,9 @@
     "walls": 13,
     "piers": 1,
     "props": 10,
-    "windows": 245
+    "windows": 245,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 166216.6
   },
@@ -7250,7 +7292,9 @@
     "walls": 6,
     "piers": 1,
     "props": 20,
-    "windows": 185
+    "windows": 185,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 16465.5
   },
@@ -7299,17 +7343,17 @@
     "facades": {
      "bounds_m": [
       [
-       374.1992,
+       373.9356,
        317.5961,
        1.0
       ],
       [
        528.7282,
-       498.0043,
+       498.2795,
        9.4
       ]
      ],
-     "triangles": 846,
+     "triangles": 1022,
      "file": "tiles/T_W2_N0/facades.glb"
     },
     "roads": {
@@ -7368,7 +7412,9 @@
     "walls": 22,
     "piers": 10,
     "props": 2,
-    "windows": 411
+    "windows": 411,
+    "balconies": 0,
+    "shuttered_windows": 44
    },
    "land_area_m2": 15639.5
   },
@@ -7427,7 +7473,7 @@
        98.74
       ]
      ],
-     "triangles": 13292,
+     "triangles": 13912,
      "file": "tiles/T_W1_N0/facades.glb"
     },
     "roads": {
@@ -7486,7 +7532,9 @@
     "walls": 20,
     "piers": 14,
     "props": 166,
-    "windows": 6404
+    "windows": 6404,
+    "balconies": 30,
+    "shuttered_windows": 24
    },
    "land_area_m2": 227588.3
   },
@@ -7604,7 +7652,9 @@
     "walls": 20,
     "piers": 0,
     "props": 18,
-    "windows": 346
+    "windows": 346,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 250000.0
   },
@@ -7653,17 +7703,17 @@
     "facades": {
      "bounds_m": [
       [
-       232.2402,
-       -12.0609,
+       231.6266,
+       -12.1845,
        5.81
       ],
       [
-       309.0226,
-       279.2731,
+       309.3428,
+       279.8157,
        23.1551
       ]
      ],
-     "triangles": 142,
+     "triangles": 414,
      "file": "tiles/T_E1_N0/facades.glb"
     },
     "roads": {
@@ -7722,7 +7772,9 @@
     "walls": 0,
     "piers": 1,
     "props": 1,
-    "windows": 69
+    "windows": 69,
+    "balconies": 0,
+    "shuttered_windows": 68
    },
    "land_area_m2": 166608.6
   },
@@ -7808,7 +7860,9 @@
     "walls": 0,
     "piers": 4,
     "props": 0,
-    "windows": 57
+    "windows": 57,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 4295.8
   },
@@ -7858,16 +7912,16 @@
      "bounds_m": [
       [
        245.4006,
-       -4.1851,
+       -4.3885,
        1.0
       ],
       [
-       516.1994,
+       517.4741,
        515.561,
        18.4
       ]
      ],
-     "triangles": 7054,
+     "triangles": 11606,
      "file": "tiles/T_W2_N1/facades.glb"
     },
     "roads": {
@@ -7926,7 +7980,9 @@
     "walls": 24,
     "piers": 22,
     "props": 9,
-    "windows": 3453
+    "windows": 3453,
+    "balconies": 237,
+    "shuttered_windows": 190
    },
    "land_area_m2": 80258.0
   },
@@ -7976,16 +8032,16 @@
      "bounds_m": [
       [
        -2.7388,
-       -7.8142,
+       -8.434,
        1.0
       ],
       [
        500.626,
-       510.4669,
+       511.0775,
        154.74
       ]
      ],
-     "triangles": 21614,
+     "triangles": 118420,
      "file": "tiles/T_W1_N1/facades.glb"
     },
     "roads": {
@@ -8044,7 +8100,9 @@
     "walls": 25,
     "piers": 4,
     "props": 374,
-    "windows": 10321
+    "windows": 10321,
+    "balconies": 1799,
+    "shuttered_windows": 7111
    },
    "land_area_m2": 240057.5
   },
@@ -8162,7 +8220,9 @@
     "walls": 6,
     "piers": 0,
     "props": 3,
-    "windows": 588
+    "windows": 588,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 250000.0
   },
@@ -8217,11 +8277,11 @@
       ],
       [
        361.3178,
-       505.1287,
+       505.806,
        111.42
       ]
      ],
-     "triangles": 1538,
+     "triangles": 1810,
      "file": "tiles/T_E1_N1/facades.glb"
     },
     "roads": {
@@ -8264,7 +8324,9 @@
     "walls": 0,
     "piers": 0,
     "props": 2,
-    "windows": 725
+    "windows": 725,
+    "balconies": 17,
+    "shuttered_windows": 0
    },
    "land_area_m2": 173905.4
   },
@@ -8318,7 +8380,9 @@
     "walls": 0,
     "piers": 3,
     "props": 0,
-    "windows": 0
+    "windows": 0,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 2092.8
   },
@@ -8388,7 +8452,9 @@
     "walls": 0,
     "piers": 2,
     "props": 0,
-    "windows": 0
+    "windows": 0,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 6375.4
   },
@@ -8438,7 +8504,7 @@
      "bounds_m": [
       [
        -40.9516,
-       17.3348,
+       16.0589,
        1.0
       ],
       [
@@ -8447,7 +8513,7 @@
        66.4
       ]
      ],
-     "triangles": 24130,
+     "triangles": 45762,
      "file": "tiles/T_W2_N2/facades.glb"
     },
     "roads": {
@@ -8506,7 +8572,9 @@
     "walls": 8,
     "piers": 24,
     "props": 70,
-    "windows": 11939
+    "windows": 11939,
+    "balconies": 1352,
+    "shuttered_windows": 0
    },
    "land_area_m2": 171326.6
   },
@@ -8560,12 +8628,12 @@
        1.1994
       ],
       [
-       504.1211,
-       524.1049,
+       504.2337,
+       524.6622,
        94.45
       ]
      ],
-     "triangles": 26222,
+     "triangles": 164312,
      "file": "tiles/T_W1_N2/facades.glb"
     },
     "roads": {
@@ -8624,7 +8692,9 @@
     "walls": 19,
     "piers": 0,
     "props": 233,
-    "windows": 12683
+    "windows": 12683,
+    "balconies": 2683,
+    "shuttered_windows": 9034
    },
    "land_area_m2": 250000.0
   },
@@ -8673,7 +8743,7 @@
     "facades": {
      "bounds_m": [
       [
-       -14.0652,
+       -14.2721,
        8.1977,
        80.87
       ],
@@ -8683,7 +8753,7 @@
        330.34
       ]
      ],
-     "triangles": 3830,
+     "triangles": 4580,
      "file": "tiles/T_E0_N2/facades.glb"
     },
     "roads": {
@@ -8742,7 +8812,9 @@
     "walls": 15,
     "piers": 0,
     "props": 9,
-    "windows": 1775
+    "windows": 1775,
+    "balconies": 7,
+    "shuttered_windows": 121
    },
    "land_area_m2": 250000.0
   },
@@ -8801,7 +8873,7 @@
        415.26
       ]
      ],
-     "triangles": 2204,
+     "triangles": 2916,
      "file": "tiles/T_E1_N2/facades.glb"
     },
     "roads": {
@@ -8860,7 +8932,9 @@
     "walls": 18,
     "piers": 0,
     "props": 17,
-    "windows": 1034
+    "windows": 1034,
+    "balconies": 8,
+    "shuttered_windows": 146
    },
    "land_area_m2": 235977.4
   },
@@ -8898,7 +8972,9 @@
     "walls": 0,
     "piers": 0,
     "props": 0,
-    "windows": 0
+    "windows": 0,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 24923.4
   },
@@ -9016,7 +9092,9 @@
     "walls": 2,
     "piers": 3,
     "props": 56,
-    "windows": 553
+    "windows": 553,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 50652.7
   },
@@ -9071,11 +9149,11 @@
       ],
       [
        546.8369,
-       512.5242,
+       513.787,
        36.4
       ]
      ],
-     "triangles": 41158,
+     "triangles": 63474,
      "file": "tiles/T_W2_N3/facades.glb"
     },
     "roads": {
@@ -9134,7 +9212,9 @@
     "walls": 14,
     "piers": 9,
     "props": 161,
-    "windows": 20363
+    "windows": 20363,
+    "balconies": 1387,
+    "shuttered_windows": 31
    },
    "land_area_m2": 243954.5
   },
@@ -9184,7 +9264,7 @@
      "bounds_m": [
       [
        -59.2744,
-       -35.2135,
+       -35.5891,
        1.0
       ],
       [
@@ -9193,7 +9273,7 @@
        102.5
       ]
      ],
-     "triangles": 31046,
+     "triangles": 89822,
      "file": "tiles/T_W1_N3/facades.glb"
     },
     "roads": {
@@ -9252,7 +9332,9 @@
     "walls": 63,
     "piers": 12,
     "props": 203,
-    "windows": 15225
+    "windows": 15225,
+    "balconies": 2150,
+    "shuttered_windows": 2442
    },
    "land_area_m2": 234209.8
   },
@@ -9302,7 +9384,7 @@
      "bounds_m": [
       [
        -4.4503,
-       9.1228,
+       8.6819,
        1.0
       ],
       [
@@ -9311,7 +9393,7 @@
        214.43
       ]
      ],
-     "triangles": 20680,
+     "triangles": 38218,
      "file": "tiles/T_E0_N3/facades.glb"
     },
     "roads": {
@@ -9370,7 +9452,9 @@
     "walls": 42,
     "piers": 0,
     "props": 38,
-    "windows": 10102
+    "windows": 10102,
+    "balconies": 1076,
+    "shuttered_windows": 75
    },
    "land_area_m2": 250000.0
   },
@@ -9419,7 +9503,7 @@
     "facades": {
      "bounds_m": [
       [
-       -9.4694,
+       -10.069,
        -1.3307,
        2.0
       ],
@@ -9429,7 +9513,7 @@
        414.74
       ]
      ],
-     "triangles": 26738,
+     "triangles": 30098,
      "file": "tiles/T_E1_N3/facades.glb"
     },
     "roads": {
@@ -9488,7 +9572,9 @@
     "walls": 16,
     "piers": 0,
     "props": 4,
-    "windows": 13135
+    "windows": 13135,
+    "balconies": 210,
+    "shuttered_windows": 0
    },
    "land_area_m2": 231081.7
   },
@@ -9542,7 +9628,9 @@
     "walls": 0,
     "piers": 0,
     "props": 0,
-    "windows": 0
+    "windows": 0,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 21119.4
   },
@@ -9596,12 +9684,12 @@
        1.0
       ],
       [
-       504.4524,
+       505.6257,
        141.4181,
        12.4
       ]
      ],
-     "triangles": 3334,
+     "triangles": 4182,
      "file": "tiles/T_W3_N4/facades.glb"
     },
     "roads": {
@@ -9660,7 +9748,9 @@
     "walls": 0,
     "piers": 2,
     "props": 9,
-    "windows": 1631
+    "windows": 1631,
+    "balconies": 53,
+    "shuttered_windows": 0
    },
    "land_area_m2": 61639.7
   },
@@ -9719,7 +9809,7 @@
        20.4
       ]
      ],
-     "triangles": 6942,
+     "triangles": 16686,
      "file": "tiles/T_W2_N4/facades.glb"
     },
     "roads": {
@@ -9778,7 +9868,9 @@
     "walls": 1,
     "piers": 10,
     "props": 11,
-    "windows": 3429
+    "windows": 3429,
+    "balconies": 609,
+    "shuttered_windows": 0
    },
    "land_area_m2": 116300.8
   },
@@ -9837,7 +9929,7 @@
        21.81
       ]
      ],
-     "triangles": 7364,
+     "triangles": 10244,
      "file": "tiles/T_W1_N4/facades.glb"
     },
     "roads": {
@@ -9896,7 +9988,9 @@
     "walls": 16,
     "piers": 27,
     "props": 7,
-    "windows": 3644
+    "windows": 3644,
+    "balconies": 180,
+    "shuttered_windows": 0
    },
    "land_area_m2": 163764.1
   },
@@ -9955,7 +10049,7 @@
        33.4
       ]
      ],
-     "triangles": 6936,
+     "triangles": 9064,
      "file": "tiles/T_E0_N4/facades.glb"
     },
     "roads": {
@@ -10014,7 +10108,9 @@
     "walls": 43,
     "piers": 0,
     "props": 31,
-    "windows": 3384
+    "windows": 3384,
+    "balconies": 133,
+    "shuttered_windows": 0
    },
    "land_area_m2": 250000.0
   },
@@ -10068,12 +10164,12 @@
        1.5184
       ],
       [
-       380.8595,
+       382.0803,
        273.3451,
        22.4
       ]
      ],
-     "triangles": 4544,
+     "triangles": 5264,
      "file": "tiles/T_E1_N4/facades.glb"
     },
     "roads": {
@@ -10132,7 +10228,9 @@
     "walls": 16,
     "piers": 0,
     "props": 32,
-    "windows": 2232
+    "windows": 2232,
+    "balconies": 45,
+    "shuttered_windows": 0
    },
    "land_area_m2": 234171.8
   },
@@ -10170,7 +10268,9 @@
     "walls": 0,
     "piers": 0,
     "props": 0,
-    "windows": 0
+    "windows": 0,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 583.7
   },
@@ -10208,7 +10308,9 @@
     "walls": 0,
     "piers": 0,
     "props": 0,
-    "windows": 0
+    "windows": 0,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 1287.0
   },
@@ -10246,7 +10348,9 @@
     "walls": 0,
     "piers": 0,
     "props": 0,
-    "windows": 0
+    "windows": 0,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 9480.9
   },
@@ -10348,7 +10452,9 @@
     "walls": 0,
     "piers": 7,
     "props": 25,
-    "windows": 0
+    "windows": 0,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 72032.7
   },
@@ -10402,12 +10508,12 @@
        1.0902
       ],
       [
-       515.8535,
+       516.7021,
        244.974,
        14.26
       ]
      ],
-     "triangles": 3600,
+     "triangles": 6096,
      "file": "tiles/T_W1_N5/facades.glb"
     },
     "roads": {
@@ -10466,7 +10572,9 @@
     "walls": 15,
     "piers": 15,
     "props": 180,
-    "windows": 1754
+    "windows": 1754,
+    "balconies": 156,
+    "shuttered_windows": 0
    },
    "land_area_m2": 144500.4
   },
@@ -10515,7 +10623,7 @@
     "facades": {
      "bounds_m": [
       [
-       -5.5852,
+       -6.7756,
        -8.4165,
        2.0
       ],
@@ -10525,7 +10633,7 @@
        20.4
       ]
      ],
-     "triangles": 8556,
+     "triangles": 11036,
      "file": "tiles/T_E0_N5/facades.glb"
     },
     "roads": {
@@ -10584,7 +10692,9 @@
     "walls": 63,
     "piers": 0,
     "props": 155,
-    "windows": 4194
+    "windows": 4194,
+    "balconies": 155,
+    "shuttered_windows": 0
    },
    "land_area_m2": 250000.0
   },
@@ -10702,7 +10812,9 @@
     "walls": 49,
     "piers": 0,
     "props": 72,
-    "windows": 533
+    "windows": 533,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 250000.0
   },
@@ -10772,7 +10884,9 @@
     "walls": 1,
     "piers": 0,
     "props": 0,
-    "windows": 0
+    "windows": 0,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 11243.2
   },
@@ -10810,7 +10924,9 @@
     "walls": 0,
     "piers": 0,
     "props": 0,
-    "windows": 0
+    "windows": 0,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 2753.7
   },
@@ -10880,7 +10996,9 @@
     "walls": 0,
     "piers": 1,
     "props": 0,
-    "windows": 0
+    "windows": 0,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 1828.1
   },
@@ -10982,7 +11100,9 @@
     "walls": 12,
     "piers": 34,
     "props": 57,
-    "windows": 0
+    "windows": 0,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 64882.3
   },
@@ -11084,7 +11204,9 @@
     "walls": 93,
     "piers": 9,
     "props": 672,
-    "windows": 0
+    "windows": 0,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 215380.4
   },
@@ -11186,7 +11308,9 @@
     "walls": 62,
     "piers": 0,
     "props": 306,
-    "windows": 0
+    "windows": 0,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 250000.0
   },
@@ -11288,7 +11412,9 @@
     "walls": 99,
     "piers": 0,
     "props": 460,
-    "windows": 0
+    "windows": 0,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 250000.0
   },
@@ -11390,7 +11516,9 @@
     "walls": 5,
     "piers": 0,
     "props": 2,
-    "windows": 0
+    "windows": 0,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 39115.3
   },
@@ -11460,7 +11588,9 @@
     "walls": 0,
     "piers": 2,
     "props": 0,
-    "windows": 0
+    "windows": 0,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 37672.1
   },
@@ -11514,7 +11644,9 @@
     "walls": 0,
     "piers": 1,
     "props": 0,
-    "windows": 0
+    "windows": 0,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 96.9
   },
@@ -11616,7 +11748,9 @@
     "walls": 18,
     "piers": 0,
     "props": 15,
-    "windows": 0
+    "windows": 0,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 6114.2
   },
@@ -11718,7 +11852,9 @@
     "walls": 84,
     "piers": 1,
     "props": 330,
-    "windows": 0
+    "windows": 0,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 157669.4
   },
@@ -11820,7 +11956,9 @@
     "walls": 265,
     "piers": 0,
     "props": 142,
-    "windows": 0
+    "windows": 0,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 222456.2
   },
@@ -11922,7 +12060,9 @@
     "walls": 144,
     "piers": 0,
     "props": 360,
-    "windows": 0
+    "windows": 0,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 222456.2
   },
@@ -12024,7 +12164,9 @@
     "walls": 557,
     "piers": 0,
     "props": 122,
-    "windows": 0
+    "windows": 0,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 222456.2
   },
@@ -12126,7 +12268,9 @@
     "walls": 18,
     "piers": 0,
     "props": 88,
-    "windows": 0
+    "windows": 0,
+    "balconies": 0,
+    "shuttered_windows": 0
    },
    "land_area_m2": 50872.8
   }

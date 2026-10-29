@@ -1,7 +1,7 @@
 /*  LANTERN WALL — LEVELS (gameplay)
-    A round is a run of wall SECTIONS. Each section is built from PIECES laid end to end,
-    and every piece is one screen (224 px) wide, so a three-piece section is three screens
-    of wall that scroll past as you go.
+    A round is a run of wall SECTIONS. Each section is built from two PIECES laid end to end
+    (each piece 224 px of wall) plus a short stretch at the end, and the screen is exactly one
+    section wide, so the whole wall is always in view, the way Hunchback shows a whole screen.
     Every section but the last ends in a belfry: touch the bell rope to ring it, collect
     the bell and move on. The last section ends at the tower where the queen is held.
 
@@ -20,7 +20,7 @@
     flasks:   [x, height above the walkway]    lamp oil worth 300
 
     Sections:
-    pieces:      piece names, left to right
+    pieces:      two piece names, left to right
     tower:       true for the final section (the queen's tower instead of a belfry)
     knightDelay: frames before the climbing knight first appears (default knight.delay)
 */
@@ -33,12 +33,12 @@ window.LEVELS = {
   bonusMinPerPiece: 1500,
   bellsForLife: 5,      // bells in a row (without dying) for an extra life
 
-  // The climbing knight scales the wall face, hauls himself onto the walkway and comes for you.
+  // The climbing knight comes up the wall face behind you (the way he does in Hunchback),
+  // hauls himself onto the walkway and comes after you.
   // Speeds are pixels per frame; the hero runs at 1.0.
   knight: {
     delay: 150,         // frames into a section before he first appears
-    respawn: 240,       // frames before he returns once he has been left off screen
-    ahead: 130,         // he climbs up this far in front of the hero
+    behind: 90,         // he climbs up this far behind the hero (never further back than the screen edge)
     climb: 0.36,        // up and down the wall face
     climbAcross: 0.3,   // sideways on the wall face
     walk: 0.52,         // along the walkway
@@ -97,13 +97,13 @@ window.LEVELS = {
   },
 
   sections: [
-    { name: 'THE GATEHOUSE', pieces: ['rampart', 'gatehouse', 'slits'], knightDelay: 360 },
-    { name: 'THE OLD CHAIN', pieces: ['chain', 'rampart', 'spikes'] },
-    { name: 'LOOSE STONES', pieces: ['loose', 'gatehouse', 'slits'] },
-    { name: 'BELFRY BATS', pieces: ['bats', 'chain', 'loose'] },
-    { name: 'THE HOIST', pieces: ['hoist', 'spikes', 'bats'] },
-    { name: 'TWIN CHAINS', pieces: ['twin', 'slits', 'hoist'] },
-    { name: 'THE GAUNTLET', pieces: ['gauntlet', 'loose', 'twin'] },
-    { name: "THE QUEEN'S TOWER", pieces: ['bats', 'hoist', 'twin', 'gatehouse'], tower: true },
+    { name: 'THE GATEHOUSE', pieces: ['rampart', 'gatehouse'], knightDelay: 300 },
+    { name: 'ARROW SLITS', pieces: ['slits', 'chain'] },
+    { name: 'SPIKE WALK', pieces: ['spikes', 'loose'] },
+    { name: 'BELFRY BATS', pieces: ['bats', 'gatehouse'] },
+    { name: 'THE HOIST', pieces: ['hoist', 'slits'] },
+    { name: 'TWIN CHAINS', pieces: ['twin', 'spikes'] },
+    { name: 'THE GAUNTLET', pieces: ['gauntlet', 'loose'] },
+    { name: "THE QUEEN'S TOWER", pieces: ['bats', 'twin'], tower: true },
   ],
 };

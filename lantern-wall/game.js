@@ -5,18 +5,20 @@
 'use strict';
 
 const SKIN = window.SKIN, LEVELS = window.LEVELS;
-const W = 224, H = 256;
+// The screen is one whole level wide, so the entire wall is always in view (no scrolling).
+const PIECE = 224;                  // one piece of wall; a level is PIECES pieces plus the BELL_TAIL
+const PIECES = 2;
+const BELL_TAIL = 40;               // walkway after the last piece, where the belfry (or the tower) stands
+const W = PIECES * PIECE + BELL_TAIL, H = 256;
+const OX = (W - 224) / 2;           // left edge of a centred 224-wide column, for the title text
 const FLOOR = 176;            // walkway surface
 const MOAT = 226;             // water line
 const BAR = 244;              // bottom status bar
-const START_X = 14, GOAL_X = 200;   // GOAL_X: where the title-screen demo stops
-const PIECE = 224;                  // one piece of wall is one screen wide
-const BELL_TAIL = 40;               // walkway after the last piece, where the belfry stands
+const START_X = 14, GOAL_X = W - 24;   // GOAL_X: where the title-screen demo stops
 const TOWER_W = 22, TOWER_TOP = FLOOR - 74;   // the queen's tower at the end of the last section
 const BELL_TOP = FLOOR - 90;        // where the belfry bell hangs from its beam
 const ROPE_END = FLOOR - 10;        // bottom of the bell rope
 const BELL_RING = 24, BELL_FLY = 46;   // frames the bell swings, then frames it flies to the HUD
-const CAM_LEAD = 100;               // the camera keeps the hero this far from the left edge
 
 // Arcade physics at 60 steps per second. Once a jump starts there is no air control.
 const PHYS = {
@@ -32,7 +34,8 @@ const HERO = { halfW: 3.5, height: 13, foot: 2 };
 const KNIGHT = { halfW: 4, height: 15, hang: 18 };   // hang: how far below the walkway he clings under a breach
 
 const SECTIONS = LEVELS.sections;
-const SEC_LEN = SECTIONS.map(d => d.pieces.length * PIECE + (d.tower ? 0 : BELL_TAIL));
+SECTIONS.forEach(d => { if (d.pieces.length !== PIECES) console.warn(`levels.js: "${d.name}" needs exactly ${PIECES} pieces`); });
+const SEC_LEN = SECTIONS.map(() => W);
 const SEC_START = SEC_LEN.map((_, i) => SEC_LEN.slice(0, i).reduce((a, b) => a + b, 0));
 const ROUND_LEN = SEC_LEN.reduce((a, b) => a + b, 0);
 
@@ -309,7 +312,7 @@ function saveScores() { try { localStorage.setItem(HS_KEY, JSON.stringify(G.scor
 const G = {
   state: 'title', t: 0, stateT: 0, paused: false, muted: false,
   score: 0, lives: 3, section: 0, loop: 0, bonus: 0, bells: 0, lifeFlash: 0, clearHold: 0, splashT: 0,
-  world: null, hero: null, cam: 0, parts: [], pops: [], scores: loadScores(), ini: null,
+  world: null, hero: null, parts: [], pops: [], scores: loadScores(), ini: null,
   bgCache: {}, titleBg: null, titleWorld: null, demo: null,
 };
 try { G.muted = localStorage.getItem('lanternwall.muted') === '1'; } catch (e) {}
@@ -381,15 +384,10 @@ function startSection() {
   G.piece = 0;
   G.hero = newHero();
   G.bonus = bonusFor(G.loop, G.world.def.pieces.length);
-  followCam();
   setState('ready');
 }
 
 function setState(s) { G.state = s; G.stateT = 0; }
-
-function followCam() {
-  G.cam = clamp(Math.round(G.hero.x) - CAM_LEAD, 0, G.world.len - W);
-}
 
 function addScore(n) { G.score += n; }
 // World popups float over the wall; screen popups (screen = true) sit in fixed screen space.
@@ -431,7 +429,6 @@ function knightFoot(w, x) {
   const s = solidAt(w, x);
   return !!s && !s.isLift;
 }
-const onScreen = (x, margin = 0) => x > G.cam - margin && x < G.cam + W + margin;
 function stepOn(s) {
   if (s && s.state === 'solid') { s.state = 'shaking'; s.t = LEVELS.crumbleDelay; }
 }
@@ -445,7 +442,7 @@ function updateWorld(w) {
   for (const s of w.spikes) {
     const p = (T + s.offset) % s.period;
     const lv = p < s.up ? 2 : (p > s.period - 14 ? 1 : 0);
-    if (lv === 2 && s.level !== 2 && G.state === 'play' && onScreen(s.x)) SFX.spike();
+    if (lv === 2 && s.level !== 2 && G.state === 'play') SFX.spike();
     s.level = lv;
   }
   for (const c of w.crumbles) {
@@ -469,13 +466,13 @@ function updateWorld(w) {
     p.t++;
     if (p.kind === 'bat') p.y = p.y0 + Math.sin(p.t * 2 * Math.PI / 64) * 11;
   }
-  w.projectiles = w.projectiles.filter(p => p.x > G.cam - 20);
+  w.projectiles = w.projectiles.filter(p => p.x > -20);
   if (w.rung) w.ringT++;
   if (w.lit && G.t % 5 === 0) part(w.beaconX - 3 + Math.random() * 6, TOWER_TOP - 28, (Math.random() - 0.5) * 0.4, -0.7, pick(SKIN.particles.spark), 40, -0.004);
 }
 
 function spawnShot(w, lane, ch) {
-  const speed = (lane.speed || 1.4) * w.sf, x = G.cam + W;
+  const speed = (lane.speed || 1.4) * w.sf, x = W;
   if (ch === 'L' || ch === 'H') {
     w.projectiles.push({ kind: 'bolt', high: ch === 'H', x: x + 4, y: ch === 'H' ? FLOOR - 24 : FLOOR - 5, vx: -speed, t: 0 });
     SFX.bolt();
@@ -486,15 +483,13 @@ function spawnShot(w, lane, ch) {
 }
 
 // ---------------------------------------------------------------- the climbing knight
-// He comes up the wall face out of the moat ahead of the hero, hauls himself onto the
-// walkway and walks at the hero. A breach does not stop him: he climbs down and crosses
-// it clinging to the stones below the walkway, then climbs back up. Left off screen, he
-// drops away and comes back up ahead of the hero a little later.
+// Like the knight in Hunchback, he comes up the wall face out of the moat behind the hero,
+// hauls himself onto the walkway and walks after him. A breach does not stop him: he
+// climbs down and crosses it clinging to the stones below the walkway, then climbs back up.
 
 function spawnKnight(w) {
   const K = LEVELS.knight, k = w.knight, h = G.hero;
-  let x = Math.min(h.x + K.ahead, G.cam + W - 16, w.len - 44);
-  if (x < h.x + 48) x = Math.max(G.cam + 16, h.x - K.ahead);   // no room in front: come up behind
+  const x = Math.max(h.x - K.behind, 8);          // at the start of the wall, right at the left edge
   Object.assign(k, { mode: 'climb', x, y: MOAT - 2, vx: 0, vy: 0, t: 0, step: 0, face: h.x < x ? -1 : 1 });
   SFX.knight();
 }
@@ -506,7 +501,7 @@ function updateKnight(w) {
     k.x += k.vx; k.y += k.vy;
     if (k.y > MOAT + 6) {
       k.mode = 'gone';
-      if (onScreen(k.x)) SFX.splash();
+      SFX.splash();
       for (let i = 0; i < 12; i++) part(k.x + (Math.random() - 0.5) * 6, MOAT + 2, (Math.random() - 0.5) * 1.6, -1 - Math.random() * 2, pick(SKIN.particles.splash), 40);
     }
     return;
@@ -528,9 +523,8 @@ function updateKnight(w) {
     const ty = top ? FLOOR : FLOOR + KNIGHT.hang;
     if (k.y > ty) k.y = Math.max(ty, k.y - K.climb * sf);
     else if (k.y < ty) k.y = Math.min(ty, k.y + K.climb * sf);
-    if (top && k.y <= FLOOR) { k.mode = 'walk'; k.y = FLOOR; if (onScreen(k.x)) SFX.knight(); }
+    if (top && k.y <= FLOOR) { k.mode = 'walk'; k.y = FLOOR; SFX.knight(); }
   }
-  if (!onScreen(k.x, 40)) { k.mode = 'wait'; k.timer = K.respawn; }
 }
 
 function knockKnight(w) {
@@ -689,7 +683,6 @@ function loseLife() {
   G.world.flasks.forEach((f, i) => { f.got = got[i]; });
   G.hero = newHero(G.piece * PIECE + START_X);
   G.bonus = bonusFor(G.loop, pieces - G.piece);
-  followCam();
   setState('ready');
 }
 
@@ -737,7 +730,7 @@ function collectBell() {
 
 // Where the flying bell is on screen, f running 0 to 1 from the belfry to its HUD slot.
 function bellFlight(f) {
-  const x0 = G.world.ropeX - G.cam - 3, y0 = BELL_TOP + 2, x1 = 3 + G.bells * 8, y1 = 11;
+  const x0 = G.world.ropeX - 3, y0 = BELL_TOP + 2, x1 = 3 + G.bells * 8, y1 = 11;
   const e = f * f * (3 - 2 * f);
   return { x: x0 + (x1 - x0) * e, y: y0 + (y1 - y0) * e - Math.sin(f * Math.PI) * 24 };
 }
@@ -754,7 +747,7 @@ function updateClear() {
     const f = (G.stateT - BELL_RING) / BELL_FLY;
     if (f >= 0 && f < 1 && G.stateT % 2 === 0) {
       const p = bellFlight(f);
-      part(p.x + G.cam + 3, p.y + 3, (Math.random() - 0.5) * 0.6, (Math.random() - 0.5) * 0.6, pick(SKIN.particles.spark), 24, 0);
+      part(p.x + 3, p.y + 3, (Math.random() - 0.5) * 0.6, (Math.random() - 0.5) * 0.6, pick(SKIN.particles.spark), 24, 0);
     }
     if (G.stateT === BELL_RING + BELL_FLY) collectBell();
   }
@@ -828,7 +821,7 @@ function step() {
       updateHero(G.world, jp);
       updateKnight(G.world);
       checkHazards(G.world);
-      if (G.state === 'play') { updateBonus(); followCam(); }
+      if (G.state === 'play') updateBonus();
       break;
     case 'dying': updateWorld(G.world); updateDeath(); break;
     case 'clear': updateWorld(G.world); updateClear(); break;
@@ -843,8 +836,7 @@ function step() {
 }
 
 // ---------------------------------------------------------------- background (drawn once per section)
-// Three layers: the sky and moon stay put, the town drifts past at half speed,
-// and the wall itself (everything from the parapet down) scrolls with the camera.
+// Three layers: the sky and moon, the distant town, and the wall itself (everything from the parapet down).
 
 function layer(wd) {
   const c = document.createElement('canvas');
@@ -877,7 +869,7 @@ function renderBackground(w, seed) {
 
   // stars
   const stars = [];
-  for (let i = 0; i < 46; i++) {
+  for (let i = 0; i < Math.round(46 * W / 224); i++) {
     const x = Math.floor(r() * W), y = Math.floor(22 + r() * 100);
     stars.push({ x, y });
     g.fillStyle = r() < 0.3 ? S.star : S.starDim;
@@ -1061,11 +1053,11 @@ function drawTwinkle(stars) {
   }
 }
 
-function drawMoat(cam = 0) {
+function drawMoat() {
   const S = SKIN.scene;
   ctx.fillStyle = S.waterLight;
   for (let row = 0; row < 4; row++) {
-    const y = MOAT + 2 + row * 4, sh = Math.floor(G.t * (0.3 + row * 0.1) + row * 37 + cam);
+    const y = MOAT + 2 + row * 4, sh = Math.floor(G.t * (0.3 + row * 0.1) + row * 37);
     for (let x = -(sh % 24); x < W; x += 24) ctx.fillRect(x + row * 5, y, 4 - (row >> 1), 1);
   }
   ctx.fillStyle = S.moonGlint;
@@ -1225,19 +1217,17 @@ function banner(lines) {
   lines.forEach((l, i) => ctext(l, y + 6 + i * 12, i === 0 ? U.banner : U.text));
 }
 
-function drawLayers(bg, cam) {
+function drawLayers(bg) {
   ctx.drawImage(bg.sky, 0, 0);
   drawTwinkle(bg.stars);
-  ctx.drawImage(bg.town, -Math.floor(cam / 2), 0);
-  ctx.drawImage(bg.fore, -cam, 0);
-  drawMoat(cam);
+  ctx.drawImage(bg.town, 0, 0);
+  ctx.drawImage(bg.fore, 0, 0);
+  drawMoat();
 }
 
 function drawGame() {
-  const w = G.world, cam = G.cam;
-  drawLayers(w.bg, cam);
-  ctx.save();
-  ctx.translate(-cam, 0);
+  const w = G.world;
+  drawLayers(w.bg);
   for (const c of w.crumbles) drawCrumble(c);
   for (const l of w.lifts) drawLift(l);
   for (const s of w.spikes) drawSpikes(s);
@@ -1251,7 +1241,6 @@ function drawGame() {
   drawHero(G.hero);
   for (const p of w.projectiles) drawShot(p);
   drawEffects();
-  ctx.restore();
   drawBellFlight();
   drawScreenPops();
   if (G.state === 'ready') {
@@ -1273,7 +1262,7 @@ const COARSE = window.matchMedia && matchMedia('(pointer: coarse)').matches;
 
 function drawTitle() {
   const U = SKIN.ui, page = ((G.stateT / 420) | 0) % 3;
-  drawLayers(G.titleBg, 0);
+  drawLayers(G.titleBg);
   drawBeacon(G.titleWorld, G.demo.lit, 99);
   drawQueen(G.titleWorld, G.demo.lit, G.t);
   logo(SKIN.title[0], 26);
@@ -1288,9 +1277,9 @@ function drawTitle() {
     ctext('HIGH SCORES', 82, U.banner);
     G.scores.forEach((e, i) => {
       const y = 98 + i * 12;
-      text(['1ST', '2ND', '3RD', '4TH', '5TH'][i], 46, y, U.label);
-      text(pad(e.s, 6), 88, y, U.text);
-      text(e.n, 148, y, U.hi);
+      text(['1ST', '2ND', '3RD', '4TH', '5TH'][i], OX + 46, y, U.label);
+      text(pad(e.s, 6), OX + 88, y, U.text);
+      text(e.n, OX + 148, y, U.hi);
     });
   } else {
     ctext('HOW TO PLAY', 78, U.banner);
@@ -1302,10 +1291,10 @@ function drawTitle() {
     ];
     rows.forEach(([icon, label], i) => {
       const y = 89 + i * 9;
-      if (icon === 'high') spr('bolt', 12, y);
-      else if (icon === 'chain') { ctx.fillStyle = SKIN.scene.chain; for (let k = 0; k < 3; k++) ctx.fillRect(16, y - 1 + k * 3, 2, 2); }
-      else if (icon) spr(icon, 12, y - 1);
-      text(label, 30, y, U.text);
+      if (icon === 'high') spr('bolt', OX + 12, y);
+      else if (icon === 'chain') { ctx.fillStyle = SKIN.scene.chain; for (let k = 0; k < 3; k++) ctx.fillRect(OX + 16, y - 1 + k * 3, 2, 2); }
+      else if (icon) spr(icon, OX + 12, y - 1);
+      text(label, OX + 30, y, U.text);
     });
   }
   drawEffects();
@@ -1314,7 +1303,7 @@ function drawTitle() {
 
 function drawInitials() {
   const U = SKIN.ui;
-  drawLayers(G.titleBg, 0);
+  drawLayers(G.titleBg);
   ctext('NEW HIGH SCORE!', 44, U.banner);
   ctext(pad(G.score, 6), 58, U.text);
   ctext('ENTER YOUR INITIALS', 80, U.label);
@@ -1322,7 +1311,7 @@ function drawInitials() {
     const n = G.ini.name.length;
     const ch = i < n ? G.ini.name[i] : (i === n ? ALPHA[G.ini.cur] : '-');
     const blink = i === n && (G.t >> 4) & 1;
-    text(ch, 85 + i * 20, 98, blink ? U.dim : U.text, 2);
+    text(ch, OX + 85 + i * 20, 98, blink ? U.dim : U.text, 2);
   }
   ctext('< > CHANGE   JUMP OK', 128, U.dim);
   if (!COARSE) ctext('OR TYPE A LETTER', 140, U.dim);
@@ -1338,7 +1327,7 @@ function drawBells() {
 // Bottom left: the whole round as one strip of wall. Bells along it, the tower at the end,
 // the walked stretch filled in and a blinking marker where the hero is now.
 function drawProgress() {
-  const U = SKIN.ui, P = SKIN.palette, x0 = 3, y0 = BAR + 1, wd = 96, ht = 10;
+  const U = SKIN.ui, P = SKIN.palette, x0 = 3, y0 = BAR + 1, wd = 160, ht = 10;
   const ix = x0 + 2, iw = wd - 4, at = d => ix + Math.round((d / ROUND_LEN) * (iw - 1));
   ctx.strokeStyle = U.box;
   ctx.strokeRect(x0 + 0.5, y0 + 0.5, wd - 1, ht - 1);
@@ -1365,18 +1354,18 @@ function drawHUD() {
   if (inGame) drawBells();
   text('1UP', 57, 2, U.label);
   text(pad(G.score, 6), 48, 11, U.score);
-  text('HI-SCORE', 92, 2, U.label);
-  text(pad(Math.max(G.scores[0].s, G.score), 6), 98, 11, U.hi);
+  ctext('HI-SCORE', 2, U.label);
+  ctext(pad(Math.max(G.scores[0].s, G.score), 6), 11, U.hi);
   if (!inGame) {
     if (G.state === 'title' && (G.t >> 5) & 1) ctext(COARSE ? 'TAP TO START' : 'PUSH START', BAR + 3, U.text);
     return;
   }
   ctx.strokeStyle = U.box;
-  ctx.strokeRect(172.5, 0.5, 47, 19);
-  text('BONUS', 182, 3, U.bonus);
-  text(pad(G.bonus, 5), 182, 11, U.text);
+  ctx.strokeRect(W - 51.5, 0.5, 47, 19);
+  text('BONUS', W - 42, 3, U.bonus);
+  text(pad(G.bonus, 5), W - 42, 11, U.text);
   drawProgress();
-  for (let i = 0; i < Math.min(G.lives - 1, 4); i++) spr('heroLife', 104 + i * 12, BAR + 3);
+  for (let i = 0; i < Math.min(G.lives - 1, 8); i++) spr('heroLife', 172 + i * 13, BAR + 3);
   const label = `WALL ${G.loop + 1}-${G.section + 1}`;
   text(label, W - 4 - textW(label), BAR + 3, U.dim);
 }

@@ -16,7 +16,7 @@ import time
 import numpy as np
 from shapely.geometry import box
 
-from . import buildings, config, crs, glb, osm, props, roads, structures, terrain
+from . import buildings, config, crs, facades, glb, osm, props, roads, structures, terrain
 
 G = {}      # shared state for worker processes (inherited via fork)
 
@@ -38,6 +38,7 @@ def prepare():
     blds = buildings.collect(d, T, overrides)
     n_lidar = buildings.apply_lidar_heights(blds, T)
     road_recs, shapes, tunnels, bridges = roads.collect(d, T.gibraltar)
+    facades.attach(blds, d, T, road_recs)
     merged = roads.merge(shapes, T.land)
     crossings = roads.collect_crossings(d, merged)
     walls = structures.collect_walls(d, T.gibraltar)
@@ -96,6 +97,9 @@ def build_tile(ixy):
     blds = G["blds"].get((ix, iy), [])
     bidx = {b["id"]: k for k, b in enumerate(blds)}
     put("buildings", buildings.mesh(blds, (ox, oy), bidx))
+    # doors and windows: cosmetic, a separate layer so engines can stream them
+    # closer and leave them out of collision; feature ids index buildings
+    put("facades", facades.mesh(blds, (ox, oy), bidx, T))
 
     # roads
     put("roads", roads.tile_mesh(G["merged"], T, ix, iy, G["crossings"]) + roads.bridge_mesh(G["bridges"], T, ix, iy))
@@ -131,7 +135,7 @@ def build_tile(ixy):
         "id": tid, "ix": ix, "iy": iy, "origin_m": [ox, oy, 0.0], "layers": layers,
         "features": f"tiles/{tid}/features.json",
         "counts": {"buildings": len(blds), "roads": len(road_recs), "walls": len(walls), "piers": len(piers),
-                   "props": len(prs)},
+                   "props": len(prs), "windows": sum(b["facade"]["windows"] for b in blds)},
         "land_area_m2": round(T.land.intersection(tbox).area, 1),
     }
 
@@ -213,6 +217,9 @@ def main():
             "props_by_kind": dict(sorted(Counter(p_["kind"] for v in G["props"].values() for p_ in v).items())),
             "roofs_by_shape": dict(sorted(Counter(b["roof"]["shape"] for b in G["all_blds"]).items())),
             "building_colours_from_tags": sum(1 for b in G["all_blds"] if b["wall_colour_source"] != "default"),
+            "doors_mapped": sum(b["facade"]["doors_mapped"] for b in G["all_blds"]),
+            "doors_procedural": sum(b["facade"]["doors_procedural"] for b in G["all_blds"]),
+            "windows_procedural": sum(r["counts"].get("windows", 0) for r in results),
         },
         "tiles": results,
     }

@@ -113,11 +113,19 @@ export function buildingPanel(b, tile, dist) {
       ? ` (eave ${(+b.roof.eave_m).toFixed(1)} m, ridge ${(+b.roof.ridge_m).toFixed(1)} m)` : ''}</td></tr>
     ${b.roof?.source ? `<tr><td>Roof source</td><td>${esc(b.roof.source)}</td></tr>` : ''}
     ${b.wall_colour_source || b.roof_colour_source ? `<tr><td>Colour source</td><td>walls: ${esc(b.wall_colour_source ?? '—')}, roof: ${esc(b.roof_colour_source ?? '—')}</td></tr>` : ''}
+    ${b.facade ? `<tr><td>Façade</td><td>${facadeText(b.facade)}</td></tr>` : ''}
     <tr><td>Footprint area</td><td>${b.footprint_area_m2 != null ? b.footprint_area_m2.toFixed(1) + ' m²' : '—'}</td></tr>
     <tr><td>Ground (min / max)</td><td>${b.ground_min_m?.toFixed?.(1) ?? '—'} / ${b.ground_max_m?.toFixed?.(1) ?? '—'} m</td></tr>
     ${b.override ? `<tr><td>Override</td><td>${esc(JSON.stringify(b.override))}</td></tr>` : ''}
     ${dist != null ? `<tr><td>Distance</td><td>${dist.toFixed(1)} m</td></tr>` : ''}
   </table><div class="close">Press E to close</div>`;
+}
+
+function facadeText(f) {
+  const ws = String(f.windows_source ?? 'unknown');
+  const wsNote = /procedural|default|generated/i.test(ws) ? `${ws} — positions not surveyed` : ws;
+  return `Doors: ${f.doors_mapped ?? 0} mapped (OSM), ${f.doors_procedural ?? 0} procedural · ` +
+    `Windows: ${f.windows ?? 0} (${esc(wsNote)})`;
 }
 
 export function propPanel(p, tile, dist) {

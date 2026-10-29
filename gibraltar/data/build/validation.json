@@ -1,6 +1,6 @@
 {
- "generated_utc": "2026-10-29T16:42:23Z",
- "manifest_generated_utc": "2026-10-29T16:41:01Z",
+ "generated_utc": "2026-10-29T17:31:42Z",
+ "manifest_generated_utc": "2026-10-29T17:29:00Z",
  "checks": [
   {
    "check": "Projection round trip (lon/lat -> GIB-LTM -> lon/lat), max error",
@@ -138,6 +138,13 @@
    "unit": "items",
    "status": "pass",
    "detail": "4742 OSM props inside the built tiles"
+  },
+  {
+   "check": "Window corners below the ground in front of them",
+   "value": 0,
+   "unit": "vertices",
+   "status": "pass",
+   "detail": "about 171412 procedural windows checked"
   },
   {
    "check": "Layer files whose bounds disagree with manifest bounds_m",

@@ -67,6 +67,8 @@ async function main() {
   const env = new Environment(scene, manifest);
   env.setShadows(settings.shadows);
   const tiles = new TileManager(scene, manifest, DATA, { detailRadius: settings.renderDistance, shadows: settings.shadows });
+  env.renderer = renderer;
+  env.envTarget = [tiles.materials.M_Window];
   const world = tiles.collision;
   const player = new Player(world, tiles, SEA);
   const audio = new Ambience();
@@ -284,17 +286,17 @@ async function main() {
   function lookTarget(withGround = false) {
     raycaster.setFromCamera(center, camera);
     const [px, py] = player.ltm;
-    const objs = tiles.meshesNear(px, py, 120, withGround ? ['buildings', 'walls', 'props', 'terrain', 'roads'] : ['buildings', 'walls', 'props']);
+    const objs = tiles.meshesNear(px, py, 120, withGround ? ['buildings', 'facades', 'walls', 'props', 'terrain', 'roads'] : ['buildings', 'facades', 'walls', 'props']);
     if (showPois) objs.push(markers);
     const hits = raycaster.intersectObjects(objs, false);
     if (!hits.length) return null;
     const h = hits[0];
     if (h.object === markers) return { type: 'poi', poi: pois[h.instanceId], dist: h.distance, point: h.point };
     const L = h.object.userData.layer;
-    if (L === 'buildings' || L === 'walls' || L === 'props') {
+    if (L === 'buildings' || L === 'facades' || L === 'walls' || L === 'props') {
       const fid = h.object.userData.fid ? Math.round(h.object.userData.fid[h.face.a]) : -1;
       const rec = tiles.featureFor(h.object.userData.tile, L, fid);
-      const type = { buildings: 'building', walls: 'wall', props: 'prop' }[L];
+      const type = { buildings: 'building', facades: 'building', walls: 'wall', props: 'prop' }[L];
       return { type, rec, fid, tile: h.object.userData.tile, dist: h.distance, point: h.point };
     }
     return { type: 'ground', dist: h.distance, point: h.point };
@@ -486,7 +488,14 @@ async function main() {
       const [X, , Z] = ltmToThree(x, y, 0);
       tiles.ensureColliderAt(x, y);
       const g = world.ground(X, Z, Infinity, (k) => k !== KIND.BROOF);
-      return g ? g.y : null;
+      if (g) return g.y;
+      // no collider for that tile yet: fall back to a vertical ray on the loaded terrain mesh
+      const t = tiles.tileAt(x, y);
+      const terr = t?.layers.terrain?.meshes || [];
+      if (!terr.length) return null;
+      const rc = new THREE.Raycaster(new THREE.Vector3(X, 5000, Z), new THREE.Vector3(0, -1, 0), 0, 10000);
+      const hit = rc.intersectObjects(terr, false)[0];
+      return hit ? hit.point.y : null;
     },
     /** Debug: detach the camera to GIB-LTM (x, y, z) looking at heading/pitch; viewFrom(null) re-attaches. */
     viewFrom(x, y, z, heading = 0, pitch = 0) { camOverride = x == null ? null : { x, y, z, heading, pitch }; },

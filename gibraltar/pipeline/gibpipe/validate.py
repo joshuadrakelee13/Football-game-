@@ -277,7 +277,22 @@ def main():
     out.append(result("Mapped props (trees, street furniture) missing from the build", len(missing), "items",
                       "pass" if not missing else "FAIL", f"{len(src_props)} OSM props inside the built tiles"))
 
-    # 8. Manifest bounds consistency --------------------------------------------
+    # 8. Façades: no procedural window below the ground in front of it
+    low, n_win = 0, 0
+    for t in m["tiles"]:
+        if "facades" not in t["layers"]:
+            continue
+        ox, oy, _ = t["origin_m"]
+        for prim in glb.read_glb(build / t["layers"]["facades"]["file"]):
+            if prim["material"] != "M_Window":
+                continue
+            p = prim["positions"]          # welded vertices: check every corner
+            n_win += len(prim["indices"]) // 2                  # one quad per window
+            low += int(np.sum(p[:, 2] < T.surface(p[:, 0] + ox, p[:, 1] + oy) - 0.05))
+    out.append(result("Window corners below the ground in front of them", low, "vertices",
+                      "pass" if low == 0 else "FAIL", f"about {n_win} procedural windows checked"))
+
+    # 9. Manifest bounds consistency --------------------------------------------
     bad = 0
     for t in m["tiles"]:
         for name, L in t["layers"].items():

@@ -133,7 +133,8 @@ function freePort() {
     check('blocked by building wall', r.blockedSteps > 0 && stalled && insp && insp.kind === 'building' && insp.dist < 0.6,
       `walked ${r.dist.toFixed(2)} m, then held; blocked steps ${r.blockedSteps}; nearest building ${insp?.id} at ${insp?.dist?.toFixed(3)} m (capsule radius 0.30)`);
     check('ground following over 30 s walk', r.maxGroundGap < 0.01 && r.airborneSteps === 0, `max |feet-ground| ${r.maxGroundGap.toFixed(4)} m, airborne steps ${r.airborneSteps}`);
-    await page.evaluate(() => __gib.look(300, 0));
+    await sim(null, null, 300, 5, { b: true }); // step back from the wall so it's in view
+    await page.evaluate(() => __gib.look(300, 5));
     await page.evaluate(() => __gib.interact());
     await page.waitForTimeout(1500);
     await shot('11-inspect-building');
@@ -166,11 +167,12 @@ function freePort() {
     // props (pipeline builds with a "props" layer): a tree trunk blocks, its crown never does, E inspects it
     const hasProps = await page.evaluate(() => __gib.tiles.manifest.tiles.some((t) => t.layers.props));
     if (hasProps) {
-      const tree = [-178.007, 1687.283]; // osm:node/3625701837, a mapped tree just east of Casemates
-      r = await sim(tree[0] - 6, tree[1], 90, 8, { f: true });
-      s = await state();
-      const dTree = Math.hypot(s.x - tree[0], s.y - tree[1]);
-      check('tree trunk blocks the player', r.blockedSteps > 0 && dTree < 1.2 && dTree > 0.25, `stopped ${dTree.toFixed(2)} m from the tree's mapped position`);
+      const tree = [-526.888, 1031.692]; // osm:node/6257475790, a free-standing tree near Commonwealth Park
+      r = await sim(tree[0] - 6, tree[1], 90, 8, { f: true }, { every: 0.1 });
+      const dTree = Math.min(...r.samples.map((q) => Math.hypot(q.x - tree[0], q.y - tree[1])));
+      const held = r.samples.filter((q) => q.blocked).length / 10;
+      check('tree trunk blocks the player (no walking through)', r.blockedSteps > 0 && dTree > 0.4 && dTree < 0.6,
+        `closest approach ${dTree.toFixed(2)} m from trunk centre (capsule 0.30 + trunk ≈0.18), held/sliding round it for ${held.toFixed(1)} s`);
       insp = await page.evaluate(() => { __gib.look(90, 20); const r = __gib.inspect(); return r && { kind: r.kind, id: r.id, rec: r.rec }; });
       check('E on a tree shows the prop record', insp && insp.kind === 'prop' && insp.rec?.kind === 'tree', `${insp?.kind} ${insp?.id} kind=${insp?.rec?.kind} model=${insp?.rec?.model}`);
       await page.evaluate(() => __gib.interact());
@@ -199,14 +201,17 @@ function freePort() {
     const top = await view('21-top-of-rock-looking-north', 502.881, -158.716, 350, -6, 12);
     check('top of the Rock is ~400 m up', top.z > 380, `feet ${top.z.toFixed(1)} m`);
     await view('22-top-of-rock-looking-east-cliff', 502.881, -158.716, 80, -25, 12);
-    await view('22b-upper-rock-signal-hill-looking-south', 384.2, 486.8, 175, -4, 12);
-    await view('23-europa-point-lighthouse', 410, -2238, 112, 4, 11);
+    await view('22b-upper-rock-douglas-lookout-looking-north', 409.2, 105.9, 345, -4, 12);
+    await view('23-europa-point-lighthouse', 365.5, -2241.9, 100, 4, 11);
     await view('24-main-street', -327.5, 1140, 10, 2, 12, true);
     await view('25-night-main-street', -327.5, 1140, 10, 2, 23, true);
     await view('26-night-casemates', -246.942, 1648.743, 180, 4, 22);
     await page.evaluate(() => __gib.setConfidence(true));
-    await view('27-confidence-mode-town', -440, 900, 60, -4, 12, true);
-    await page.evaluate(() => __gib.setConfidence(false));
+    await view('27a-confidence-mode-street', -327.5, 1140, 10, 2, 12, true);
+    await page.evaluate(() => __gib.viewFrom(-750, 1000, 140, 65, -14));
+    await page.waitForTimeout(3000);
+    await shot('27b-confidence-mode-town-elevated');
+    await page.evaluate(() => { __gib.viewFrom(null); __gib.setConfidence(false); });
     await view('28-airport-runway-from-north-front', 300, 2400, 90, 0, 12);
     // aerial validation views (detached camera)
     await page.evaluate(() => { __gib.setTime(12); __gib.teleport(0, 700); });

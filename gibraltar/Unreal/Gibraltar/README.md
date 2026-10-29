@@ -72,7 +72,7 @@ run it from a command prompt). It:
    * checks every mesh's bounds against the manifest, to within 1 cm,
    * imports the ambience sounds (`/Game/Gibraltar/Audio`),
    * builds the World Partition level `/Game/Gibraltar/Maps/L_Gibraltar` with
-     terrain, roads, buildings, walls, props (trees and street furniture), the sea, the sky, landmarks and the
+     terrain, roads, buildings, walls, props (trees and street furniture), facades (doors and windows), the sea, the sky, landmarks and the
      start point.
 
 At the end it prints a **"Gibraltar import summary"** and writes

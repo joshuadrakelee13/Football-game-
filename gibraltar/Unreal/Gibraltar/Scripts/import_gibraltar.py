@@ -63,11 +63,16 @@ MATERIAL_PARAMS = {
     "M_Wall": (0.92, 0.35),
     "M_Prop": (0.70, 0.40),       # street furniture at OSM positions (generic models)
     "M_Foliage": (0.90, 0.25),    # tree crowns and hedges
+    "M_Window": (0.08, 0.90),     # window glass (procedural positions)
+    "M_Door": (0.60, 0.40),       # doors and door frames (mapped OSM entrances, else procedural)
 }
 FALLBACK_MATERIAL = "M_Terrain"
 
-LAYERS = ["terrain", "roads", "buildings", "walls", "props"]
-NANITE_LAYERS = {"terrain", "buildings", "walls", "props"}
+LAYERS = ["terrain", "roads", "buildings", "walls", "props", "facades"]
+NANITE_LAYERS = {"terrain", "buildings", "walls", "props", "facades"}
+# Doors and windows are thin quads a few centimetres in front of the walls; the
+# walls already block the player, so these get no collision.
+NO_COLLISION_LAYERS = {"facades"}
 # Terrain is small (~100 tiles x ~20k triangles) and must be visible from far away: never stream it out.
 ALWAYS_LOADED_LAYERS = {"terrain"}
 
@@ -495,6 +500,9 @@ def configure_mesh(mesh, layer, instances, master):
         warn("static meshes have no nanite_settings property in this engine version.", once_key="no-nanite")
 
     # Collision: use the render triangles as the collision shape.
+    if layer in NO_COLLISION_LAYERS:
+        save_asset(mesh)
+        return unmatched
     body = try_get(mesh, "body_setup")
     if body is None and hasattr(unreal, "StaticMeshEditorSubsystem"):
         try:
@@ -753,7 +761,10 @@ def spawn_tile_actor(tile, layer, meshes, rotation, scale):
         comp = static_mesh_component(actor)
         comp.set_mobility(unreal.ComponentMobility.STATIC)
         comp.set_static_mesh(mesh)
-        comp.set_collision_profile_name("BlockAll")
+        if layer in NO_COLLISION_LAYERS:
+            comp.set_collision_enabled(unreal.CollisionEnabled.NO_COLLISION)
+        else:
+            comp.set_collision_profile_name("BlockAll")
         actor.set_actor_scale3d(scale)
         add_tag(actor, "Tile_%s" % tile_id)
         add_tag(actor, "Layer_%s" % layer)

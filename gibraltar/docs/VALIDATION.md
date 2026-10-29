@@ -1,6 +1,6 @@
 # Validation report
 
-Generated 2026-10-29T16:42:23Z by `python -m gibpipe.validate` from the build made at 2026-10-29T16:41:01Z. Regenerate it after every build; do not edit by hand.
+Generated 2026-10-29T17:31:42Z by `python -m gibpipe.validate` from the build made at 2026-10-29T17:29:00Z. Regenerate it after every build; do not edit by hand.
 
 | Status | Check | Value | Notes |
 |---|---|---|---|
@@ -23,6 +23,7 @@ Generated 2026-10-29T16:42:23Z by `python -m gibpipe.validate` from the build ma
 | pass | Footprint area in GIB-LTM vs ellipsoidal (geodesic) area, max relative error | 0.432 ppm | 400 footprints |
 | info | Building heights by confidence | measured: 50, derived: 120, estimated: 5416 buildings | measured = OSM height tag; derived = OSM building:levels × 3 m; estimated = type default |
 | pass | Mapped props (trees, street furniture) missing from the build | 0 items | 4742 OSM props inside the built tiles |
+| pass | Window corners below the ground in front of them | 0 vertices | about 171412 procedural windows checked |
 | pass | Layer files whose bounds disagree with manifest bounds_m | 0 files |  |
 
 ## Distances between landmarks

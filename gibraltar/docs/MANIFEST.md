@@ -14,6 +14,7 @@ data/build/
   tiles/<tile_id>/buildings.glb building masses
   tiles/<tile_id>/walls.glb     walls, fortifications, fences, hedges, barriers, piers
   tiles/<tile_id>/props.glb     trees and street furniture at their OSM positions
+  tiles/<tile_id>/facades.glb   doors and windows (cosmetic: no collision)
   tiles/<tile_id>/features.json per-feature records for that tile
   catalogue.json                every source dataset: licence, hash, date
 data/overrides.json             hand-made replacements for specific buildings
@@ -53,7 +54,7 @@ A layer file is only written if the tile has geometry for that layer.
         "terrain":   { "file": "tiles/T_E0_N0/terrain.glb",
                        "bounds_m": [[minx, miny, minz], [maxx, maxy, maxz]],
                        "triangles": 12345 },
-        "roads":     { … }, "buildings": { … }, "walls": { … }, "props": { … }
+        "roads":     { … }, "buildings": { … }, "walls": { … }, "props": { … }, "facades": { … }
       },
       "features": "tiles/T_E0_N0/features.json",
       "counts": { "buildings": 120, "roads": 40, "walls": 30, "piers": 2, "props": 85 }
@@ -92,11 +93,13 @@ The import script checks this to within 1 cm.
 | `M_Wall` | walls, city walls, retaining walls, fences, jersey barriers, guard rails |
 | `M_Prop` | street furniture: benches, bollards, post boxes, phone kiosks, lamps, cannons, memorials, bus stops, tree trunks |
 | `M_Foliage` | tree crowns (props.glb) and hedges (walls.glb) |
+| `M_Window` | window glass, 5 cm in front of the façade (facades.glb) |
+| `M_Door` | door panels and frames (facades.glb) |
 
 * Every primitive also carries a custom attribute `_FEATURE_ID` (float,
   exact integer) indexing the matching array in `features.json`
-  (`buildings` for buildings.glb, `walls` for walls.glb, `props` for
-  props.glb); `-1` means none (roads, terrain). Engines that don't
+  (`buildings` for buildings.glb and facades.glb, `walls` for walls.glb,
+  `props` for props.glb); `-1` means none (roads, terrain). Engines that don't
   understand it ignore it.
 
 ## features.json
@@ -120,6 +123,12 @@ Coordinates here are **world GIB-LTM metres** (not tile-local).
                 "source": "osm:roof:height | default:pitch 30°" },
       "wall_colour_source": "osm:building:colour | osm:building:material | default",
       "roof_colour_source": "osm:roof:colour | osm:roof:material | default",
+      "facade": {
+        "doors_mapped": 1, "doors_procedural": 0, "windows": 42,
+        "windows_source": "procedural v1: … | none",
+        "doors": [ { "position_m": [x, y], "width_m": 1.6,
+                     "source": "osm:node/123 entrance=main | procedural: wall nearest a street" } ]
+      },
       "override": null          // or the entry from overrides.json
     }
   ],

@@ -118,6 +118,15 @@ export class Environment {
     this.dome.frustumCulled = false;
     scene.add(this.dome);
 
+    // Small environment map rendered from the same sky shader, so glossy materials
+    // (windows) reflect the current sky. Refreshed when the sun moves noticeably.
+    this.envScene = new THREE.Scene();
+    this.envScene.add(new THREE.Mesh(new THREE.SphereGeometry(50, 32, 16), skyMat));
+    this.pmrem = null;
+    this.envRT = null;
+    this.envElev = null;
+    this.envTarget = null; // materials that get the env map
+
     // ---- stars
     const N = 2500, pos = new Float32Array(N * 3);
     let seed = 12345;
@@ -132,7 +141,7 @@ export class Environment {
     // Opaque (drawn first, right after the dome) so buildings and terrain always cover the stars;
     // fading is done through the colour, not transparency.
     this.starMat = new THREE.PointsMaterial({ color: 0x000000, size: 1.6, sizeAttenuation: false,
-      depthTest: false, depthWrite: false, fog: false, toneMapped: false });
+      blending: THREE.AdditiveBlending, depthTest: false, depthWrite: false, fog: false, toneMapped: false });
     this.stars = new THREE.Points(sg, this.starMat);
     this.stars.renderOrder = -9;
     this.stars.frustumCulled = false;
@@ -186,7 +195,9 @@ export class Environment {
     U.sunColor.value.setRGB(1, 0.75 + 0.2 * smooth(0, 20, el), 0.5 + 0.4 * smooth(0, 25, el));
     this.dome.position.copy(camera.position);
     this.stars.position.copy(camera.position);
-    this.starMat.color.setScalar(smooth(-5, -14, el) * 0.9);
+    const starK = smooth(-5, -14, el);
+    this.starMat.color.setScalar(starK * 0.9);
+    this.stars.visible = starK > 0.003;
     this.stars.rotation.y = (utcMs / 86164090) * Math.PI * 2 % (Math.PI * 2);
 
     // Simple moon: opposite the sun in azimuth, 35–55° high, only at night.
@@ -222,6 +233,16 @@ export class Environment {
     this.hemi.groundColor.copy(this.cols.hemiGnd);
     this.hemi.intensity = this.cols.hemi;
     this.scene.fog.color.copy(this.cols.hor);
+
+    // Refresh the sky reflection every ~1.5° of sun movement.
+    if (this.renderer && this.envTarget && (this.envElev == null || Math.abs(el - this.envElev) > 1.5)) {
+      this.envElev = el;
+      if (!this.pmrem) this.pmrem = new THREE.PMREMGenerator(this.renderer);
+      const rt = this.pmrem.fromScene(this.envScene, 0, 0.1, 200);
+      for (const m of this.envTarget) { m.envMap = rt.texture; m.envMapIntensity = 0.25 + 0.75 * dayK; m.needsUpdate = !this.envRT; }
+      if (this.envRT) this.envRT.dispose();
+      this.envRT = rt;
+    }
 
     // Sea tint follows the sky a little; waves drift.
     this._tmp.copy(this.seaDeep).lerp(this.cols.hor, 0.12).multiplyScalar(0.25 + 0.75 * smooth(-8, 10, el));

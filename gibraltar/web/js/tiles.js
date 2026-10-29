@@ -10,6 +10,14 @@ import { tileIndexOf, tileId } from './geo.js';
 // Every layer except terrain streams at the detail radius (roads, buildings, walls, props, and
 // any layer a future pipeline adds).
 // Props that the player bumps into. Everything else (and every tree crown, M_Foliage) is walk-through.
+const COSMETIC = new Set(['M_Window', 'M_Door']);
+// Layers that take part in collision. Anything else (facades, or a layer a future pipeline
+// adds) is loaded as a visual-only detail layer.
+const COLLISION_LAYERS = new Set(['terrain', 'roads', 'buildings', 'walls', 'props']);
+const FACADE_RADIUS = 600; // ~290k window quads: stream them close
+// features.json array that a layer's _FEATURE_ID indexes
+const FEATURE_KEY = { buildings: 'buildings', facades: 'buildings', walls: 'walls', props: 'props', roads: 'roads' };
+const RECOLOR_LAYERS = ['buildings', 'walls', 'facades'];
 const SOLID_PROPS = new Set(['tree', 'bench', 'picnic_table', 'memorial', 'telephone', 'post_box', 'cannon',
   'bus_stop', 'fountain', 'mast', 'flagpole', 'street_lamp', 'bollard', 'info_board', 'recycling']);
 const HYSTERESIS = 200;      // m: unload only once this far beyond the load radius
@@ -40,6 +48,9 @@ export function createMaterials() {
     M_Wall: mk('M_Wall', 0.92),
     M_Prop: mk('M_Prop', 0.7),
     M_Foliage: mk('M_Foliage', 0.9),
+    // cosmetic façade detail (quads a few cm in front of the walls): never collides
+    M_Window: mk('M_Window', 0.1, { metalness: 0.25, envMapIntensity: 1.0 }),
+    M_Door: mk('M_Door', 0.6),
     default: mk('default', 0.9), // any material name we don't know yet: generic vertex-colour
   };
 }
@@ -84,7 +95,7 @@ export class TileManager {
     this.shadows = on;
     for (const t of this.tiles.values())
       for (const L of Object.values(t.layers))
-        for (const m of L.meshes || []) { m.castShadow = on; m.receiveShadow = on; }
+        for (const m of L.meshes || []) { m.castShadow = on && !m.userData.cosmetic; m.receiveShadow = on; }
   }
 
   tileAt(x, y) {
@@ -123,13 +134,16 @@ export class TileManager {
       const d = Math.hypot(dx, dy);
       t.dist = d;
       for (const layer of Object.keys(t.meta.layers)) {
-        const R = layer === 'terrain' ? this.terrainRadius : this.detailRadius;
+        const R = this.radiusFor(layer);
         const L = t.layers[layer];
-        const state = L ? L.state : 'none';
+        let state = L ? L.state : 'none';
+        // failed loads (e.g. a build being reinstalled) are retried with backoff
+        if (state === 'error' && L.tries < 6 && performance.now() > L.retryAt) state = 'none';
         if (d <= R && state === 'none') queue.push({ t, layer, prio: d + (layer === 'terrain' ? 0 : 60) });
         else if (d > R + HYSTERESIS && (state === 'loaded' || state === 'loading')) this._unloadLayer(t, layer);
       }
       // features.json travels with the detail layers
+      if (t.featuresState === 'error' && (t.featTries || 0) < 6 && performance.now() > (t.featRetryAt || 0)) t.featuresState = 'none';
       if (d <= this.detailRadius && t.featuresState === 'none') queue.push({ t, layer: 'features', prio: d + 30 });
       else if (d > this.detailRadius + HYSTERESIS && t.featuresState === 'loaded') { t.features = null; t.featuresState = 'none'; }
 
@@ -150,9 +164,20 @@ export class TileManager {
     this._buildOneCollider();
   }
 
+  radiusFor(layer) {
+    if (layer === 'terrain') return this.terrainRadius;
+    if (layer === 'facades') return Math.min(FACADE_RADIUS, this.detailRadius);
+    return this.detailRadius;
+  }
+
+  _collisionSig(t) {
+    return Object.keys(t.layers).filter((k) => COLLISION_LAYERS.has(k) && t.layers[k].state === 'loaded').sort().join(',');
+  }
+
   _complete(t) {
     // 'error' counts as done so a broken file can't block walking forever
     for (const layer of Object.keys(t.meta.layers)) {
+      if (!COLLISION_LAYERS.has(layer)) continue;
       const s = t.layers[layer]?.state;
       if (s !== 'loaded' && s !== 'error') return false;
     }
@@ -167,8 +192,7 @@ export class TileManager {
     for (const t of this.tiles.values()) {
       if (t.dist > COLLISION_RADIUS) continue;
       if (!this._complete(t)) continue;
-      const sig = Object.keys(t.layers).filter((k) => t.layers[k].state === 'loaded').sort().join(',');
-      if (t.collider && t.colliderSig === sig) continue;
+      if (t.collider && t.colliderSig === this._collisionSig(t)) continue;
       if (!best || t.dist < best.dist) best = t;
     }
     if (force) best = force;
@@ -182,8 +206,9 @@ export class TileManager {
     const parts = [];
     const v = new THREE.Vector3();
     for (const [layer, L] of Object.entries(t.layers)) {
-      if (L.state !== 'loaded') continue;
+      if (L.state !== 'loaded' || !COLLISION_LAYERS.has(layer)) continue;
       for (const m of L.meshes) {
+        if (m.userData.cosmetic) continue; // windows / doors: walls already block
         m.updateWorldMatrix(true, false);
         const src = m.geometry.attributes.position;
         const pos = new Float32Array(src.count * 3);
@@ -211,7 +236,7 @@ export class TileManager {
     }
     const c = new TileCollider(t.meta.id, parts);
     t.collider = c;
-    t.colliderSig = Object.keys(t.layers).filter((k) => t.layers[k].state === 'loaded').sort().join(',');
+    t.colliderSig = this._collisionSig(t);
     this.collision.add(c);
     this.stats.colliderMs = performance.now() - t0;
     if (this.onColliderBuilt) this.onColliderBuilt(t);
@@ -239,8 +264,10 @@ export class TileManager {
       t.featuresState = 'loaded';
       if (this.confidenceMode) this._applyConfidence(t);
     } catch (e) {
-      console.warn('features load failed', t.meta.id, e);
+      console.warn('features load failed (will retry)', t.meta.id, e.message);
       t.featuresState = 'error';
+      t.featTries = (t.featTries || 0) + 1;
+      t.featRetryAt = performance.now() + 2000 * 2 ** t.featTries;
     } finally {
       this.inflight--;
     }
@@ -248,7 +275,7 @@ export class TileManager {
 
   async _loadLayer(t, layer) {
     const info = t.meta.layers[layer];
-    const L = { state: 'loading', meshes: [], gen: (t.layers[layer]?.gen || 0) + 1 };
+    const L = { state: 'loading', meshes: [], tries: t.layers[layer]?.tries || 0, retryAt: 0 };
     t.layers[layer] = L;
     this.inflight++;
     try {
@@ -272,11 +299,18 @@ export class TileManager {
         if (fa) { m.userData.fid = fa.array; g.deleteAttribute('_feature_id'); }
         g.computeBoundingSphere();
         g.computeBoundingBox();
-        m.castShadow = this.shadows;
+        const cosmetic = COSMETIC.has(name);
+        m.castShadow = this.shadows && !cosmetic;
         m.receiveShadow = this.shadows;
+        m.userData.cosmetic = cosmetic;
         m.matrixAutoUpdate = false;
         m.updateMatrix();
-        if (layer === 'buildings' || layer === 'walls') m.userData.colorOrig = g.attributes.color;
+        if (!g.attributes.color) {
+          // vertex-coloured materials need a colour attribute; default to white
+          const white = new Uint8Array(g.attributes.position.count * 4).fill(255);
+          g.setAttribute('color', new THREE.BufferAttribute(white, 4, true));
+        }
+        if (RECOLOR_LAYERS.includes(layer)) m.userData.colorOrig = g.attributes.color;
         // detach from glTF hierarchy (identity transforms in our files), attach to tile group
         m.removeFromParent();
         t.group.add(m);
@@ -287,8 +321,10 @@ export class TileManager {
       this.stats.loads++;
       if (this.confidenceMode && t.features) this._applyConfidence(t);
     } catch (e) {
-      console.warn('tile load failed', t.meta.id, layer, e);
+      console.warn('tile load failed (will retry)', t.meta.id, layer, e.message);
       L.state = 'error';
+      L.tries++;
+      L.retryAt = performance.now() + 2000 * 2 ** L.tries;
     } finally {
       this.inflight--;
     }
@@ -306,7 +342,7 @@ export class TileManager {
     L.state = 'none';
     delete t.layers[layer];
     this.stats.unloads++;
-    if (t.collider) { this.collision.remove(t.meta.id); t.collider = null; t.colliderSig = ''; }
+    if (t.collider && COLLISION_LAYERS.has(layer)) { this.collision.remove(t.meta.id); t.collider = null; t.colliderSig = ''; }
   }
 
   // ----------------------------------------------------------------- confidence view
@@ -319,10 +355,10 @@ export class TileManager {
   }
 
   _applyConfidence(t) {
-    for (const layer of ['buildings', 'walls']) {
+    for (const layer of RECOLOR_LAYERS) {
       const L = t.layers[layer];
       if (!L || L.state !== 'loaded') continue;
-      const recs = t.features?.[layer];
+      const recs = t.features?.[FEATURE_KEY[layer]];
       if (!recs) continue;
       for (const m of L.meshes) {
         const g = m.geometry;
@@ -332,11 +368,11 @@ export class TileManager {
           if (!orig || !fid) continue;
           const n = orig.count;
           const arr = new Uint8Array(n * 4);
-          const src = orig.array; // normalized uint8 RGBA, linear
           for (let i = 0; i < n; i++) {
             const rec = recs[Math.round(fid[i])];
             const col = CONF_COLORS[rec?.confidence] || CONF_COLORS.none;
-            const lum = (0.3 * src[i * 4] + 0.59 * src[i * 4 + 1] + 0.11 * src[i * 4 + 2]) / 255;
+            // getX/Y/Z de-normalise, so this works for uint8 RGBA and float RGB alike
+            const lum = 0.3 * orig.getX(i) + 0.59 * orig.getY(i) + 0.11 * orig.getZ(i);
             const shade = Math.min(1.15, Math.max(0.65, 0.55 + lum));
             arr[i * 4] = Math.min(255, col.r * shade * 255);
             arr[i * 4 + 1] = Math.min(255, col.g * shade * 255);
@@ -351,7 +387,7 @@ export class TileManager {
   }
 
   _restoreColors(t) {
-    for (const layer of ['buildings', 'walls']) {
+    for (const layer of RECOLOR_LAYERS) {
       const L = t.layers[layer];
       if (!L) continue;
       for (const m of L.meshes) if (m.userData.colorOrig) m.geometry.setAttribute('color', m.userData.colorOrig);
@@ -372,7 +408,7 @@ export class TileManager {
   featureFor(tileIdStr, layer, fid) {
     const t = this.tiles.get(tileIdStr);
     if (!t || !t.features || fid < 0) return null;
-    return t.features[layer]?.[fid] || null;
+    return t.features[FEATURE_KEY[layer] || layer]?.[fid] || null;
   }
 }
 

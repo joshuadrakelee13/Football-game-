@@ -25,7 +25,8 @@
                                              flying in from the 'right' or 'left', low (jump it)
                                              or high (stay on the ground), one every `every` frames
     wall:      0, 1 or 2                     brick colour set from skin.js (changes by area)
-    time:      seconds before the climbing knight reaches the top (default from `time` below)
+    time:      seconds before the climbing knight reaches the top (default `time.start` below);
+               busier screens get a little longer
 
     Also supported by the engine, though Hunchback has none of them:
     crumbles [x, width], lifts {from, to, w, period}, spikes [x, width, period, up, offset],
@@ -38,7 +39,7 @@ window.LEVELS = {
 
   // The climbing knight is the clock. He starts at the bottom left of every screen and climbs
   // the wall face; when time runs out he reaches the top and walks after you with his torch.
-  time: { start: 22, loopCut: 3, min: 14 },   // seconds, and how much less each round
+  time: { start: 14, loopCut: 2, minShare: 0.7 },   // seconds; 2 less each round, but never under 70% of a screen's time
   bonus: { start: 3000, loopAdd: 1000 },      // the bonus drains to 0 as the knight climbs
   knight: { walk: 0.55 },                     // walking speed once he is up (the hero runs at 1.0)
 
@@ -50,14 +51,14 @@ window.LEVELS = {
     { name: 'THE FIRST FIREBALL', wall: 0,
       shots: [{ kind: 'fire', from: 'right', every: 150, offset: 90, speed: 1.2 }] },
 
-    { name: 'THE FIRE PIT', wall: 0,
+    { name: 'THE FIRE PIT', wall: 0, time: 15,
       firePits: [[200, 80]],
       chains: [{ x: 240, len: 56, amp: 0.62, period: 140 }] },
 
     { name: 'THE BREACHES', wall: 0,
       gaps: [[150, 26], [290, 28]] },
 
-    { name: 'THE PIKEMEN', wall: 0,
+    { name: 'THE PIKEMEN', wall: 0, time: 15,
       guards: [[140, 120, 40, 0], [240, 120, 40, 40], [340, 120, 40, 80]] },
 
     { name: 'ARROW SLITS', wall: 0,
@@ -67,12 +68,12 @@ window.LEVELS = {
         { kind: 'arrow', from: 'right', high: true, every: 110, offset: 95, speed: 1.4 },
       ] },
 
-    { name: 'FIRE AND ROPE', wall: 1,
+    { name: 'FIRE AND ROPE', wall: 1, time: 15,
       firePits: [[200, 80]],
       chains: [{ x: 240, len: 56, amp: 0.62, period: 140 }],
       shots: [{ kind: 'fire', from: 'right', every: 170, offset: 60, speed: 1.3 }] },
 
-    { name: 'PIKES AND ARROWS', wall: 1,
+    { name: 'PIKES AND ARROWS', wall: 1, time: 15,
       guards: [[140, 110, 40, 0], [240, 110, 40, 36], [340, 110, 40, 72]],
       shots: [{ kind: 'arrow', from: 'right', high: true, every: 130, offset: 70, speed: 1.4 }] },
 
@@ -88,23 +89,23 @@ window.LEVELS = {
         { kind: 'arrow', from: 'left', every: 200, offset: 10, speed: 1.5 },
       ] },
 
-    { name: 'TWIN PITS', wall: 1,
+    { name: 'TWIN PITS', wall: 1, time: 16,
       firePits: [[110, 60], [290, 60]],
       chains: [
         { x: 140, len: 50, amp: 0.65, period: 120 },
         { x: 320, len: 50, amp: 0.65, period: 120, phase: Math.PI },
       ] },
 
-    { name: 'THE GUARD HOUSE', wall: 2,
+    { name: 'THE GUARD HOUSE', wall: 2, time: 16,
       guards: [[110, 100, 40, 0], [190, 100, 40, 25], [270, 100, 40, 50], [350, 100, 40, 75]] },
 
-    { name: 'THE GAUNTLET', wall: 2,
+    { name: 'THE GAUNTLET', wall: 2, time: 19,
       gaps: [[100, 26]],
       guards: [[190, 110, 40, 0], [260, 110, 40, 55]],
       firePits: [[330, 80]],
       chains: [{ x: 370, len: 56, amp: 0.62, period: 140 }] },
 
-    { name: 'ROPE UNDER FIRE', wall: 2,
+    { name: 'ROPE UNDER FIRE', wall: 2, time: 16,
       firePits: [[180, 80]],
       chains: [{ x: 220, len: 56, amp: 0.62, period: 140 }],
       shots: [
@@ -112,14 +113,14 @@ window.LEVELS = {
         { kind: 'fire', from: 'left', every: 150, offset: 20, speed: 1.2 },
       ] },
 
-    { name: 'PIKES IN CROSSFIRE', wall: 2,
+    { name: 'PIKES IN CROSSFIRE', wall: 2, time: 16,
       guards: [[140, 110, 40, 0], [240, 110, 40, 40], [340, 110, 40, 80]],
       shots: [
         { kind: 'fire', from: 'left', every: 150, offset: 30, speed: 1.3 },
         { kind: 'arrow', from: 'right', high: true, every: 130, offset: 90, speed: 1.5 },
       ] },
 
-    { name: 'THE LAST WALL', wall: 2,
+    { name: 'THE LAST WALL', wall: 2, time: 20,
       gaps: [[70, 26]],
       firePits: [[150, 80]],
       chains: [{ x: 190, len: 56, amp: 0.62, period: 140 }],
@@ -129,7 +130,7 @@ window.LEVELS = {
         { kind: 'arrow', from: 'left', high: true, every: 190, offset: 140, speed: 1.4 },
       ] },
 
-    { name: 'THE BELL TOWER', wall: 2, tower: true, time: 30,
+    { name: 'THE BELL TOWER', wall: 2, tower: true, time: 20,
       firePits: [[146, 156]],
       bellRopes: [{ x: 170, len: 60 }, { x: 206, len: 60 }, { x: 242, len: 60 }, { x: 278, len: 60 }],
       shots: [

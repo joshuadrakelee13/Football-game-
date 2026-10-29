@@ -324,8 +324,8 @@ syncButtons();
 
 // The time limit for a screen in frames: the climbing knight takes this long to reach the top.
 function timeFor(d, loop) {
-  const T = LEVELS.time;
-  return Math.round(60 * Math.max(T.min, (d.time ?? T.start) - loop * T.loopCut));
+  const T = LEVELS.time, base = d.time ?? T.start;
+  return Math.round(60 * Math.max(base * T.minShare, base - loop * T.loopCut));
 }
 
 function buildWorld(i, loop) {

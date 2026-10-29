@@ -38,7 +38,7 @@ window.LEVELS = {
 
   // The climbing knight is the clock. He starts at the bottom left of every screen and climbs
   // the wall face; when time runs out he reaches the top and walks after you with his torch.
-  time: { start: 40, loopCut: 6, min: 24 },   // seconds, and how much less each round
+  time: { start: 22, loopCut: 3, min: 14 },   // seconds, and how much less each round
   bonus: { start: 3000, loopAdd: 1000 },      // the bonus drains to 0 as the knight climbs
   knight: { walk: 0.55 },                     // walking speed once he is up (the hero runs at 1.0)
 
@@ -129,7 +129,7 @@ window.LEVELS = {
         { kind: 'arrow', from: 'left', high: true, every: 190, offset: 140, speed: 1.4 },
       ] },
 
-    { name: 'THE BELL TOWER', wall: 2, tower: true, time: 50,
+    { name: 'THE BELL TOWER', wall: 2, tower: true, time: 30,
       firePits: [[146, 156]],
       bellRopes: [{ x: 170, len: 60 }, { x: 206, len: 60 }, { x: 242, len: 60 }, { x: 278, len: 60 }],
       shots: [

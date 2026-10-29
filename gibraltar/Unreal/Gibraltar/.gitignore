@@ -1,0 +1,31 @@
+# --- Unreal build products and caches
+Binaries/
+Intermediate/
+Saved/
+DerivedDataCache/
+Build/
+Plugins/*/Binaries/
+Plugins/*/Intermediate/
+
+# --- IDE files
+.vs/
+.vscode/
+.idea/
+*.sln
+*.suo
+*.sdf
+*.opensdf
+*.VC.db
+*.VC.opendb
+*.code-workspace
+
+# --- Python caches (Scripts/)
+__pycache__/
+*.pyc
+
+# --- Generated content: rebuilt from gibraltar/data/build by Scripts/import_gibraltar.py.
+#     Everything under Content/ is ignored EXCEPT Content/Gibraltar/Custom/ (hand-made overrides).
+Content/*
+!Content/Gibraltar/
+Content/Gibraltar/*
+!Content/Gibraltar/Custom/

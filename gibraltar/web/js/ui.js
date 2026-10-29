@@ -109,11 +109,28 @@ export function buildingPanel(b, tile, dist) {
     <tr><td>Height source</td><td>${esc(b.height_source ?? '—')}</td></tr>
     <tr><td>Confidence</td><td class="conf-${esc(conf)}">${esc(conf)}</td></tr>
     <tr><td>Levels</td><td>${b.levels ?? '—'}</td></tr>
-    <tr><td>Roof shape</td><td>${esc(b.roof_shape ?? '—')}</td></tr>
+    <tr><td>Roof</td><td>${esc(b.roof?.shape ?? b.roof_shape ?? '—')}${b.roof && b.roof.ridge_m != null && b.roof.ridge_m !== b.roof.eave_m
+      ? ` (eave ${(+b.roof.eave_m).toFixed(1)} m, ridge ${(+b.roof.ridge_m).toFixed(1)} m)` : ''}</td></tr>
+    ${b.roof?.source ? `<tr><td>Roof source</td><td>${esc(b.roof.source)}</td></tr>` : ''}
+    ${b.wall_colour_source || b.roof_colour_source ? `<tr><td>Colour source</td><td>walls: ${esc(b.wall_colour_source ?? '—')}, roof: ${esc(b.roof_colour_source ?? '—')}</td></tr>` : ''}
     <tr><td>Footprint area</td><td>${b.footprint_area_m2 != null ? b.footprint_area_m2.toFixed(1) + ' m²' : '—'}</td></tr>
     <tr><td>Ground (min / max)</td><td>${b.ground_min_m?.toFixed?.(1) ?? '—'} / ${b.ground_max_m?.toFixed?.(1) ?? '—'} m</td></tr>
     ${b.override ? `<tr><td>Override</td><td>${esc(JSON.stringify(b.override))}</td></tr>` : ''}
     ${dist != null ? `<tr><td>Distance</td><td>${dist.toFixed(1)} m</td></tr>` : ''}
+  </table><div class="close">Press E to close</div>`;
+}
+
+export function propPanel(p, tile, dist) {
+  const title = p.name || (p.kind === 'tree' ? (p.species ? `Tree (${p.species})` : 'Tree') : p.kind.replace(/_/g, ' '));
+  return `<h3>${esc(title)}</h3><div class="sub">${esc(p.id)}${p.osm_version ? ' v' + p.osm_version : ''} · tile ${esc(tile)}</div><table>
+    <tr><td>Kind</td><td>${esc(p.kind)}</td></tr>
+    ${p.name ? `<tr><td>Name</td><td>${esc(p.name)}</td></tr>` : ''}
+    ${p.kind === 'tree' ? `<tr><td>Species</td><td>${esc(p.species ?? 'not recorded')}</td></tr>` : ''}
+    ${p.height_m != null ? `<tr><td>Height</td><td>${p.height_m} m <span class="muted">(${esc(p.height_source ?? '')})</span></td></tr>` : ''}
+    ${p.crown_m != null ? `<tr><td>Crown</td><td>${p.crown_m} m <span class="muted">(${esc(p.crown_source ?? '')})</span></td></tr>` : ''}
+    <tr><td>Position (GIB-LTM)</td><td>${p.position_m.map((v) => (+v).toFixed(1)).join(', ')} m</td></tr>
+    <tr><td>Source</td><td>${esc(p.source ?? '—')}</td></tr>
+    <tr><td>Model</td><td>${esc(p.model ?? 'generic')} — a stand-in shape; the <b>position is mapped</b> from OSM, the look is not</td></tr>
   </table><div class="close">Press E to close</div>`;
 }
 
@@ -158,10 +175,11 @@ export class Menu {
     search.addEventListener('keydown', (e) => e.stopPropagation());
     this._renderTp('');
     $('credits').innerHTML = `<p>Gibraltar 1:1 walking simulator — web validation viewer.</p><ul>
-      ${attribution.map((a) => `<li>${esc(a)}</li>`).join('')}
+      ${[...new Set([...attribution, 'Contains modified Copernicus Sentinel data 2026'])].map((a) => `<li>${esc(a)}</li>`).join('')}
       <li>three.js r169 — © 2010–2024 three.js authors (MIT licence, <code>web/vendor/three/LICENSE</code>)</li>
       <li>Sun position: NOAA Solar Calculator algorithm. Sounds are synthesised live in your browser.</li></ul>
-      <p class="muted">Terrain heights are IGN MDT05 (5 m grid). Building heights come from OpenStreetMap tags where present;
+      <p class="muted">Terrain heights are IGN MDT05 (5 m grid); terrain colours from Copernicus Sentinel-2 imagery.
+      Trees and street furniture are generic stand-in models at their real OpenStreetMap positions. Building heights come from OpenStreetMap tags where present;
       most are estimated defaults — press V to see which.</p>`;
   }
 

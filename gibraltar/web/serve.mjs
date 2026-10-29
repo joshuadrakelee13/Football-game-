@@ -5,6 +5,8 @@
 //
 // Serves the whole gibraltar/ folder so the page at /web/ can fetch
 // ../data/build/manifest.json and the tile .glb files.
+// GIB_DATA=/path/to/other/build serves a different pipeline build at /data/build/
+// (handy for checking a preview build without installing it).
 
 import { createServer } from 'node:http';
 import { createReadStream } from 'node:fs';
@@ -15,6 +17,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url))); // gibraltar/
 const PORT = Number(process.env.PORT || 8080);
 const HOST = process.env.HOST || '127.0.0.1';
+const DATA_OVERRIDE = process.env.GIB_DATA ? resolve(process.env.GIB_DATA) : null;
 
 const TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -43,8 +46,13 @@ const server = createServer(async (req, res) => {
       return;
     }
     if (pathname.endsWith('/')) pathname += 'index.html';
-    const filePath = resolve(join(ROOT, normalize(pathname)));
-    if (filePath !== ROOT && !filePath.startsWith(ROOT + sep)) {
+    let base = ROOT;
+    if (DATA_OVERRIDE && pathname.startsWith('/data/build/')) {
+      base = DATA_OVERRIDE;
+      pathname = pathname.slice('/data/build'.length);
+    }
+    const filePath = resolve(join(base, normalize(pathname)));
+    if (filePath !== base && !filePath.startsWith(base + sep)) {
       res.writeHead(403).end('Forbidden');
       return;
     }
@@ -67,5 +75,5 @@ const server = createServer(async (req, res) => {
 
 server.listen(PORT, HOST, () => {
   console.log(`Gibraltar viewer: http://${HOST === '0.0.0.0' ? '127.0.0.1' : HOST}:${PORT}/web/`);
-  console.log(`Serving ${ROOT}`);
+  console.log(`Serving ${ROOT}${DATA_OVERRIDE ? ` (data/build -> ${DATA_OVERRIDE})` : ''}`);
 });

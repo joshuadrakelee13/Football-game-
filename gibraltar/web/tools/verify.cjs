@@ -71,7 +71,7 @@ function freePort() {
     await page.fill('#tp-search', 'light');
     await page.waitForTimeout(300);
     await shot('01-menu-teleport');
-    await page.click('button[data-page="main"]');
+    await page.click('#page-teleport button[data-page="main"]');
     await page.click('button[data-page="settings"]');
     await shot('02-menu-settings');
 
@@ -163,6 +163,24 @@ function freePort() {
     s = await state();
     check('sea blocks (Catalan Bay beach)', r.dist < 40 && s.z >= -0.5 && s.grounded, `moved ${r.dist.toFixed(2)} m east, stopped at feet ${s.z.toFixed(2)} m, seaBlocked=${s.seaBlocked}`);
 
+    // props (pipeline builds with a "props" layer): a tree trunk blocks, its crown never does, E inspects it
+    const hasProps = await page.evaluate(() => __gib.tiles.manifest.tiles.some((t) => t.layers.props));
+    if (hasProps) {
+      const tree = [-178.007, 1687.283]; // osm:node/3625701837, a mapped tree just east of Casemates
+      r = await sim(tree[0] - 6, tree[1], 90, 8, { f: true });
+      s = await state();
+      const dTree = Math.hypot(s.x - tree[0], s.y - tree[1]);
+      check('tree trunk blocks the player', r.blockedSteps > 0 && dTree < 1.2 && dTree > 0.25, `stopped ${dTree.toFixed(2)} m from the tree's mapped position`);
+      insp = await page.evaluate(() => { __gib.look(90, 20); const r = __gib.inspect(); return r && { kind: r.kind, id: r.id, rec: r.rec }; });
+      check('E on a tree shows the prop record', insp && insp.kind === 'prop' && insp.rec?.kind === 'tree', `${insp?.kind} ${insp?.id} kind=${insp?.rec?.kind} model=${insp?.rec?.model}`);
+      await page.evaluate(() => __gib.interact());
+      await page.waitForTimeout(1500);
+      await shot('12-inspect-tree');
+      await page.evaluate(() => __gib.interact());
+      const props = await page.evaluate(() => __gib.loadedTiles().filter((t) => t.layers.includes('props')).length);
+      check('props layer streams as a detail layer', props > 0, `${props} tiles with props loaded`);
+    }
+
     // ground height hook
     const gh = await page.evaluate(() => __gib.groundHeightAt(502.881, -158.716));
     check('groundHeightAt(Rock of Gibraltar peak) ≈ 403 m', gh != null && Math.abs(gh - 403) < 15, `${gh?.toFixed?.(2)} m (POI z 402.97)`);
@@ -181,6 +199,7 @@ function freePort() {
     const top = await view('21-top-of-rock-looking-north', 502.881, -158.716, 350, -6, 12);
     check('top of the Rock is ~400 m up', top.z > 380, `feet ${top.z.toFixed(1)} m`);
     await view('22-top-of-rock-looking-east-cliff', 502.881, -158.716, 80, -25, 12);
+    await view('22b-upper-rock-signal-hill-looking-south', 384.2, 486.8, 175, -4, 12);
     await view('23-europa-point-lighthouse', 410, -2238, 112, 4, 11);
     await view('24-main-street', -327.5, 1140, 10, 2, 12, true);
     await view('25-night-main-street', -327.5, 1140, 10, 2, 23, true);

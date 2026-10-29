@@ -10,13 +10,13 @@ import { Ambience } from './audio.js';
 import { KIND } from './collision.js';
 import { ltmToLonLat, ltmToThree, threeToLtm, tileIndexOf, tileId, headingToYaw, yawToHeading, cardinal } from './geo.js';
 import { gibLocal, gibLocalToUtc, fmtLocal } from './sun.js';
-import { Hud, Menu, store, loadSettings, poiPanel, buildingPanel, wallPanel } from './ui.js';
+import { Hud, Menu, store, loadSettings, poiPanel, buildingPanel, wallPanel, propPanel } from './ui.js';
 
 const params = new URLSearchParams(location.search);
 const AUTOTEST = params.get('autotest') === '1';
 const DATA = new URL('../data/build/', location.href).href;
 
-const KIND_NAMES = ['terrain', 'cliff', 'road/path', 'wall', 'pier/quay', 'building wall', 'roof'];
+const KIND_NAMES = ['terrain', 'cliff', 'road/path', 'wall', 'pier/quay', 'building wall', 'roof', 'prop'];
 
 function fatal(msg) {
   document.getElementById('fatal').classList.remove('hidden');
@@ -72,6 +72,9 @@ async function main() {
   const audio = new Ambience();
   audio.setVolume(settings.volume);
   const hud = new Hud();
+  const bc = manifest.stats?.buildings_by_confidence;
+  if (bc) document.getElementById('legend-counts').textContent =
+    `Whole world: ${bc.measured ?? 0} measured · ${bc.derived ?? 0} derived · ${bc.estimated ?? 0} estimated`;
 
   // ------------------------------------------------------------ POI markers
   const pois = manifest.pois;
@@ -188,6 +191,7 @@ async function main() {
     `${pois.length} places. Generated ${manifest.generated_utc}.`;
   if (store.get('autosave')) btnContinue.classList.remove('hidden');
 
+  let menuShownAt = 0;
   const lockPointer = () => {
     if (AUTOTEST) return;
     try {
@@ -211,7 +215,7 @@ async function main() {
   btnContinue.addEventListener('click', () => { applyRecord(store.get('autosave')); begin(); });
   document.addEventListener('pointerlockchange', () => {
     if (!started || AUTOTEST) return;
-    if (document.pointerLockElement !== canvas && !menu.open) menu.show();
+    if (document.pointerLockElement !== canvas && !menu.open) { menu.show(); menuShownAt = performance.now(); }
   });
   canvas.addEventListener('click', () => {
     if (started && !menu.open && document.pointerLockElement !== canvas) lockPointer();
@@ -225,7 +229,8 @@ async function main() {
     if (e.code === 'F3') { e.preventDefault(); hud.showInfo = !hud.showInfo; return; }
     if (e.code === 'Escape') {
       if (!started) return;
-      if (menu.open) resume();
+      // (a real browser may both release pointer lock and deliver this keydown; ignore the echo)
+      if (menu.open) { if (performance.now() - menuShownAt > 400) resume(); }
       else {
         menu.show();
         if (document.pointerLockElement === canvas) document.exitPointerLock?.();
@@ -279,17 +284,18 @@ async function main() {
   function lookTarget(withGround = false) {
     raycaster.setFromCamera(center, camera);
     const [px, py] = player.ltm;
-    const objs = tiles.meshesNear(px, py, 120, withGround ? ['buildings', 'walls', 'terrain', 'roads'] : ['buildings', 'walls']);
+    const objs = tiles.meshesNear(px, py, 120, withGround ? ['buildings', 'walls', 'props', 'terrain', 'roads'] : ['buildings', 'walls', 'props']);
     if (showPois) objs.push(markers);
     const hits = raycaster.intersectObjects(objs, false);
     if (!hits.length) return null;
     const h = hits[0];
     if (h.object === markers) return { type: 'poi', poi: pois[h.instanceId], dist: h.distance, point: h.point };
     const L = h.object.userData.layer;
-    if (L === 'buildings' || L === 'walls') {
+    if (L === 'buildings' || L === 'walls' || L === 'props') {
       const fid = h.object.userData.fid ? Math.round(h.object.userData.fid[h.face.a]) : -1;
       const rec = tiles.featureFor(h.object.userData.tile, L, fid);
-      return { type: L === 'buildings' ? 'building' : 'wall', rec, fid, tile: h.object.userData.tile, dist: h.distance, point: h.point };
+      const type = { buildings: 'building', walls: 'wall', props: 'prop' }[L];
+      return { type, rec, fid, tile: h.object.userData.tile, dist: h.distance, point: h.point };
     }
     return { type: 'ground', dist: h.distance, point: h.point };
   }
@@ -308,6 +314,7 @@ async function main() {
     const t = lookTarget(true);
     if (t && t.dist <= 60 && t.type === 'poi') return { kind: 'poi', poi: t.poi, dist: t.dist };
     if (t && t.dist <= 60 && t.type === 'building' && t.rec) return { kind: 'building', rec: t.rec, tile: t.tile, dist: t.dist };
+    if (t && t.dist <= 40 && t.type === 'prop' && t.rec) return { kind: 'prop', rec: t.rec, tile: t.tile, dist: t.dist };
     // a POI within 6 m of what we're looking at, or of the player
     if (t && t.point) {
       for (let i = 0; i < pois.length; i++) {
@@ -333,6 +340,7 @@ async function main() {
     if (!r) { hud.toast('Nothing to inspect here — look at a building or a place marker'); return null; }
     if (r.kind === 'poi') hud.showPanel(poiPanel(r.poi, r.dist));
     else if (r.kind === 'building') hud.showPanel(buildingPanel(r.rec, r.tile, r.dist));
+    else if (r.kind === 'prop') hud.showPanel(propPanel(r.rec, r.tile, r.dist));
     else hud.showPanel(wallPanel(r.rec, r.tile, r.dist));
     panelAnchor = player.pos.clone();
     return r;
@@ -400,6 +408,7 @@ async function main() {
       if (t && t.dist <= 60) {
         if (t.type === 'poi') txt = `E — ${t.poi.name}`;
         else if (t.type === 'building' && t.rec) txt = `E — ${t.rec.name || 'building'} (${t.rec.confidence})`;
+        else if (t.type === 'prop' && t.rec && t.dist <= 40) txt = `E — ${t.rec.name || t.rec.kind.replace(/_/g, ' ')}`;
       }
       hud.prompt.textContent = txt;
     }

@@ -7,7 +7,11 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { TileCollider, CollisionWorld, kindFor } from './collision.js';
 import { tileIndexOf, tileId } from './geo.js';
 
-const DETAIL_LAYERS = ['roads', 'buildings', 'walls'];
+// Every layer except terrain streams at the detail radius (roads, buildings, walls, props, and
+// any layer a future pipeline adds).
+// Props that the player bumps into. Everything else (and every tree crown, M_Foliage) is walk-through.
+const SOLID_PROPS = new Set(['tree', 'bench', 'picnic_table', 'memorial', 'telephone', 'post_box', 'cannon',
+  'bus_stop', 'fountain', 'mast', 'flagpole', 'street_lamp', 'bollard', 'info_board', 'recycling']);
 const HYSTERESIS = 200;      // m: unload only once this far beyond the load radius
 const COLLISION_RADIUS = 350; // m from the tile rectangle
 const MAX_CONCURRENT = 4;
@@ -34,7 +38,9 @@ export function createMaterials() {
     M_BuildingWall: mk('M_BuildingWall', 0.85),
     M_BuildingRoof: mk('M_BuildingRoof', 0.9),
     M_Wall: mk('M_Wall', 0.92),
-    default: mk('default', 0.9),
+    M_Prop: mk('M_Prop', 0.7),
+    M_Foliage: mk('M_Foliage', 0.9),
+    default: mk('default', 0.9), // any material name we don't know yet: generic vertex-colour
   };
 }
 
@@ -150,6 +156,8 @@ export class TileManager {
       const s = t.layers[layer]?.state;
       if (s !== 'loaded' && s !== 'error') return false;
     }
+    // prop collision needs the prop kinds from features.json
+    if (t.meta.layers.props && t.featuresState !== 'loaded' && t.featuresState !== 'error') return false;
     return true;
   }
 
@@ -183,10 +191,22 @@ export class TileManager {
           v.fromBufferAttribute(src, i).applyMatrix4(m.matrixWorld);
           pos[i * 3] = v.x; pos[i * 3 + 1] = v.y; pos[i * 3 + 2] = v.z;
         }
-        parts.push({
-          pos, index: m.geometry.index ? m.geometry.index.array : null,
-          kind: kindFor(layer, m.userData.matName), fid: m.userData.fid || null,
-        });
+        let index = m.geometry.index ? m.geometry.index.array : null;
+        if (layer === 'props') {
+          // only solid furniture and tree trunks collide; crowns (M_Foliage) never do
+          if (m.userData.matName !== 'M_Prop' || !m.userData.fid) continue;
+          const recs = t.features?.props || [];
+          const fid = m.userData.fid;
+          const src = index || Array.from({ length: pos.length / 3 }, (_, i) => i);
+          const keep = [];
+          for (let k = 0; k < src.length; k += 3) {
+            const rec = recs[Math.round(fid[src[k]])];
+            if (rec && SOLID_PROPS.has(rec.kind)) keep.push(src[k], src[k + 1], src[k + 2]);
+          }
+          if (!keep.length) continue;
+          index = Uint32Array.from(keep);
+        }
+        parts.push({ pos, index, kind: kindFor(layer, m.userData.matName), fid: m.userData.fid || null });
       }
     }
     const c = new TileCollider(t.meta.id, parts);

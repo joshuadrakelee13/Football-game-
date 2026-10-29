@@ -21,6 +21,7 @@ export const KIND = {
   DECK: 4,      // M_Path in walls.glb (pier / quay decks)
   BWALL: 5,     // M_BuildingWall
   BROOF: 6,     // M_BuildingRoof
+  PROP: 7,      // M_Prop in props.glb (tree trunks, benches, kiosks…) — bumps into, never stood on
 };
 
 export function kindFor(layer, materialName) {
@@ -30,7 +31,10 @@ export function kindFor(layer, materialName) {
     case 'M_BuildingWall': return KIND.BWALL;
     case 'M_BuildingRoof': return KIND.BROOF;
     case 'M_Wall': return KIND.WALL;
+    case 'M_Prop': return KIND.PROP;
+    case 'M_Foliage': return layer === 'walls' ? KIND.WALL : KIND.PROP; // hedges are walls
     default:
+      if (layer === 'props') return KIND.PROP;
       if (layer === 'walls') return KIND.DECK;
       if (layer === 'buildings') return KIND.BWALL;
       if (layer === 'terrain') return KIND.TERRAIN;
@@ -91,11 +95,11 @@ export class TileCollider {
     this.nz = Math.max(1, Math.ceil((maxZ - minZ) / CELL) + 1);
     this.stamp = new Uint32Array(t);
     this.stampId = 1;
-    this.surface = this._grid((i) => this.nrm[i * 3 + 1] > SURFACE_MIN_NY);
+    this.surface = this._grid((i) => this.nrm[i * 3 + 1] > SURFACE_MIN_NY && this.kind[i] !== KIND.PROP);
     this.walls = this._grid((i) => {
       const k = this.kind[i];
-      return this.nrm[i * 3 + 1] < WALL_MAX_NY &&
-        (k === KIND.BWALL || k === KIND.WALL || k === KIND.CLIFF || k === KIND.DECK || k === KIND.BROOF);
+      return k === KIND.PROP || (this.nrm[i * 3 + 1] < WALL_MAX_NY &&
+        (k === KIND.BWALL || k === KIND.WALL || k === KIND.CLIFF || k === KIND.DECK || k === KIND.BROOF));
     });
   }
 

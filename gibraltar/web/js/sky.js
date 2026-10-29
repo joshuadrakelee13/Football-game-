@@ -129,8 +129,10 @@ export class Environment {
     }
     const sg = new THREE.BufferGeometry();
     sg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    this.starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 1.6, sizeAttenuation: false, transparent: true,
-      opacity: 0, depthTest: false, depthWrite: false, fog: false });
+    // Opaque (drawn first, right after the dome) so buildings and terrain always cover the stars;
+    // fading is done through the colour, not transparency.
+    this.starMat = new THREE.PointsMaterial({ color: 0x000000, size: 1.6, sizeAttenuation: false,
+      depthTest: false, depthWrite: false, fog: false, toneMapped: false });
     this.stars = new THREE.Points(sg, this.starMat);
     this.stars.renderOrder = -9;
     this.stars.frustumCulled = false;
@@ -184,7 +186,7 @@ export class Environment {
     U.sunColor.value.setRGB(1, 0.75 + 0.2 * smooth(0, 20, el), 0.5 + 0.4 * smooth(0, 25, el));
     this.dome.position.copy(camera.position);
     this.stars.position.copy(camera.position);
-    this.starMat.opacity = smooth(-5, -14, el) * 0.95;
+    this.starMat.color.setScalar(smooth(-5, -14, el) * 0.9);
     this.stars.rotation.y = (utcMs / 86164090) * Math.PI * 2 % (Math.PI * 2);
 
     // Simple moon: opposite the sun in azimuth, 35–55° high, only at night.

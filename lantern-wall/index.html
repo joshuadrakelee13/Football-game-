@@ -1,0 +1,100 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Lantern Wall</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen&display=swap">
+<style>
+/* Layout: an arcade cabinet. The game screen fills the middle, controls sit underneath.
+   One deliberate dark look; every colour is set explicitly. */
+:root {
+  color-scheme: dark;
+  --cab: #0b0c18;
+  --bezel: #1a1b31;
+  --ink: #e9e2cc;
+  --dim: #8a87a6;
+  --amber: #ffb43a;
+  --key: #23264a;
+  --key-edge: #34386a;
+  --font-ui: "Silkscreen", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--cab);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 12px;
+  overflow: hidden;
+}
+#stage { flex: 1 1 auto; min-height: 0; display: flex; align-items: center; justify-content: center; }
+#screen {
+  position: relative;
+  max-width: 100%;
+  background: #000;
+  box-shadow: 0 0 0 6px var(--bezel), 0 0 48px 8px rgba(255, 180, 58, 0.07);
+}
+#game { display: block; width: 100%; height: 100%; image-rendering: pixelated; image-rendering: crisp-edges; outline: none; }
+#screen.crt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(to bottom,
+    transparent 0, transparent calc(var(--px, 3px) * 0.62),
+    rgba(0, 0, 0, 0.26) calc(var(--px, 3px) * 0.62), rgba(0, 0, 0, 0.26) var(--px, 3px));
+}
+.bar { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px 16px; color: var(--dim); }
+.keys { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 14px; }
+kbd { font: inherit; color: var(--ink); background: var(--key); padding: 1px 6px; border-radius: 3px; }
+button { font: inherit; color: var(--ink); background: var(--key); border: 1px solid var(--key-edge); border-radius: 3px; padding: 3px 8px; cursor: pointer; }
+button:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+.pad { display: none; justify-content: space-between; align-items: center; gap: 12px; }
+.pad .dirs { display: flex; gap: 10px; }
+.pad button {
+  touch-action: none; user-select: none; -webkit-user-select: none;
+  font-size: 15px; min-width: 68px; min-height: 58px; border-radius: 12px;
+}
+.pad .jump { min-width: 104px; background: #4a2412; border-color: var(--amber); color: var(--amber); }
+@media (pointer: coarse) {
+  .pad { display: flex; }
+  .keys { display: none; }
+}
+</style>
+
+<div id="stage">
+  <div id="screen" class="crt">
+    <canvas id="game" tabindex="0" aria-label="Lantern Wall game screen"></canvas>
+  </div>
+</div>
+
+<div class="pad">
+  <div class="dirs">
+    <button type="button" data-k="left" aria-label="Move left">&#9664;</button>
+    <button type="button" data-k="right" aria-label="Move right">&#9654;</button>
+  </div>
+  <button type="button" class="jump" data-k="jump">JUMP</button>
+</div>
+
+<div class="bar">
+  <span class="keys">
+    <span><kbd>&larr; &rarr;</kbd> move</span>
+    <span><kbd>Space</kbd> jump</span>
+    <span><kbd>Enter</kbd> start</span>
+    <span><kbd>P</kbd> pause</span>
+  </span>
+  <button type="button" id="mute">Sound on</button>
+  <button type="button" id="crt">Scanlines on</button>
+</div>
+
+<script src="skin.js"></script>
+<script src="levels.js"></script>
+<script src="game.js"></script>

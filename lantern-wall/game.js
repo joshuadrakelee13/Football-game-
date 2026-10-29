@@ -5,11 +5,8 @@
 'use strict';
 
 const SKIN = window.SKIN, LEVELS = window.LEVELS;
-// The screen is one whole level wide, so the entire wall is always in view (no scrolling).
-const PIECE = 224;                  // one piece of wall; a level is PIECES pieces plus the BELL_TAIL
-const PIECES = 2;
-const BELL_TAIL = 40;               // walkway after the last piece, where the belfry (or the tower) stands
-const W = PIECES * PIECE + BELL_TAIL, H = 256;
+// One fixed screen is one whole level, so the entire wall is always in view (no scrolling).
+const W = 488, H = 256;
 const OX = (W - 224) / 2;           // left edge of a centred 224-wide column, for the title text
 const FLOOR = 176;            // walkway surface
 const MOAT = 226;             // water line
@@ -31,10 +28,12 @@ const PHYS = {
 };
 // Fixed hitboxes, independent of the sprite art.
 const HERO = { halfW: 3.5, height: 13, foot: 2 };
-const KNIGHT = { halfW: 4, height: 15, hang: 18 };   // hang: how far below the walkway he clings under a breach
+// hang: how far below the walkway the knight clings crossing a breach; cling: his speed doing it
+const KNIGHT = { halfW: 4, height: 15, hang: 18, cling: 0.35, startX: 10 };
+// A pikeman stands in a recess-wide gap in the ramparts; his pike rises from pikeDown to pikeUp above the walkway.
+const GUARD = { recess: 20, pikeX: 13, pikeDown: 4, pikeUp: 30 };
 
 const SECTIONS = LEVELS.sections;
-SECTIONS.forEach(d => { if (d.pieces.length !== PIECES) console.warn(`levels.js: "${d.name}" needs exactly ${PIECES} pieces`); });
 const SEC_LEN = SECTIONS.map(() => W);
 const SEC_START = SEC_LEN.map((_, i) => SEC_LEN.slice(0, i).reduce((a, b) => a + b, 0));
 const ROUND_LEN = SEC_LEN.reduce((a, b) => a + b, 0);
@@ -203,8 +202,9 @@ const TUNES = {
 const SFX = {
   jump: () => beep(220, 660, 0.14),
   land: () => beep(140, 90, 0.05, 'triangle', 0.08),
-  bolt: () => beep(900, 300, 0.08, 'sawtooth', 0.025),
-  bat: () => beep(1500, 1100, 0.05, 'square', 0.02),
+  fire: () => noise(0.25, 0.05, 900),
+  arrow: () => beep(1400, 700, 0.06, 'triangle', 0.03),
+  pike: () => beep(300, 600, 0.05, 'sawtooth', 0.015),
   grab: () => beep(500, 760, 0.07),
   pickup: () => [0, 0.06, 0.12].forEach((d, i) => beep(880 * (1 + i * 0.26), 880 * (1 + i * 0.26), 0.07, 'square', 0.05, d)),
   hit: () => beep(700, 60, 0.6, 'square', 0.08),
@@ -322,32 +322,34 @@ try {
 } catch (e) {}
 syncButtons();
 
-function bonusFor(loop, pieces) {
-  return pieces * Math.max(LEVELS.bonusMinPerPiece, LEVELS.bonusPerPiece - loop * LEVELS.bonusLoopCut);
+// The time limit for a screen in frames: the climbing knight takes this long to reach the top.
+function timeFor(d, loop) {
+  const T = LEVELS.time;
+  return Math.round(60 * Math.max(T.min, (d.time ?? T.start) - loop * T.loopCut));
 }
 
-// A section is its pieces laid end to end; every piece position is shifted by PIECE per piece.
-function buildWorld(i, loop, respawn = false) {
-  const d = SECTIONS[i], len = SEC_LEN[i];
+function buildWorld(i, loop) {
+  const d = SECTIONS[i];
+  const rope = (c, bell) => ({ x: c.x, len: c.len, amp: bell ? 0 : c.amp, period: bell ? 1 : c.period, phase: c.phase || 0,
+    ay: FLOOR - 21 - c.len, th: 0, om: 0, bell, rung: false, ringT: 0 });
   const w = {
-    def: d, len, sf: Math.min(LEVELS.maxSpeed, 1 + loop * LEVELS.loopSpeedUp), t: 0, lit: false, rung: false, ringT: 0,
-    gaps: [], crumbles: [], lifts: [], chains: [], spikes: [], flasks: [], lanes: [], projectiles: [],
+    def: d, len: W, sf: Math.min(LEVELS.maxSpeed, 1 + loop * LEVELS.loopSpeedUp), t: 0, lit: false, rung: false, ringT: 0,
+    gaps: (d.gaps || []).map(([x, wd]) => ({ x, w: wd })),
+    crumbles: (d.crumbles || []).map(([x, wd]) => ({ x, w: wd, state: 'solid', t: 0 })),
+    lifts: (d.lifts || []).map(l => ({ from: l.from, to: l.to, w: l.w, period: l.period, px: l.from, dx: 0, isLift: true })),
+    chains: [...(d.chains || []).map(c => rope(c, false)), ...(d.bellRopes || []).map(c => rope(c, true))],
+    spikes: (d.spikes || []).map(([x, wd, period, up, offset]) => ({ x, w: wd, period, up, offset: offset || 0, level: 0 })),
+    flasks: (d.flasks || []).map(([x, hgt]) => ({ x: x - 3, y: FLOOR - hgt, got: false })),
+    guards: (d.guards || []).map(([x, period, up, offset]) => ({ x, period, up, offset: offset || 0, pike: 0, wasUp: false })),
+    streams: (d.shots || []).map(s => ({ ...s, acc: s.every - (s.offset || 0) })),
+    projectiles: [],
   };
-  d.pieces.forEach((name, pi) => {
-    const p = LEVELS.pieces[name], ox = pi * PIECE;
-    if (!p) { console.warn(`levels.js: no piece called "${name}"`); return; }
-    for (const [x, wd] of p.gaps || []) w.gaps.push({ x: ox + x, w: wd });
-    for (const [x, wd] of p.crumbles || []) w.crumbles.push({ x: ox + x, w: wd, state: 'solid', t: 0 });
-    for (const l of p.lifts || []) w.lifts.push({ from: ox + l.from, to: ox + l.to, w: l.w, period: l.period, px: ox + l.from, dx: 0, isLift: true });
-    for (const c of p.chains || []) w.chains.push({ x: ox + c.x, len: c.len, amp: c.amp, period: c.period, phase: c.phase || 0, ay: FLOOR - 21 - c.len, th: 0, om: 0 });
-    for (const [x, wd, period, up, offset] of p.spikes || []) w.spikes.push({ x: ox + x, w: wd, period, up, offset: offset || 0, level: 0 });
-    for (const [x, hgt] of p.flasks || []) w.flasks.push({ x: ox + x - 3, y: FLOOR - hgt, got: false });
-    if (p.shots) w.lanes.push({ ...p.shots, x0: ox, x1: ox + PIECE, acc: p.shots.beat - (p.shots.offset || 0), i: 0 });
-  });
-  if (d.tower) { w.towerX = len - TOWER_W; w.beaconX = len - 11; }
-  else w.ropeX = len - 26;
-  const K = LEVELS.knight;
-  w.knight = { mode: 'wait', timer: respawn ? K.delay : (d.knightDelay ?? K.delay), x: 0, y: 0, vx: 0, vy: 0, face: -1, t: 0, step: 0 };
+  // fire pits and the pikemen's gaps in the ramparts are breaches in the walkway too
+  for (const [x, wd] of d.firePits || []) w.gaps.push({ x, w: wd, fire: true });
+  for (const g of w.guards) w.gaps.push({ x: g.x, w: GUARD.recess, guard: g });
+  if (d.tower) { w.towerX = W - TOWER_W; w.beaconX = W - 11; }
+  else w.ropeX = W - 26;
+  w.knight = { mode: 'climb', x: KNIGHT.startX, y: MOAT - 2, vx: 0, vy: 0, face: 1, t: 0, step: 0 };
   poseWorld(w);
   if (!G.bgCache[i]) G.bgCache[i] = renderBackground(w, i + 1);
   w.bg = G.bgCache[i];
@@ -379,19 +381,20 @@ function startGame() {
   startSection();
 }
 
+// Every attempt at a screen starts from its left end with the full time and the knight at the bottom.
 function startSection() {
   G.world = buildWorld(G.section, G.loop);
-  G.piece = 0;
   G.hero = newHero();
-  G.bonus = bonusFor(G.loop, G.world.def.pieces.length);
+  G.timeFull = G.timeLeft = timeFor(G.world.def, G.loop);
+  G.bonusFull = G.bonus = LEVELS.bonus.start + G.loop * LEVELS.bonus.loopAdd;
   setState('ready');
 }
 
 function setState(s) { G.state = s; G.stateT = 0; }
 
 function addScore(n) { G.score += n; }
-// World popups float over the wall; screen popups (screen = true) sit in fixed screen space.
-function popup(x, y, txt, screen = false) { G.pops.push({ x, y, txt: String(txt), life: 50, screen }); }
+// World popups float over the wall; screen popups (screen = true) are drawn in the banner colour.
+function popup(x, y, txt, screen = false) { G.pops.push({ x, y, txt: String(txt), life: screen ? 80 : 50, screen }); }
 function part(x, y, vx, vy, color, life, g = 0.1) { G.parts.push({ x, y, vx, vy, color, life, g }); }
 
 // ---------------------------------------------------------------- collision helpers
@@ -432,6 +435,7 @@ function knightFoot(w, x) {
 function stepOn(s) {
   if (s && s.state === 'solid') { s.state = 'shaking'; s.t = LEVELS.crumbleDelay; }
 }
+const pikeTip = g => FLOOR - GUARD.pikeDown - (GUARD.pikeUp - GUARD.pikeDown) * g.pike;
 
 // ---------------------------------------------------------------- update
 
@@ -445,6 +449,12 @@ function updateWorld(w) {
     if (lv === 2 && s.level !== 2 && G.state === 'play') SFX.spike();
     s.level = lv;
   }
+  for (const g of w.guards) {           // pikes thrust up and drop back over a few frames
+    const up = (T + g.offset) % g.period < g.up;
+    g.pike = clamp(g.pike + (up ? 0.25 : -0.2), 0, 1);
+    if (up && !g.wasUp && G.state === 'play') SFX.pike();
+    g.wasUp = up;
+  }
   for (const c of w.crumbles) {
     if (c.state === 'shaking' && --c.t <= 0) {
       c.state = 'gone';
@@ -452,50 +462,33 @@ function updateWorld(w) {
       for (let i = 0; i < 12; i++) part(c.x + Math.random() * c.w, FLOOR + 2, (Math.random() - 0.5) * 1.2, -Math.random() * 1.5, pick(SKIN.particles.rubble), 70);
     }
   }
-  // only the piece the hero is on fires at him
-  const lane = G.state === 'play' && w.lanes.find(l => G.hero.x >= l.x0 && G.hero.x < l.x1);
-  if (lane) {
-    lane.acc += w.sf;
-    if (lane.acc >= lane.beat) {
-      lane.acc -= lane.beat;
-      spawnShot(w, lane, lane.pattern[lane.i++ % lane.pattern.length]);
+  if (G.state === 'play') {
+    for (const s of w.streams) {
+      s.acc += w.sf;
+      if (s.acc >= s.every) { s.acc -= s.every; spawnShot(w, s); }
     }
   }
-  for (const p of w.projectiles) {
-    p.x += p.vx;
-    p.t++;
-    if (p.kind === 'bat') p.y = p.y0 + Math.sin(p.t * 2 * Math.PI / 64) * 11;
-  }
-  w.projectiles = w.projectiles.filter(p => p.x > -20);
+  for (const p of w.projectiles) { p.x += p.vx; p.t++; }
+  w.projectiles = w.projectiles.filter(p => p.x > -20 && p.x < W + 20);
+  for (const c of w.chains) if (c.rung) c.ringT++;
   if (w.rung) w.ringT++;
   if (w.lit && G.t % 5 === 0) part(w.beaconX - 3 + Math.random() * 6, TOWER_TOP - 28, (Math.random() - 0.5) * 0.4, -0.7, pick(SKIN.particles.spark), 40, -0.004);
 }
 
-function spawnShot(w, lane, ch) {
-  const speed = (lane.speed || 1.4) * w.sf, x = W;
-  if (ch === 'L' || ch === 'H') {
-    w.projectiles.push({ kind: 'bolt', high: ch === 'H', x: x + 4, y: ch === 'H' ? FLOOR - 24 : FLOOR - 5, vx: -speed, t: 0 });
-    SFX.bolt();
-  } else if (ch === 'B') {
-    w.projectiles.push({ kind: 'bat', x: x + 6, y0: FLOOR - 20, y: FLOOR - 20, vx: -0.9 * w.sf, t: 0 });
-    SFX.bat();
-  }
+// Fireballs and arrows come in from either side, low (jump them) or high (stay down).
+function spawnShot(w, s) {
+  const dir = s.from === 'left' ? 1 : -1, speed = (s.speed || 1.3) * w.sf;
+  w.projectiles.push({ kind: s.kind, high: !!s.high, x: dir > 0 ? -10 : W + 2, y: s.high ? FLOOR - 24 : FLOOR - 5, vx: dir * speed, t: 0 });
+  if (s.kind === 'fire') SFX.fire(); else SFX.arrow();
 }
 
 // ---------------------------------------------------------------- the climbing knight
-// Like the knight in Hunchback, he comes up the wall face out of the moat behind the hero,
-// hauls himself onto the walkway and walks after him. A breach does not stop him: he
-// climbs down and crosses it clinging to the stones below the walkway, then climbs back up.
-
-function spawnKnight(w) {
-  const K = LEVELS.knight, k = w.knight, h = G.hero;
-  const x = Math.max(h.x - K.behind, 8);          // at the start of the wall, right at the left edge
-  Object.assign(k, { mode: 'climb', x, y: MOAT - 2, vx: 0, vy: 0, t: 0, step: 0, face: h.x < x ? -1 : 1 });
-  SFX.knight();
-}
+// He is the clock, as in Hunchback. Every screen he starts at the bottom left and climbs the
+// wall face, reaching the top just as time runs out. Then he walks at the hero with his torch,
+// climbing down and round any breach in his way. He kills on touch, climbing or walking.
 
 function updateKnight(w) {
-  const K = LEVELS.knight, k = w.knight, h = G.hero, sf = w.sf;
+  const k = w.knight, h = G.hero, sf = w.sf;
   if (k.mode === 'fall') {
     k.vy = Math.min(k.vy + PHYS.gravity, PHYS.maxFall);
     k.x += k.vx; k.y += k.vy;
@@ -507,30 +500,36 @@ function updateKnight(w) {
     return;
   }
   if (G.state !== 'play' || k.mode === 'gone') return;
-  if (k.mode === 'wait') { if (--k.timer <= 0) spawnKnight(w); return; }
-
   k.t++;
+  if (k.mode === 'climb') {
+    k.y = MOAT - 2 - (MOAT - 2 - FLOOR) * (1 - G.timeLeft / G.timeFull);
+    if (G.timeLeft <= 0) {
+      k.mode = 'walk'; k.y = FLOOR;
+      SFX.knight();
+      popup(W / 2 - 20, 40, 'TIME UP', true);
+    }
+    return;
+  }
   const dx = h.x - k.x, dir = Math.abs(dx) > 1.5 ? Math.sign(dx) : 0;
   if (dir) k.face = dir;
   if (k.mode === 'walk') {
-    const nx = k.x + dir * K.walk * sf;
-    if (!knightFoot(w, k.x) || (dir && !knightFoot(w, nx + dir * 3))) k.mode = 'climb';   // a breach: over the side
+    const nx = k.x + dir * LEVELS.knight.walk * sf;
+    if (!knightFoot(w, k.x) || (dir && !knightFoot(w, nx + dir * 3))) k.mode = 'cling';   // a breach: over the side
     else { k.x = nx; if (dir) k.step++; }
   }
-  if (k.mode === 'climb') {
-    k.x += dir * K.climbAcross * sf;
+  if (k.mode === 'cling') {
+    k.x += dir * KNIGHT.cling * sf;
     const top = knightFoot(w, k.x - 5) && knightFoot(w, k.x + 5);
     const ty = top ? FLOOR : FLOOR + KNIGHT.hang;
-    if (k.y > ty) k.y = Math.max(ty, k.y - K.climb * sf);
-    else if (k.y < ty) k.y = Math.min(ty, k.y + K.climb * sf);
-    if (top && k.y <= FLOOR) { k.mode = 'walk'; k.y = FLOOR; SFX.knight(); }
+    if (k.y > ty) k.y = Math.max(ty, k.y - KNIGHT.cling * sf);
+    else if (k.y < ty) k.y = Math.min(ty, k.y + KNIGHT.cling * sf);
+    if (top && k.y <= FLOOR) { k.mode = 'walk'; k.y = FLOOR; }
   }
 }
 
 function knockKnight(w) {
   const k = w.knight;
-  if (k.mode === 'climb' || k.mode === 'walk') { k.mode = 'fall'; k.vy = -1.6; k.vx = -k.face * 0.5; }
-  else if (k.mode === 'wait') k.mode = 'gone';
+  if (k.mode !== 'fall' && k.mode !== 'gone') { k.mode = 'fall'; k.vy = -1.6; k.vx = -k.face * 0.5; }
 }
 
 function updateHero(w, jp) {
@@ -567,7 +566,11 @@ function updateHero(w, jp) {
       else {
         for (const c of w.chains) {
           const r = grabTest(c, h);
-          if (r) { h.mode = 'chain'; h.chain = c; h.grabR = r; h.vx = 0; h.vy = 0; SFX.grab(); return; }
+          if (r) {
+            h.mode = 'chain'; h.chain = c; h.grabR = r; h.vx = 0; h.vy = 0; SFX.grab();
+            if (c.bell && !c.rung) ringTowerBell(c);
+            return;
+          }
         }
       }
       if (h.vy > 0 && py <= FLOOR && h.y >= FLOOR) {
@@ -589,9 +592,14 @@ function updateHero(w, jp) {
       h.x = p.x - h.face * 2;
       h.y = p.y + 15;
       if (jp) {
-        const v = c.len * h.grabR * c.om;
-        h.vx = clamp(Math.cos(c.th) * v, -PHYS.maxReleaseVx, PHYS.maxReleaseVx);
-        h.vy = -Math.sin(c.th) * v + PHYS.releaseVy;
+        if (c.amp === 0) {              // a still rope: an ordinary jump off it
+          h.vx = (dir || h.face) * PHYS.run;
+          h.vy = PHYS.jumpVy;
+        } else {                        // a swinging rope throws you with its swing
+          const v = c.len * h.grabR * c.om;
+          h.vx = clamp(Math.cos(c.th) * v, -PHYS.maxReleaseVx, PHYS.maxReleaseVx);
+          h.vy = -Math.sin(c.th) * v + PHYS.releaseVy;
+        }
         h.mode = 'air'; h.chain = null; h.regrab = 24;
         if (Math.abs(h.vx) > 0.2) h.face = Math.sign(h.vx);
         SFX.jump();
@@ -606,16 +614,13 @@ function checkHazards(w) {
   if (G.state !== 'play') return;
   const hx0 = h.x - HERO.halfW, hx1 = h.x + HERO.halfW, hy0 = h.y - HERO.height, hy1 = h.y;
   for (const p of w.projectiles) {
-    let bx0, bx1, by0, by1;
-    if (p.kind === 'bolt') { bx0 = p.x + 1; bx1 = p.x + 7; by0 = p.y - 1; by1 = p.y + 1; }
-    else { bx0 = p.x + 2; bx1 = p.x + 8; by0 = p.y - 2; by1 = p.y + 2; }
+    const bx0 = p.x + 1, bx1 = p.x + 7, by0 = p.y - (p.kind === 'fire' ? 2 : 1), by1 = p.y + (p.kind === 'fire' ? 2 : 1);
     if (bx0 < hx1 && bx1 > hx0 && by0 < hy1 && by1 > hy0) { die('hit'); return; }
-    if (!p.passed && bx1 < hx0) {
-      p.passed = true;
-      const pts = p.kind === 'bat' ? 100 : (!p.high && h.mode !== 'ground' ? 100 : 50);
-      addScore(pts);
-      popup(h.x - 8, h.y - 26, pts);
-    }
+  }
+  for (const g of w.guards) {
+    const px = g.x + GUARD.pikeX;
+    if (px - 1 < hx1 && px + 1 > hx0 && pikeTip(g) < hy1 && FLOOR > hy0) { die('hit'); return; }
+    if (h.y > FLOOR + 4 && h.x > g.x && h.x < g.x + GUARD.recess) { die('hit'); return; }   // fell in on top of him
   }
   if (h.y > FLOOR - 4 && h.mode !== 'chain') {
     for (const s of w.spikes) {
@@ -632,27 +637,26 @@ function checkHazards(w) {
     }
   }
   const k = w.knight;
-  if (k.mode === 'climb' || k.mode === 'walk') {
+  if (k.mode === 'climb' || k.mode === 'walk' || k.mode === 'cling') {
     if (k.x - KNIGHT.halfW < hx1 && k.x + KNIGHT.halfW > hx0 && k.y - KNIGHT.height < hy1 && k.y - 1 > hy0) { die('hit'); return; }
   }
   if (!w.def.tower && Math.abs(h.x - w.ropeX) < HERO.halfW + 1.5 && hy0 < ROPE_END && hy1 > BELL_TOP + 10) ringBell();
 }
 
-function updateBonus() {
-  if (G.stateT % 12 === 0) {
-    G.bonus = Math.max(0, G.bonus - 10);
-    if (G.bonus === 0) { popup(G.hero.x - 20, G.hero.y - 30, 'TIME UP'); die('time'); }
-  }
+// The bonus drains with the time left, and the knight climbs with it.
+function updateTime() {
+  if (G.timeLeft > 0) G.timeLeft--;
+  G.bonus = Math.round((G.bonusFull * G.timeLeft) / G.timeFull / 10) * 10;
 }
 
 function die(kind) {
   if (G.state !== 'play') return;
   const h = G.hero;
   setState('dying');
-  h.deathKind = kind; h.deathX = h.x; h.chain = null; h.mode = 'dead'; h.vx = 0;
+  h.deathKind = kind; h.chain = null; h.mode = 'dead'; h.vx = 0;
   if (kind === 'fall') SFX.fall();
   else { h.vy = -2.4; SFX.hit(); }
-  if (G.bells > 0) {             // dying before the fifth bell loses every bell rung so far
+  if (G.bells > 0) {             // a life lost breaks the run of bells
     G.bells = 0;
     popup(W / 2 - 29, 40, 'BELLS LOST', true);
     SFX.lost();
@@ -675,15 +679,7 @@ function updateDeath() {
 function loseLife() {
   G.lives--;
   if (G.lives <= 0) { setState('gameover'); tune(TUNES.over); return; }
-  // start again from the beginning of the piece of wall the hero fell on
-  const pieces = G.world.def.pieces.length;
-  G.piece = clamp(Math.floor(G.hero.deathX / PIECE), 0, pieces - 1);
-  const got = G.world.flasks.map(f => f.got);
-  G.world = buildWorld(G.section, G.loop, true);
-  G.world.flasks.forEach((f, i) => { f.got = got[i]; });
-  G.hero = newHero(G.piece * PIECE + START_X);
-  G.bonus = bonusFor(G.loop, pieces - G.piece);
-  setState('ready');
+  startSection();                // back to the start of the same screen
 }
 
 function finishSection() {
@@ -705,26 +701,42 @@ function reachBeacon() {
   tune(TUNES.clear);
 }
 
+// Ringing the bell ends the screen. Rung before the knight is up, it counts towards the run
+// of bells and pays the bonus; rung late, it only ends the screen.
 function ringBell() {
   const w = G.world;
+  w.inTime = G.timeLeft > 0;
   finishSection();
   w.rung = true;
   w.ringT = 0;
-  addScore(500);
-  popup(w.ropeX - 30, FLOOR - 40, 500);
+  SFX.bell();
+  if (!w.inTime) {
+    G.bells = 0;
+    popup(W / 2 - 23, 40, 'TOO LATE', true);
+  }
+}
+
+function ringTowerBell(c) {
+  c.rung = true;
+  addScore(LEVELS.towerBell);
+  popup(c.x - 12, c.ay - 22, LEVELS.towerBell);
   SFX.bell();
 }
 
-// The rung bell lands in the HUD: a fifth bell in a row is an extra life.
+// The bell lands in the HUD. Five in a row is the super bonus and an extra life.
 function collectBell() {
   G.bells++;
   SFX.pickup();
   if (G.bells >= LEVELS.bellsForLife) {
+    const sb = LEVELS.superBonus[Math.min(G.loop, LEVELS.superBonus.length - 1)];
     G.bells = 0;
     G.lives++;
     G.lifeFlash = 90;
+    addScore(sb);
     tune(TUNES.life);
-    popup(W / 2 - 29, 40, 'EXTRA LIFE', true);
+    popup(W / 2 - 35, 34, 'SUPER BONUS', true);
+    popup(W / 2 - 14, 44, sb, true);
+    popup(W / 2 - 29, 54, 'EXTRA LIFE', true);
   }
 }
 
@@ -743,7 +755,7 @@ function updateClear() {
     if (h.y >= FLOOR) { h.y = FLOOR; h.vy = 0; h.mode = 'ground'; SFX.land(); }
   }
   updateKnight(w);
-  if (w.rung) {
+  if (w.rung && w.inTime) {
     const f = (G.stateT - BELL_RING) / BELL_FLY;
     if (f >= 0 && f < 1 && G.stateT % 2 === 0) {
       const p = bellFlight(f);
@@ -821,7 +833,7 @@ function step() {
       updateHero(G.world, jp);
       updateKnight(G.world);
       checkHazards(G.world);
-      if (G.state === 'play') updateBonus();
+      if (G.state === 'play') updateTime();
       break;
     case 'dying': updateWorld(G.world); updateDeath(); break;
     case 'clear': updateWorld(G.world); updateClear(); break;
@@ -914,12 +926,13 @@ function renderBackground(w, seed) {
     f.fillRect(px, y0, 1, 1);
   }
 
-  // wall face
-  f.fillStyle = S.mortar;
+  // wall face, in this area's brick colours
+  const WS = S.walls[w.def.wall || 0] || S.walls[0];
+  f.fillStyle = WS.mortar;
   f.fillRect(0, FLOOR, L, MOAT - FLOOR);
   for (let y = FLOOR + 4, row = 0; y < MOAT; y += 6, row++) {
     for (let bx = (row & 1 ? -6 : -12); bx < L; bx += 12) {
-      f.fillStyle = S.brick[Math.floor(r() * S.brick.length)];
+      f.fillStyle = WS.brick[Math.floor(r() * WS.brick.length)];
       f.fillRect(bx, y, 11, Math.min(5, MOAT - y));
     }
   }
@@ -929,14 +942,22 @@ function renderBackground(w, seed) {
   f.fillStyle = S.copingShadow; f.fillRect(0, FLOOR + 3, L, 1);
   for (let jx = 0; jx < L; jx += 16) f.fillRect(jx, FLOOR + 1, 1, 2);
 
-  // breaches
+  // breaches; a pikeman's gap is only a shallow recess with a door at the back
   for (const v of voids) {
+    if (v.guard) {
+      f.fillStyle = S.recess;
+      f.fillRect(v.x, FLOOR, v.w, 21);
+      f.fillStyle = S.woodDark; f.fillRect(v.x, FLOOR + 1, 3, 20);
+      f.fillStyle = S.wood; f.fillRect(v.x + 1, FLOOR + 2, 1, 18);
+      f.fillStyle = WS.mortar; f.fillRect(v.x, FLOOR + 21, v.w, 1);
+      continue;
+    }
     f.fillStyle = S.breach;
     f.fillRect(v.x, FLOOR, v.w, MOAT - FLOOR);
     f.fillStyle = S.breachEdge;
     for (let y = FLOOR + 6; y < MOAT; y += 6) f.fillRect(v.x + 2, y, v.w - 4, 1);
     for (let y = FLOOR; y < MOAT; y++) {
-      f.fillStyle = S.brick[Math.floor(r() * S.brick.length)];
+      f.fillStyle = WS.brick[Math.floor(r() * WS.brick.length)];
       f.fillRect(v.x, y, Math.floor(r() * 3), 1);
       const rw = Math.floor(r() * 3);
       f.fillRect(v.x + v.w - rw, y, rw, 1);
@@ -1102,7 +1123,16 @@ function drawSpikes(s) {
 }
 
 function drawChain(c) {
-  const S = SKIN.scene, links = Math.round(c.len / 3);
+  const S = SKIN.scene;
+  if (c.bell) {                   // a still bell rope in the bell tower, its bell on top
+    ctx.fillStyle = S.rope;
+    for (let y = c.ay; y <= c.ay + c.len; y++) { ctx.fillStyle = y % 3 ? S.rope : S.ropeDark; ctx.fillRect(c.x, y, 1, 1); }
+    ctx.fillStyle = S.ropeDark; ctx.fillRect(c.x - 1, c.ay + c.len - 1, 3, 3);
+    const shake = c.rung && c.ringT < 40 ? Math.round(Math.sin(c.ringT * 0.8) * 2) : 0;
+    spr('bell', c.x - 5 + shake, c.ay - 10);
+    return;
+  }
+  const links = Math.round(c.len / 3);
   for (let i = 0; i <= links; i++) {
     const p = chainPoint(c, i / links);
     ctx.fillStyle = i & 1 ? S.chainDark : S.chain;
@@ -1132,7 +1162,7 @@ function drawBeacon(w, lit, t) {
 
 // The belfry bell and its long rope. Once rung it swings, then flies off to the HUD.
 function drawBell(w) {
-  if (w.rung && G.state === 'clear' && G.stateT >= BELL_RING) return;
+  if (w.rung && w.inTime && G.state === 'clear' && G.stateT >= BELL_RING) return;
   const S = SKIN.scene, rt = w.ringT;
   const a = w.rung ? Math.sin(rt * 0.45) * 0.55 * Math.exp(-rt / 40) : Math.sin(G.t / 50) * 0.03;
   const px = w.ropeX + 0.5, py = BELL_TOP;
@@ -1155,7 +1185,7 @@ function drawBell(w) {
 
 function drawBellFlight() {
   const w = G.world;
-  if (!w.rung || G.state !== 'clear') return;
+  if (!w.rung || !w.inTime || G.state !== 'clear') return;
   const f = (G.stateT - BELL_RING) / BELL_FLY;
   if (f < 0 || f >= 1) return;
   const p = bellFlight(f);
@@ -1173,7 +1203,7 @@ function drawKnight(k) {
     ctx.restore();
     return;
   }
-  if (k.mode === 'climb') spr('knightClimb', x - 6, y - 16, ((k.t / 14) | 0) % 2 === 1);
+  if (k.mode === 'climb' || k.mode === 'cling') spr('knightClimb', x - 6, y - 16, ((k.t / 30) | 0) % 2 === 1);
   else spr(((k.step / 7) | 0) % 2 ? 'knightWalk2' : 'knightWalk1', x - 6, y - 16, k.face < 0);
 }
 
@@ -1197,8 +1227,26 @@ function drawHero(h) {
 }
 
 function drawShot(p) {
-  if (p.kind === 'bolt') spr('bolt', p.x, p.y - 1);
-  else spr(((p.t / 8) | 0) % 2 ? 'bat2' : 'bat1', p.x, p.y - 3);
+  const flip = p.vx > 0;          // the art faces left; mirror anything flying in from the left
+  if (p.kind === 'arrow') spr('bolt', p.x, p.y - 1, flip);
+  else spr(((p.t / 5) | 0) % 2 ? 'fire2' : 'fire1', p.x, p.y - 3, flip);
+}
+
+function drawFirePit(g) {
+  ctx.fillStyle = SKIN.scene.fireGlow;
+  ctx.fillRect(g.x, FLOOR - 10, g.w, 40);
+  for (let x = g.x + 1, i = 0; x + 12 <= g.x + g.w; x += 10, i++) {
+    const lick = Math.round(Math.sin(G.t / 7 + i * 1.7) * 2);
+    spr('flame', x, FLOOR + 14 + lick, ((G.t / 6 + i) | 0) % 2 === 1);
+  }
+}
+
+function drawGuard(g) {
+  const S = SKIN.scene, px = g.x + GUARD.pikeX, tip = Math.round(pikeTip(g));
+  spr('guard', g.x + 4, FLOOR + 4);
+  ctx.fillStyle = S.pike; ctx.fillRect(px, tip + 3, 1, FLOOR + 12 - tip - 3);
+  ctx.fillStyle = SKIN.palette.G; ctx.fillRect(px, tip, 1, 3); ctx.fillRect(px - 1, tip + 2, 3, 1);
+  ctx.fillStyle = SKIN.palette.X; ctx.fillRect(px + 1, tip + 4, 2, 2);    // pennant
 }
 
 function drawEffects() {
@@ -1231,6 +1279,8 @@ function drawGame() {
   for (const c of w.crumbles) drawCrumble(c);
   for (const l of w.lifts) drawLift(l);
   for (const s of w.spikes) drawSpikes(s);
+  for (const g of w.gaps) if (g.fire) drawFirePit(g);
+  for (const g of w.guards) drawGuard(g);
   for (const c of w.chains) drawChain(c);
   if (w.def.tower) {
     drawBeacon(w, w.lit, G.state === 'clear' ? G.stateT : 99);
@@ -1245,7 +1295,7 @@ function drawGame() {
   drawScreenPops();
   if (G.state === 'ready') {
     const lines = [`WALL ${G.loop + 1}-${G.section + 1}`, w.def.name, (G.stateT >> 4) & 1 ? 'READY' : ' '];
-    if (G.piece === 0 && G.loop === 0 && (G.section === 0 || w.def.tower)) lines.push(w.def.tower ? SKIN.towerHint : SKIN.goalHint);
+    if (G.loop === 0 && (G.section === 0 || w.def.tower)) lines.push(w.def.tower ? SKIN.towerHint : SKIN.goalHint);
     banner(lines);
   }
   if (G.state === 'clear' && G.stateT > 20) banner([w.def.tower ? SKIN.clearBanner : SKIN.bellBanner]);
@@ -1271,7 +1321,7 @@ function drawTitle() {
     ctext(SKIN.subtitle, 82, U.banner);
     if ((G.t >> 5) & 1) ctext(COARSE ? 'TAP TO START' : 'PUSH START', 104, U.text);
     if (!COARSE) ctext('SPACE OR ENTER', 116, U.dim);
-    ctext(`${SECTIONS.length - 1} BELLS, THEN THE QUEEN`, 134, U.dim);
+    ctext(`${SECTIONS.length - 1} WALLS, THEN THE QUEEN`, 134, U.dim);
     drawHero(G.demo);
   } else if (page === 1) {
     ctext('HIGH SCORES', 82, U.banner);
@@ -1284,10 +1334,10 @@ function drawTitle() {
   } else {
     ctext('HOW TO PLAY', 78, U.banner);
     const rows = [
-      ['bolt', 'JUMP OVER LOW BOLTS'], ['high', 'STAY DOWN FOR HIGH ONES'], ['bat1', 'SLIP PAST THE BATS'],
-      ['spikes', 'WAIT OUT THE SPIKES'], ['chain', 'JUMP ON AND OFF CHAINS'],
-      ['knightLife', 'JUMP THE CLIMBING KNIGHT'], ['bellIcon', 'TOUCH ROPES FOR BELLS'],
-      ['', `${LEVELS.bellsForLife} BELLS: EXTRA LIFE`], ['flask', 'LAMP OIL 300 PTS'],
+      ['fire1', 'JUMP THE LOW FIREBALLS'], ['high', 'STAY DOWN FOR HIGH ARROWS'],
+      ['chain', 'SWING OVER THE FIRE PITS'], ['guardLife', 'JUMP PIKES WHEN THEY DROP'],
+      ['knightLife', 'RING THE BELL BEFORE THE'], ['', 'KNIGHT CLIMBS THE WALL'],
+      ['bellIcon', `${LEVELS.bellsForLife} BELLS IN A ROW: SUPER`], ['', 'BONUS AND AN EXTRA LIFE'],
     ];
     rows.forEach(([icon, label], i) => {
       const y = 89 + i * 9;

@@ -9,8 +9,11 @@
       '.' is transparent. Every row of one sprite must be the same length.
       The hero is 12 x 16 and faces right (the game mirrors it for left).
       The hero's hitbox is fixed in game.js, so a bigger or smaller drawing plays the same.
-      The queen in the tower window is 10 x 12. The climbing knight is 12 x 16 and,
-      like the hero, faces right. The belfry bell is 11 x 10; the HUD bells are 7 x 7.
+      The queen in the tower window is 10 x 12. The climbing knight and the pikemen are
+      12 x 16 and, like the hero, face right (a pikeman's pike is drawn by the game).
+      The belfry bell is 11 x 10; the HUD bells are 7 x 7. Fireballs and arrows face left
+      and are mirrored when they come from the left.
+    - Each area of wall has its own brick colours: `scene.walls`.
     - Rename the game: change `title` (two lines) and `subtitle`.
     - Move the moon, change the sky bands, the brick colours or the water in `scene`.
 */
@@ -40,11 +43,11 @@ window.SKIN = {
     N: '#3b2418',  // hair
     U: '#8e4fc9',  // gown
     u: '#5e2f8f',  // gown shadow
-    // bats
-    V: '#7b4bb3',  // wing
-    K: '#2b1b3f',  // body
+    // pikemen
+    T: '#e8e6f0',  // white tabard
+    t: '#a9a6b8',  // tabard shadow
     // fire
-    Y: '#fff3a0',  // flame core (also bat eyes)
+    Y: '#fff3a0',  // flame core
     O: '#ffb43a',  // flame
     F: '#ff5a1f',  // flame edge
     f: '#b8231a',  // flame base
@@ -196,14 +199,14 @@ window.SKIN = {
       'UUUUUUUUUU',
     ],
     knightWalk1: [
-      '....XX....G.',
-      '...XXX....G.',
-      '...DDDD...G.',
-      '..DDDDDD..G.',
-      '..DDDDDDd.G.',
-      '..DZZZZDd.G.',
-      '..dDDDDDd.G.',
-      '..dddddddhhh',
+      '....XX....O.',
+      '...XXX...OYO',
+      '...DDDD..FOF',
+      '..DDDDDD..W.',
+      '..DDDDDDd.W.',
+      '..DZZZZDd.W.',
+      '..dDDDDDd.W.',
+      '..ddddddd.W.',
       '.dXXXXXXDDD.',
       '.dXXxXXXd...',
       '.dXxxxXXd...',
@@ -214,14 +217,14 @@ window.SKIN = {
       'BBB.....BBB.',
     ],
     knightWalk2: [
-      '....XX....G.',
-      '...XXX....G.',
-      '...DDDD...G.',
-      '..DDDDDD..G.',
-      '..DDDDDDd.G.',
-      '..DZZZZDd.G.',
-      '..dDDDDDd.G.',
-      '..dddddddhhh',
+      '....XX....O.',
+      '...XXX...OYO',
+      '...DDDD..FOF',
+      '..DDDDDD..W.',
+      '..DDDDDDd.W.',
+      '..DZZZZDd.W.',
+      '..dDDDDDd.W.',
+      '..ddddddd.W.',
       '.dXXXXXXDDD.',
       '.dXXxXXXd...',
       '.dXxxxXXd...',
@@ -250,13 +253,13 @@ window.SKIN = {
       '............',
     ],
     knightLife: [
-      '....XX....G.',
-      '...XXX....G.',
-      '...DDDD...G.',
-      '..DDDDDD..G.',
-      '..DDDDDDd.G.',
-      '..DZZZZDd.G.',
-      '..dDDDDDd.G.',
+      '....XX....O.',
+      '...XXX...OYO',
+      '...DDDD..FOF',
+      '..DDDDDD..W.',
+      '..DDDDDDd.W.',
+      '..DZZZZDd.W.',
+      '..dDDDDDd.W.',
     ],
     bell: [
       '....jjj....',
@@ -293,21 +296,48 @@ window.SKIN = {
       'GGWWWWWR',
       '......RR',
     ],
-    bat1: [
-      'V........V',
-      'VV.K..K.VV',
-      'VVVKKKKVVV',
-      '.VVKYYKVV.',
-      '...KKKK...',
-      '....KK....',
+    guard: [
+      '....GGG.....',
+      '...GGGGG....',
+      '...GGGGGg...',
+      '...gSSESg...',
+      '...gSSSSg...',
+      '....SSS.....',
+      '..TTTTTTT...',
+      '.TTTTXTTTS..',
+      '.TTXXXXXTS..',
+      '.TTTTXTTT...',
+      '.tTTTXTTt...',
+      '.tTTTTTTt...',
+      '..ttttttt...',
+      '...gg.gg....',
+      '...gg.gg....',
+      '..BBB.BBB...',
     ],
-    bat2: [
-      '...K..K...',
-      '...KKKK...',
-      '.VVKYYKVV.',
-      'VVVKKKKVVV',
-      'VV..KK..VV',
-      'V........V',
+    guardLife: [
+      '....GGG.....',
+      '...GGGGG....',
+      '...GGGGGg...',
+      '...gSSESg...',
+      '...gSSSSg...',
+      '....SSS.....',
+      '..TTTTTTT...',
+    ],
+    fire1: [
+      '..FFO..f',
+      '.FOYYOFF',
+      'FOYYYYOF',
+      'FOYYYYO.',
+      '.FOYYOFf',
+      '..FFO...',
+    ],
+    fire2: [
+      '..FFOf..',
+      '.FOYYOF.',
+      'FOYYYYOF',
+      'FOYYYYOF',
+      '.FOYYOF.',
+      '..FFO.f.',
     ],
     spikes: [
       '.G...G..',
@@ -371,8 +401,14 @@ window.SKIN = {
     coping: '#b9a98f',
     copingLight: '#e3d6bd',
     copingShadow: '#7d6f5c',
-    brick: ['#8e4f3b', '#9c5a44', '#81483a'],
-    mortar: '#4e2d26',
+    walls: [                                                       // one per area, levels.js picks with `wall`
+      { brick: ['#2f3fb0', '#3848c4', '#2a389e'], mortar: '#141b5a' },   // blue
+      { brick: ['#8e4f3b', '#9c5a44', '#81483a'], mortar: '#4e2d26' },   // red
+      { brick: ['#6e6a80', '#7a7590', '#625e74'], mortar: '#2e2b3a' },   // grey
+    ],
+    recess: '#0c0912',      // the gap in the ramparts a pikeman stands in
+    pike: '#8a5a2b',
+    fireGlow: 'rgba(255, 110, 40, 0.16)',
     breach: '#120d19',
     breachEdge: '#22182a',
     crumble: '#a8977a',

@@ -335,8 +335,11 @@ export class TileManager {
     if (!L) return;
     for (const m of L.meshes || []) {
       m.removeFromParent();
-      m.geometry.dispose();
-      if (m.userData.colorConf) m.userData.colorConf = null;
+      // make sure both colour buffers (original + confidence) are freed on the GPU
+      const g = m.geometry, u = m.userData;
+      if (u.colorConf && u.colorOrig) g.setAttribute('_colorAlt', g.attributes.color === u.colorConf ? u.colorOrig : u.colorConf);
+      g.dispose();
+      u.colorConf = null; u.colorOrig = null; u.fid = null;
     }
     L.meshes = [];
     L.state = 'none';

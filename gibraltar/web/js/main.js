@@ -205,7 +205,7 @@ async function main() {
     started = true;
     startEl.classList.add('hidden');
     hud.setVisible(hudVisible);
-    audio.start();
+    if (!AUTOTEST) audio.start(); // headless tests have no user gesture
     lockPointer();
   };
   const resume = () => {
@@ -214,6 +214,8 @@ async function main() {
     lockPointer();
   };
   btnStart.addEventListener('click', begin);
+  // browsers only allow sound after a user gesture: (re)start audio on the first one
+  for (const ev of ['pointerdown', 'keydown']) window.addEventListener(ev, () => { if (started) audio.start(); }, { once: true });
   btnContinue.addEventListener('click', () => { applyRecord(store.get('autosave')); begin(); });
   document.addEventListener('pointerlockchange', () => {
     if (!started || AUTOTEST) return;
@@ -284,6 +286,8 @@ async function main() {
   const center = new THREE.Vector2(0, 0);
 
   function lookTarget(withGround = false) {
+    // use the player's current view, not the pose of the last rendered frame
+    if (!camOverride) { player.applyToCamera(camera); camera.updateMatrixWorld(); }
     raycaster.setFromCamera(center, camera);
     const [px, py] = player.ltm;
     const objs = tiles.meshesNear(px, py, 120, withGround ? ['buildings', 'facades', 'walls', 'props', 'terrain', 'roads'] : ['buildings', 'facades', 'walls', 'props']);

@@ -56,7 +56,7 @@ function freePort() {
     };
 
     // ------------------------------------------------ start screen + menu (normal mode)
-    await page.goto(BASE);
+    await page.goto(BASE, { waitUntil: 'domcontentloaded', timeout: 120000 });
     await page.waitForSelector('#btn-start');
     await page.waitForFunction(() => !!window.__gib, null, { timeout: 60000 });
     check('page title', (await page.title()) === 'Gibraltar — 1:1 walking simulator (validation viewer)', await page.title());
@@ -77,7 +77,7 @@ function freePort() {
 
     // ------------------------------------------------ autotest session
     const t0 = Date.now();
-    await page.goto(BASE + '?autotest=1');
+    await page.goto(BASE + '?autotest=1', { waitUntil: 'domcontentloaded', timeout: 120000 });
     await page.waitForFunction(() => !!window.__gib, null, { timeout: 60000 });
     await waitReady();
     results.perf.initialLoadSeconds = (Date.now() - t0) / 1000;
@@ -138,6 +138,24 @@ function freePort() {
     await page.evaluate(() => __gib.interact());
     await page.waitForTimeout(1500);
     await shot('11-inspect-building');
+    const panelText = await page.evaluate(() => document.getElementById('panel').textContent);
+    check('building panel shows id, confidence, roof', /osm:way\/\d+/.test(panelText) && /Confidence/.test(panelText) && /Roof/.test(panelText),
+      panelText.replace(/\s+/g, ' ').slice(0, 160));
+    const hasFacades = await page.evaluate(() => __gib.tiles.manifest.tiles.some((t) => t.layers.facades));
+    if (hasFacades) {
+      check('building panel shows façade (doors / windows)', /Doors: \d+ mapped \(OSM\), \d+ procedural · Windows: \d+/.test(panelText),
+        (panelText.match(/Doors:[^\n]*?surveyed\)|Doors:.{0,80}/) || [''])[0]);
+      const fac = await page.evaluate(() => {
+        const out = { loaded: 0, maxDist: 0, inCollider: 0 };
+        for (const t of __gib.tiles.tiles.values()) {
+          if (t.layers.facades?.state === 'loaded') { out.loaded++; out.maxDist = Math.max(out.maxDist, Math.round(t.dist)); }
+          if (t.collider && /facades/.test(t.colliderSig)) out.inCollider++;
+        }
+        return out;
+      });
+      check('facades stream close (≤600 m + hysteresis) and never collide', fac.loaded > 0 && fac.maxDist <= 800 && fac.inCollider === 0,
+        `${fac.loaded} tiles with facades, farthest ${fac.maxDist} m, in collision: ${fac.inCollider}`);
+    }
     await page.evaluate(() => __gib.interact()); // close
 
     // jump
@@ -173,7 +191,13 @@ function freePort() {
       const held = r.samples.filter((q) => q.blocked).length / 10;
       check('tree trunk blocks the player (no walking through)', r.blockedSteps > 0 && dTree > 0.4 && dTree < 0.6,
         `closest approach ${dTree.toFixed(2)} m from trunk centre (capsule 0.30 + trunk ≈0.18), held/sliding round it for ${held.toFixed(1)} s`);
-      insp = await page.evaluate(() => { __gib.look(90, 20); const r = __gib.inspect(); return r && { kind: r.kind, id: r.id, rec: r.rec }; });
+      // face the tree from wherever the player ended up (it may have slid round the trunk)
+      insp = await page.evaluate((tree) => {
+        const s = __gib.getState();
+        const hdg = (Math.atan2(tree[0] - s.x, tree[1] - s.y) * 180 / Math.PI + 360) % 360;
+        __gib.look(hdg, 10);
+        const r = __gib.inspect(); return r && { kind: r.kind, id: r.id, rec: r.rec };
+      }, tree);
       check('E on a tree shows the prop record', insp && insp.kind === 'prop' && insp.rec?.kind === 'tree', `${insp?.kind} ${insp?.id} kind=${insp?.rec?.kind} model=${insp?.rec?.model}`);
       await page.evaluate(() => __gib.interact());
       await page.waitForTimeout(1500);

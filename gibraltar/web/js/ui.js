@@ -123,9 +123,10 @@ export function buildingPanel(b, tile, dist) {
 
 function facadeText(f) {
   const ws = String(f.windows_source ?? 'unknown');
-  const wsNote = /procedural|default|generated/i.test(ws) ? `${ws} — positions not surveyed` : ws;
+  const procedural = /^procedural/i.test(ws);
+  const wsShort = procedural ? 'procedural — positions not surveyed' : ws;
   return `Doors: ${f.doors_mapped ?? 0} mapped (OSM), ${f.doors_procedural ?? 0} procedural · ` +
-    `Windows: ${f.windows ?? 0} (${esc(wsNote)})`;
+    `Windows: ${f.windows ?? 0} (<span title="${esc(ws)}">${esc(wsShort)}</span>)`;
 }
 
 export function propPanel(p, tile, dist) {

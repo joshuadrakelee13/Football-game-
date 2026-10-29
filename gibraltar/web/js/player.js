@@ -45,6 +45,7 @@ export class Player {
     this.waiting = null;   // { x, y, zHint, since }
     this.noGround = 0;
     this.blockedLast = false;
+    this.seaBlocked = false;
     this.simTime = 0;
     this.distance = 0;
     this.measuredSpeed = 0;
@@ -230,7 +231,9 @@ export class Player {
       // sea / edge of the world: refuse the horizontal move
       nx = p.x; nz = p.z; v.x = 0; v.z = 0;
       g = W.ground(nx, nz, maxY);
-    }
+      this.blockedLast = true;
+      this.seaBlocked = true;
+    } else this.seaBlocked = false;
     p.x = nx; p.z = nz;
 
     if (g) {

@@ -272,10 +272,10 @@ async function main() {
   raycaster.far = 120;
   const center = new THREE.Vector2(0, 0);
 
-  function lookTarget() {
+  function lookTarget(withGround = false) {
     raycaster.setFromCamera(center, camera);
     const [px, py] = player.ltm;
-    const objs = tiles.meshesNear(px, py, 150, ['buildings', 'walls', 'terrain', 'roads']);
+    const objs = tiles.meshesNear(px, py, 120, withGround ? ['buildings', 'walls', 'terrain', 'roads'] : ['buildings', 'walls']);
     if (showPois) objs.push(markers);
     const hits = raycaster.intersectObjects(objs, false);
     if (!hits.length) return null;
@@ -301,7 +301,7 @@ async function main() {
   }
 
   function inspect() {
-    const t = lookTarget();
+    const t = lookTarget(true);
     if (t && t.dist <= 60 && t.type === 'poi') return { kind: 'poi', poi: t.poi, dist: t.dist };
     if (t && t.dist <= 60 && t.type === 'building' && t.rec) return { kind: 'building', rec: t.rec, tile: t.tile, dist: t.dist };
     // a POI within 6 m of what we're looking at, or of the player
@@ -451,7 +451,7 @@ async function main() {
         ground: g ? g.y : null, groundKind: g ? KIND_NAMES[g.kind] : null,
         tile: tileId(ix, iy), heading: yawToHeading(player.yaw), pitchDeg: player.pitch * 57.2958,
         speed: player.measuredSpeed, vel: [player.vel.x, player.vel.y, player.vel.z],
-        grounded: player.grounded, sliding: player.sliding, blocked: player.blockedLast,
+        grounded: player.grounded, sliding: player.sliding, blocked: player.blockedLast, seaBlocked: player.seaBlocked,
         waiting: !!player.waiting, crouched: player.crouched,
         simTime: player.simTime, distance: player.distance,
         fps, frameMs: lastFrameMs, time: fmtLocal(gameUtc), utc: gameUtc,
@@ -499,7 +499,7 @@ async function main() {
           const [x, y, z] = player.ltm;
           samples.push({ t: +((i + 1) * h).toFixed(2), x: +x.toFixed(3), y: +y.toFixed(3), z: +z.toFixed(3),
             ground: player.ground ? +player.ground.y.toFixed(3) : null, kind: player.ground ? KIND_NAMES[player.ground.kind] : null,
-            grounded: player.grounded, blocked: player.blockedLast, sliding: player.sliding });
+            grounded: player.grounded, blocked: player.blockedLast, sea: player.seaBlocked, sliding: player.sliding });
         }
       }
       const [ex, ey, ez] = player.ltm;

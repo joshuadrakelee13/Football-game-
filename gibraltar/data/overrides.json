@@ -1,0 +1,8 @@
+{
+  "_comment": "Replace individual buildings with hand-made models. Key = building id from features.json (e.g. osm:way/137335923). The pipeline leaves overridden buildings out of the merged buildings.glb and the engines place the custom asset at the building's centroid_m / ground_min_m instead. See docs/MANIFEST.md. Example entry (disabled because its key starts with an underscore):",
+  "_osm:way/137335923": {
+    "unreal_asset": "/Game/Gibraltar/Custom/SM_GrandCasemates",
+    "web_asset": "custom/grand_casemates.glb",
+    "note": "Grand Casemates barracks, hand-modelled from survey drawings"
+  }
+}

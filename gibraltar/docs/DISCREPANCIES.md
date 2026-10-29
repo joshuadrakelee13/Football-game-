@@ -1,0 +1,29 @@
+# Known discrepancies
+
+Where the reconstruction is known or suspected to differ from the real
+Gibraltar, largest-impact first, using the project's accuracy priority order:
+boundary and coastline → terrain → roads → building footprints → building
+heights → façades → small details. Measured figures come from
+`VALIDATION.md` (regenerated on every build). "Fix" says what would close the
+gap, and whether it needs you.
+
+| # | Priority area | Discrepancy | Size (measured or estimated) | Fix |
+|---|---|---|---|---|
+| 1 | Building heights | **97% of buildings have estimated heights.** OSM has a `height` tag on 50 of ~5,600 buildings in the build area and `building:levels` on 120. The rest use a per-type storey count × 3 m (`buildings.py: DEFAULT_LEVELS`). | Probably several storeys wrong on many buildings; unmeasured. | Measured heights for every building need a surface model. (a) Ask HM Government of Gibraltar for building heights or their DTM/DSM (draft email in `LICENSING.md` §6). (b) Map heights and levels in OSM from survey (this benefits everyone). The pipeline already accepts a surface model at `data/raw/dem/ign_mds_25830.tif` (`buildings.apply_lidar_heights`), but Spain's surface models don't cover Gibraltar with LiDAR. **Needs you** for (a). |
+| 2 | Terrain | **The terrain over Gibraltar is photogrammetric, not LiDAR**, per IGN's MDT05 metadata. No accuracy figure is published for the Gibraltar sheet. | Unknown, likely metres on cliffs and vegetated slopes. | Gibraltar's own DTM (GeoPortal, needs permission), or a new survey. |
+| 3 | Terrain | **The summit is about 9 m low.** The highest terrain point is 418.7 m against the official 426 m; the 5 m grid under-samples the knife-edge ridge. | −7 to −9 m at the peaks; Signal Hill −6 m. | Higher-resolution DTM (as #2). Could locally add surveyed spot heights as control points. |
+| 4 | Terrain | **8% of Gibraltar's land (0.52 km²) has no terrain measurement.** It's land newer than the DTM survey: the north-west reclamations, the west end of the runway, Eastern Beach and the east-side reclaimed strips. Heights are filled from the nearest measured land, or set to 3 m if more than 15 m away. | Probably ±2 m on flat reclaimed ground. | Gibraltar's DTM (as #2). |
+| 5 | Terrain | **The vertical datum offset is unknown.** IGN heights are presumed to be relative to mean sea level at Alicante; Gibraltar's own levelling datum differs by an unpublished amount. | Expected decimetres (unverified). | Ask in the permission email; or compare against the Gibraltar tide gauge (PSMSL station 981). |
+| 6 | Terrain | **Sheer cliffs are smoothed.** The east face, the north face and Europa Point's cliffs are steep slopes at 5 m resolution, not vertical faces or overhangs. Caves and overhangs can't be represented in a height grid at all. | Visual; tens of metres of horizontal smoothing on the cliff faces. | Cliff meshes from photogrammetry or LiDAR when available; caves modelled as separate meshes. |
+| 7 | Coastline | **The coastline comes from OSM.** Gibraltar's land area comes out at 6.591 km² against the GeoPortal's 6.55 km² (+0.6%), consistent with recent reclamation. OSM's positional accuracy against an independent survey hasn't been measured. | +0.6% area. | Compare with GeoPortal coastline (needs permission). |
+| 8 | Roads | **Road widths are mostly class defaults.** Only ways tagged `width`/`lanes` use measured values. The road network topology is copied 1:1 from OSM (98.1% of nodes in one connected network). | ±1–2 m per side. | Map `width` in OSM, or use GeoPortal road polygons (`thoroughfare_pl`, needs permission). |
+| 9 | Roads | **Tunnels are not walkable yet.** 171 tunnel ways (e.g. Dudley Ward Tunnel) are recorded in `features.json` but have no geometry. Gibraltar has ~52 km of tunnels, mostly unmapped military galleries. | Missing features. | Generate tunnel tubes from centreline + width; portal openings in the terrain. |
+| 10 | Roads | **Steps are ramps.** `highway=steps` is drawn as a sloped surface (walkable) with no individual treads. | Visual. | Generate treads from `step_count`/incline. |
+| 11 | Roads | **Bridge decks are a simple linear interpolation** between their end heights. | Up to ~1 m on long bridges. | Use `layer`/`bridge:structure` and surveyed clearances. |
+| 12 | Buildings | **Roofs are flat.** `roof:shape` is recorded but not modelled. | Visual. | Roof generation for gabled/hipped roofs. |
+| 13 | Buildings | **Arcades and passages are blocked.** Buildings over `tunnel=building_passage` ways are solid. | Some passages, e.g. through gates, are blocked. | Cut passages using the way's footprint and a clearance height. |
+| 14 | Buildings | **Some buildings on steep slopes overlap the terrain.** The base is sunk 1 m below the lowest ground under the footprint; the top is at lowest ground + height. | Visual only. | Fine once heights are measured. |
+| 15 | Walls & piers | **Wall heights and thicknesses are defaults** (wall 2 m, city wall 6 m, retaining wall 1 m), as are pier deck heights (fixed 2 m, floating 0.8 m, breakwater 3 m). | ±several metres for fortifications. | Survey data, heritage records, OSM tagging. |
+| 16 | Land cover | Ground colour comes from OSM land-use polygons plus a slope rule (steep = limestone, above 60 m = scrub). It isn't imagery. | Visual. | Sentinel-2 10 m colour (CC-compatible), or hand-painted materials. |
+| 17 | Vegetation | **Trees are only those mapped in OSM** (individual trees and tree rows at an assumed 8 m spacing). The Upper Rock's maquis isn't instanced yet. | Visual. | Scatter vegetation inside `natural=scrub/wood` polygons. |
+| 18 | Spanish context | La Línea (north of the border) is shown only to give the view context; its buildings use the same estimated heights. | Visual. | Spanish Catastro building heights (separate licence check). |

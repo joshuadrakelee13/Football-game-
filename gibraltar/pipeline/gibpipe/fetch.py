@@ -35,6 +35,13 @@ SOURCES = {
         "licence_url": "https://www.scne.es/",
         "attribution": "Obra derivada de MDT05-cob1 2008-2015 CC-BY 4.0 scne.es (Instituto Geográfico Nacional, resampled to the GIB-LTM grid)",
     },
+    "sentinel2": {
+        "name": "Sentinel-2 L2A true-colour image (10 m)",
+        "publisher": "European Union Copernicus programme / ESA; hosted by Element 84 on AWS",
+        "licence": "Copernicus Sentinel data legal notice (free, full and open; modification allowed)",
+        "licence_url": "https://sentinels.copernicus.eu/documents/247904/690755/Sentinel_Data_Legal_Notice",
+        "attribution": "Contains modified Copernicus Sentinel data 2026",
+    },
     "copernicus_glo30": {
         "name": "Copernicus DEM GLO-30 (30 m DSM)",
         "publisher": "European Space Agency / Airbus",
@@ -147,6 +154,44 @@ def fetch_copernicus(cat, refresh=False):
                                                  "note": "DSM (includes buildings and trees); used only for cross-checking"})
 
 
+# A cloud-free, high-sun summer scene that covers all of Gibraltar. Pinned
+# by id so every build uses the same image; change it here to update.
+SENTINEL2_SCENE = "S2B_30STF_20260818_0_L2A"
+
+
+def fetch_sentinel2(cat, refresh=False):
+    """Crop the scene's true-colour (TCI) image to the project area. Only the
+    needed window is read from the cloud-optimised GeoTIFF."""
+    import os
+    import rasterio
+    from rasterio.windows import from_bounds
+    rel = f"imagery/{SENTINEL2_SCENE}_TCI.tif"
+    if (config.RAW / rel).exists() and not refresh:
+        return
+    (config.RAW / "imagery").mkdir(parents=True, exist_ok=True)
+    item_url = f"https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a/items/{SENTINEL2_SCENE}"
+    item = _get(item_url).json()
+    href = item["assets"]["visual"]["href"]
+    print("Sentinel-2", href)
+    os.environ.setdefault("CURL_CA_BUNDLE", os.environ.get("SSL_CERT_FILE", "") or "/etc/ssl/certs/ca-certificates.crt")
+    w, s, e, n = config.FETCH_BBOX_LONLAT
+    from pyproj import Transformer
+    tr = Transformer.from_crs(4326, 32630, always_xy=True)
+    xs, ys = tr.transform([w, e, e, w], [s, s, n, n])
+    with rasterio.open(href) as src:
+        win = from_bounds(min(xs) - 100, min(ys) - 100, max(xs) + 100, max(ys) + 100, src.transform).round_offsets().round_lengths()
+        data = src.read(window=win)
+        profile = src.profile.copy()
+        profile.update(width=data.shape[2], height=data.shape[1], transform=src.window_transform(win),
+                       driver="GTiff", compress="deflate", tiled=False)
+        profile.pop("blockxsize", None); profile.pop("blockysize", None)
+    with rasterio.open(config.RAW / rel, "w", **profile) as dst:
+        dst.write(data)
+    _record(cat, rel, "sentinel2", href, {"scene": SENTINEL2_SCENE, "acquired": item["properties"]["datetime"],
+                                          "cloud_cover_pct": item["properties"].get("eo:cloud_cover"),
+                                          "crs": "EPSG:32630", "resolution_m": 10.0, "stac_item": item_url})
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--refresh", action="store_true")
@@ -156,6 +201,7 @@ def main():
     fetch_ign(cat, args.refresh)
     fetch_copernicus(cat, args.refresh)
     fetch_osm(cat, args.refresh)
+    fetch_sentinel2(cat, args.refresh)
     print(f"catalogue: {len(cat['files'])} files -> {CATALOGUE}")
 
 

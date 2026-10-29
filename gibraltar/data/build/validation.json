@@ -1,6 +1,6 @@
 {
- "generated_utc": "2026-10-29T16:20:20Z",
- "manifest_generated_utc": "2026-10-29T16:14:14Z",
+ "generated_utc": "2026-10-29T16:42:23Z",
+ "manifest_generated_utc": "2026-10-29T16:41:01Z",
  "checks": [
   {
    "check": "Projection round trip (lon/lat -> GIB-LTM -> lon/lat), max error",
@@ -105,7 +105,7 @@
    "value": 0.224,
    "unit": "%",
    "status": "pass",
-   "detail": "5586 buildings read back from buildings.glb"
+   "detail": "5585 buildings read back from buildings.glb"
   },
   {
    "check": "Building roofs: centroid offset vs source, max",
@@ -131,6 +131,13 @@
    "unit": "buildings",
    "status": "info",
    "detail": "measured = OSM height tag; derived = OSM building:levels × 3 m; estimated = type default"
+  },
+  {
+   "check": "Mapped props (trees, street furniture) missing from the build",
+   "value": 0,
+   "unit": "items",
+   "status": "pass",
+   "detail": "4742 OSM props inside the built tiles"
   },
   {
    "check": "Layer files whose bounds disagree with manifest bounds_m",

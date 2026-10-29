@@ -12,7 +12,8 @@ data/build/
   tiles/<tile_id>/terrain.glb   ground surface, clipped to the coastline
   tiles/<tile_id>/roads.glb     roads, paths, steps (draped on terrain)
   tiles/<tile_id>/buildings.glb building masses
-  tiles/<tile_id>/walls.glb     walls, fortifications, retaining walls
+  tiles/<tile_id>/walls.glb     walls, fortifications, fences, hedges, barriers, piers
+  tiles/<tile_id>/props.glb     trees and street furniture at their OSM positions
   tiles/<tile_id>/features.json per-feature records for that tile
   catalogue.json                every source dataset: licence, hash, date
 data/overrides.json             hand-made replacements for specific buildings
@@ -52,10 +53,10 @@ A layer file is only written if the tile has geometry for that layer.
         "terrain":   { "file": "tiles/T_E0_N0/terrain.glb",
                        "bounds_m": [[minx, miny, minz], [maxx, maxy, maxz]],
                        "triangles": 12345 },
-        "roads":     { … }, "buildings": { … }, "walls": { … }
+        "roads":     { … }, "buildings": { … }, "walls": { … }, "props": { … }
       },
       "features": "tiles/T_E0_N0/features.json",
-      "counts": { "buildings": 120, "roads": 40, "trees": 12 }
+      "counts": { "buildings": 120, "roads": 40, "walls": 30, "piers": 2, "props": 85 }
     }
   ]
 }
@@ -72,25 +73,30 @@ The import script checks this to within 1 cm.
 * Binary glTF 2.0 (`.glb`), metres, glTF axes `(East, Up, South)`, positions
   relative to the tile origin.
 * One node per layer, one mesh, one primitive per material.
-* Every primitive has `POSITION`, `NORMAL` and `COLOR_0` (RGB vertex colour,
-  linear). Vertex colour carries land cover and building/road class, so a
+* Every primitive has `POSITION`, `NORMAL` and `COLOR_0` (normalised 8-bit
+  RGBA vertex colour, linear). Vertex colour carries the ground colour
+  (sampled from a Sentinel-2 true-colour image, or the land-cover palette
+  where the image shows water), road surface, building colour and so on, so a
   single vertex-colour master material is enough to start with.
 * Material names (the engine maps these to its own materials):
 
 | Material | Used for |
 |---|---|
-| `M_Terrain` | ground; colour by land cover (rock, scrub, grass, sand, paved, built-up) |
+| `M_Terrain` | ground; colour from the Sentinel-2 image (fallback: land cover) |
 | `M_Cliff` | vertical skirts where land meets the sea |
-| `M_Road` | carriageways (asphalt) |
-| `M_Path` | footways, pedestrian streets, tracks, paths |
+| `M_Road` | carriageways (colour by OSM `surface`); zebra-crossing stripes (white) |
+| `M_Path` | footways, pedestrian streets, tracks, paths (colour by `surface`); pier and breakwater decks |
 | `M_Steps` | `highway=steps` |
 | `M_BuildingWall` | building façades |
 | `M_BuildingRoof` | building roofs |
-| `M_Wall` | `barrier=wall`, `historic=city_walls`, retaining walls |
+| `M_Wall` | walls, city walls, retaining walls, fences, jersey barriers, guard rails |
+| `M_Prop` | street furniture: benches, bollards, post boxes, phone kiosks, lamps, cannons, memorials, bus stops, tree trunks |
+| `M_Foliage` | tree crowns (props.glb) and hedges (walls.glb) |
 
 * Every primitive also carries a custom attribute `_FEATURE_ID` (float,
   exact integer) indexing the matching array in `features.json`
-  (`buildings`, `roads` or `walls`); `-1` means none. Engines that don't
+  (`buildings` for buildings.glb, `walls` for walls.glb, `props` for
+  props.glb); `-1` means none (roads, terrain). Engines that don't
   understand it ignore it.
 
 ## features.json
@@ -109,7 +115,11 @@ Coordinates here are **world GIB-LTM metres** (not tile-local).
       "height_m": 21.0,
       "height_source": "osm:height | osm:building:levels | default:apartments",
       "confidence": "measured | derived | estimated",
-      "levels": 7, "roof_shape": "flat",
+      "levels": 7, "roof_shape": "gabled",
+      "roof": { "shape": "gabled", "eave_m": 52.2, "ridge_m": 55.1,
+                "source": "osm:roof:height | default:pitch 30°" },
+      "wall_colour_source": "osm:building:colour | osm:building:material | default",
+      "roof_colour_source": "osm:roof:colour | osm:roof:material | default",
       "override": null          // or the entry from overrides.json
     }
   ],
@@ -118,7 +128,12 @@ Coordinates here are **world GIB-LTM metres** (not tile-local).
                 "length_m": 84.2, "tunnel": false, "bridge": false, "layer": 0 } ],
   "walls":  [ { "id": "osm:way/…", "kind": "historic=city_walls", "height_m": 6,
                 "height_source": "default:city_walls" } ],
-  "trees":  [ { "id": "osm:node/…", "position_m": [x, y, z] } ],
+  "props":  [ { "id": "osm:node/…", "kind": "tree | bench | bollard | post_box | telephone | street_lamp | cannon | …",
+                "name": null, "position_m": [x, y, z], "model": "generic",
+                "height_m": 7.0, "height_source": "osm:height | default:tree",
+                "direction_deg": 270.0,          // only when OSM tags a direction
+                "orientation_source": "osm:direction | default:east",
+                "source": "osm" } ],
   "tunnels": [ { "id": "osm:way/…", "name": "…", "highway": "…", "length_m": 0 } ]
 }
 ```

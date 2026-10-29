@@ -2,3 +2,4 @@ data/raw/osm/
 data/raw/dem/
 __pycache__/
 *.pyc
+data/raw/imagery/

@@ -1,7 +1,7 @@
 {
  "schema": 1,
  "pipeline_version": "0.1.0",
- "generated_utc": "2026-10-29T16:14:14Z",
+ "generated_utc": "2026-10-29T16:41:01Z",
  "crs": {
   "engine_proj": "+proj=tmerc +lat_0=36.13 +lon_0=-5.35 +k=1 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
   "engine_name": "GIB-LTM",
@@ -5241,7 +5241,8 @@
   }
  ],
  "attribution": [
-  "MDT05 CC BY 4.0 scne.es (Instituto Geográfico Nacional)",
+  "Contains modified Copernicus Sentinel data 2026",
+  "Obra derivada de MDT05-cob1 2008-2015 CC-BY 4.0 scne.es (Instituto Geográfico Nacional, resampled to the GIB-LTM grid)",
   "© OpenStreetMap contributors. Available under the Open Database License (ODbL). https://www.openstreetmap.org/copyright"
  ],
  "stats": {
@@ -5253,9 +5254,37 @@
   },
   "road_ways": 4497,
   "tunnels": 171,
-  "walls": 3614,
+  "walls": 3967,
   "piers": 173,
-  "pois": 400
+  "pois": 400,
+  "props_by_kind": {
+   "bench": 180,
+   "bollard": 79,
+   "bus_stop": 147,
+   "cannon": 24,
+   "drinking_water": 6,
+   "fire_hydrant": 9,
+   "flagpole": 8,
+   "fountain": 6,
+   "info_board": 18,
+   "mast": 30,
+   "memorial": 40,
+   "picnic_table": 37,
+   "post_box": 20,
+   "recycling": 8,
+   "street_lamp": 7,
+   "telephone": 7,
+   "tree": 5720,
+   "waste_basket": 51
+  },
+  "roofs_by_shape": {
+   "flat": 9661,
+   "gabled": 34,
+   "hipped": 13,
+   "pyramidal": 1,
+   "skillion": 5
+  },
+  "building_colours_from_tags": 36
  },
  "tiles": [
   {
@@ -5323,7 +5352,7 @@
     "roads": 0,
     "walls": 1,
     "piers": 0,
-    "trees": 0
+    "props": 0
    },
    "land_area_m2": 3678.7
   },
@@ -5366,7 +5395,7 @@
        53.52
       ]
      ],
-     "triangles": 1536,
+     "triangles": 4515,
      "file": "tiles/T_E0_S5/buildings.glb"
     },
     "roads": {
@@ -5382,7 +5411,7 @@
        37.06
       ]
      ],
-     "triangles": 6101,
+     "triangles": 6865,
      "file": "tiles/T_E0_S5/roads.glb"
     },
     "walls": {
@@ -5398,17 +5427,33 @@
        38.689
       ]
      ],
-     "triangles": 6779,
+     "triangles": 7457,
      "file": "tiles/T_E0_S5/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       136.246,
+       224.991,
+       7.284
+      ],
+      [
+       464.678,
+       488.444,
+       42.162
+      ]
+     ],
+     "triangles": 1140,
+     "file": "tiles/T_E0_S5/props.glb"
     }
    },
    "features": "tiles/T_E0_S5/features.json",
    "counts": {
     "buildings": 52,
     "roads": 70,
-    "walls": 21,
+    "walls": 29,
     "piers": 0,
-    "trees": 12
+    "props": 25
    },
    "land_area_m2": 132873.1
   },
@@ -5445,7 +5490,7 @@
     "roads": 0,
     "walls": 0,
     "piers": 0,
-    "trees": 0
+    "props": 0
    },
    "land_area_m2": 4.2
   },
@@ -5485,10 +5530,10 @@
       [
        505.069,
        128.816,
-       54.62
+       57.1545
       ]
      ],
-     "triangles": 101,
+     "triangles": 552,
      "file": "tiles/T_W1_S4/buildings.glb"
     },
     "roads": {
@@ -5530,7 +5575,7 @@
     "roads": 3,
     "walls": 3,
     "piers": 0,
-    "trees": 0
+    "props": 0
    },
    "land_area_m2": 8723.8
   },
@@ -5573,7 +5618,7 @@
        125.31
       ]
      ],
-     "triangles": 1979,
+     "triangles": 12832,
      "file": "tiles/T_E0_S4/buildings.glb"
     },
     "roads": {
@@ -5589,7 +5634,7 @@
        118.5373
       ]
      ],
-     "triangles": 7637,
+     "triangles": 8013,
      "file": "tiles/T_E0_S4/roads.glb"
     },
     "walls": {
@@ -5605,17 +5650,33 @@
        121.9082
       ]
      ],
-     "triangles": 4400,
+     "triangles": 5326,
      "file": "tiles/T_E0_S4/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       -1.672,
+       -1.477,
+       6.804
+      ],
+      [
+       219.916,
+       480.3,
+       70.174
+      ]
+     ],
+     "triangles": 1652,
+     "file": "tiles/T_E0_S4/props.glb"
     }
    },
    "features": "tiles/T_E0_S4/features.json",
    "counts": {
     "buildings": 117,
     "roads": 78,
-    "walls": 47,
+    "walls": 49,
     "piers": 0,
-    "trees": 36
+    "props": 38
    },
    "land_area_m2": 243617.3
   },
@@ -5674,7 +5735,7 @@
        82.1636
       ]
      ],
-     "triangles": 1507,
+     "triangles": 1577,
      "file": "tiles/T_E1_S4/roads.glb"
     },
     "walls": {
@@ -5700,7 +5761,7 @@
     "roads": 8,
     "walls": 4,
     "piers": 0,
-    "trees": 0
+    "props": 0
    },
    "land_area_m2": 46277.6
   },
@@ -5759,7 +5820,7 @@
        43.2175
       ]
      ],
-     "triangles": 1652,
+     "triangles": 1714,
      "file": "tiles/T_W1_S3/roads.glb"
     },
     "walls": {
@@ -5775,17 +5836,33 @@
        77.7007
       ]
      ],
-     "triangles": 3315,
+     "triangles": 3525,
      "file": "tiles/T_W1_S3/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       450.007,
+       263.6234,
+       5.201
+      ],
+      [
+       473.908,
+       502.428,
+       48.896
+      ]
+     ],
+     "triangles": 72,
+     "file": "tiles/T_W1_S3/props.glb"
     }
    },
    "features": "tiles/T_W1_S3/features.json",
    "counts": {
     "buildings": 36,
     "roads": 11,
-    "walls": 20,
+    "walls": 21,
     "piers": 0,
-    "trees": 1
+    "props": 2
    },
    "land_area_m2": 63585.7
   },
@@ -5828,7 +5905,7 @@
        188.5
       ]
      ],
-     "triangles": 2960,
+     "triangles": 3572,
      "file": "tiles/T_E0_S3/buildings.glb"
     },
     "roads": {
@@ -5844,7 +5921,7 @@
        197.1695
       ]
      ],
-     "triangles": 8676,
+     "triangles": 9466,
      "file": "tiles/T_E0_S3/roads.glb"
     },
     "walls": {
@@ -5860,17 +5937,33 @@
        175.4581
       ]
      ],
-     "triangles": 5988,
+     "triangles": 6916,
      "file": "tiles/T_E0_S3/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       22.877,
+       4.0414,
+       6.474
+      ],
+      [
+       366.196,
+       459.38,
+       173.504
+      ]
+     ],
+     "triangles": 422,
+     "file": "tiles/T_E0_S3/props.glb"
     }
    },
    "features": "tiles/T_E0_S3/features.json",
    "counts": {
     "buildings": 148,
     "roads": 77,
-    "walls": 29,
+    "walls": 34,
     "piers": 0,
-    "trees": 6
+    "props": 12
    },
    "land_area_m2": 250000.0
   },
@@ -5929,7 +6022,7 @@
        210.6931
       ]
      ],
-     "triangles": 2428,
+     "triangles": 2452,
      "file": "tiles/T_E1_S3/roads.glb"
     },
     "walls": {
@@ -5945,17 +6038,33 @@
        180.2774
       ]
      ],
-     "triangles": 3928,
+     "triangles": 3972,
      "file": "tiles/T_E1_S3/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       32.146,
+       190.914,
+       68.101
+      ],
+      [
+       190.581,
+       439.052,
+       137.0
+      ]
+     ],
+     "triangles": 220,
+     "file": "tiles/T_E1_S3/props.glb"
     }
    },
    "features": "tiles/T_E1_S3/features.json",
    "counts": {
     "buildings": 16,
     "roads": 28,
-    "walls": 19,
+    "walls": 20,
     "piers": 0,
-    "trees": 5
+    "props": 5
    },
    "land_area_m2": 108335.8
   },
@@ -6040,7 +6149,7 @@
     "roads": 2,
     "walls": 5,
     "piers": 0,
-    "trees": 0
+    "props": 0
    },
    "land_area_m2": 4364.9
   },
@@ -6083,7 +6192,7 @@
        83.78
       ]
      ],
-     "triangles": 3051,
+     "triangles": 3363,
      "file": "tiles/T_W1_S2/buildings.glb"
     },
     "roads": {
@@ -6099,7 +6208,7 @@
        69.2447
       ]
      ],
-     "triangles": 8223,
+     "triangles": 8692,
      "file": "tiles/T_W1_S2/roads.glb"
     },
     "walls": {
@@ -6115,17 +6224,33 @@
        48.4659
       ]
      ],
-     "triangles": 9661,
+     "triangles": 10019,
      "file": "tiles/T_W1_S2/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       125.52,
+       15.969,
+       2.112
+      ],
+      [
+       474.763,
+       481.8098,
+       61.313
+      ]
+     ],
+     "triangles": 2818,
+     "file": "tiles/T_W1_S2/props.glb"
     }
    },
    "features": "tiles/T_W1_S2/features.json",
    "counts": {
     "buildings": 172,
     "roads": 85,
-    "walls": 31,
+    "walls": 32,
     "piers": 0,
-    "trees": 56
+    "props": 66
    },
    "land_area_m2": 190976.2
   },
@@ -6168,7 +6293,7 @@
        143.0
       ]
      ],
-     "triangles": 1136,
+     "triangles": 2348,
      "file": "tiles/T_E0_S2/buildings.glb"
     },
     "roads": {
@@ -6184,7 +6309,7 @@
        331.8994
       ]
      ],
-     "triangles": 6603,
+     "triangles": 6839,
      "file": "tiles/T_E0_S2/roads.glb"
     },
     "walls": {
@@ -6202,6 +6327,22 @@
      ],
      "triangles": 766,
      "file": "tiles/T_E0_S2/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       47.731,
+       8.1284,
+       79.351
+      ],
+      [
+       192.715,
+       344.0426,
+       102.095
+      ]
+     ],
+     "triangles": 488,
+     "file": "tiles/T_E0_S2/props.glb"
     }
    },
    "features": "tiles/T_E0_S2/features.json",
@@ -6210,7 +6351,7 @@
     "roads": 25,
     "walls": 4,
     "piers": 0,
-    "trees": 8
+    "props": 12
    },
    "land_area_m2": 250000.0
   },
@@ -6269,33 +6410,49 @@
        417.5313
       ]
      ],
-     "triangles": 3748,
+     "triangles": 3752,
      "file": "tiles/T_E1_S2/roads.glb"
     },
     "walls": {
      "bounds_m": [
       [
-       40.8618,
+       40.7069,
        137.107,
        302.8675
       ],
       [
        139.7901,
-       474.4662,
+       500.0,
        417.977
       ]
      ],
-     "triangles": 1366,
+     "triangles": 1630,
      "file": "tiles/T_E1_S2/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       86.98,
+       338.7755,
+       402.395
+      ],
+      [
+       122.448,
+       400.913,
+       430.292
+      ]
+     ],
+     "triangles": 112,
+     "file": "tiles/T_E1_S2/props.glb"
     }
    },
    "features": "tiles/T_E1_S2/features.json",
    "counts": {
     "buildings": 24,
     "roads": 39,
-    "walls": 8,
+    "walls": 12,
     "piers": 0,
-    "trees": 0
+    "props": 4
    },
    "land_area_m2": 158513.3
   },
@@ -6370,17 +6527,33 @@
        4.0
       ]
      ],
-     "triangles": 4648,
+     "triangles": 4770,
      "file": "tiles/T_W2_S1/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       66.043,
+       412.4854,
+       0.9
+      ],
+      [
+       133.422,
+       499.3816,
+       1.9
+      ]
+     ],
+     "triangles": 96,
+     "file": "tiles/T_W2_S1/props.glb"
     }
    },
    "features": "tiles/T_W2_S1/features.json",
    "counts": {
     "buildings": 6,
     "roads": 2,
-    "walls": 5,
+    "walls": 6,
     "piers": 1,
-    "trees": 0
+    "props": 6
    },
    "land_area_m2": 30882.3
   },
@@ -6439,7 +6612,7 @@
        69.9902
       ]
      ],
-     "triangles": 8495,
+     "triangles": 8858,
      "file": "tiles/T_W1_S1/roads.glb"
     },
     "walls": {
@@ -6455,17 +6628,33 @@
        59.6455
       ]
      ],
-     "triangles": 8512,
+     "triangles": 8930,
      "file": "tiles/T_W1_S1/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       236.027,
+       31.433,
+       6.272
+      ],
+      [
+       498.62,
+       502.134,
+       59.445
+      ]
+     ],
+     "triangles": 3544,
+     "file": "tiles/T_W1_S1/props.glb"
     }
    },
    "features": "tiles/T_W1_S1/features.json",
    "counts": {
     "buildings": 121,
     "roads": 64,
-    "walls": 12,
+    "walls": 16,
     "piers": 1,
-    "trees": 75
+    "props": 81
    },
    "land_area_m2": 220021.0
   },
@@ -6524,7 +6713,7 @@
        379.3931
       ]
      ],
-     "triangles": 6422,
+     "triangles": 6648,
      "file": "tiles/T_E0_S1/roads.glb"
     },
     "walls": {
@@ -6540,17 +6729,33 @@
        355.629
       ]
      ],
-     "triangles": 1577,
+     "triangles": 1817,
      "file": "tiles/T_E0_S1/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       1.623,
+       95.5784,
+       50.06
+      ],
+      [
+       435.801,
+       493.113,
+       355.358
+      ]
+     ],
+     "triangles": 708,
+     "file": "tiles/T_E0_S1/props.glb"
     }
    },
    "features": "tiles/T_E0_S1/features.json",
    "counts": {
     "buildings": 53,
     "roads": 43,
-    "walls": 10,
+    "walls": 13,
     "piers": 0,
-    "trees": 8
+    "props": 19
    },
    "land_area_m2": 250000.0
   },
@@ -6609,14 +6814,14 @@
        413.0794
       ]
      ],
-     "triangles": 2242,
+     "triangles": 2274,
      "file": "tiles/T_E1_S1/roads.glb"
     },
     "walls": {
      "bounds_m": [
       [
        4.3663,
-       134.3654,
+       0.0,
        -4.0
       ],
       [
@@ -6625,17 +6830,33 @@
        416.0
       ]
      ],
-     "triangles": 1657,
+     "triangles": 2541,
      "file": "tiles/T_E1_S1/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       18.105,
+       327.163,
+       8.684
+      ],
+      [
+       269.024,
+       400.538,
+       427.478
+      ]
+     ],
+     "triangles": 412,
+     "file": "tiles/T_E1_S1/props.glb"
     }
    },
    "features": "tiles/T_E1_S1/features.json",
    "counts": {
     "buildings": 10,
     "roads": 15,
-    "walls": 11,
+    "walls": 13,
     "piers": 1,
-    "trees": 9
+    "props": 10
    },
    "land_area_m2": 166216.6
   },
@@ -6710,17 +6931,33 @@
        4.0
       ]
      ],
-     "triangles": 3130,
+     "triangles": 3228,
      "file": "tiles/T_W3_N0/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       266.221,
+       86.4764,
+       0.9
+      ],
+      [
+       499.183,
+       389.9816,
+       1.9
+      ]
+     ],
+     "triangles": 320,
+     "file": "tiles/T_W3_N0/props.glb"
     }
    },
    "features": "tiles/T_W3_N0/features.json",
    "counts": {
     "buildings": 1,
     "roads": 3,
-    "walls": 5,
+    "walls": 6,
     "piers": 1,
-    "trees": 0
+    "props": 20
    },
    "land_area_m2": 16465.5
   },
@@ -6795,17 +7032,33 @@
        3.9904
       ]
      ],
-     "triangles": 5155,
+     "triangles": 5497,
      "file": "tiles/T_W2_N0/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       10.17,
+       71.5724,
+       0.9
+      ],
+      [
+       449.179,
+       343.8925,
+       15.9
+      ]
+     ],
+     "triangles": 32,
+     "file": "tiles/T_W2_N0/props.glb"
     }
    },
    "features": "tiles/T_W2_N0/features.json",
    "counts": {
     "buildings": 6,
     "roads": 7,
-    "walls": 16,
+    "walls": 22,
     "piers": 10,
-    "trees": 0
+    "props": 2
    },
    "land_area_m2": 15639.5
   },
@@ -6864,7 +7117,7 @@
        109.9577
       ]
      ],
-     "triangles": 15772,
+     "triangles": 16606,
      "file": "tiles/T_W1_N0/roads.glb"
     },
     "walls": {
@@ -6880,17 +7133,33 @@
        55.1917
       ]
      ],
-     "triangles": 10240,
+     "triangles": 10492,
      "file": "tiles/T_W1_N0/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       81.773,
+       -2.345,
+       0.8
+      ],
+      [
+       489.538,
+       501.96,
+       62.232
+      ]
+     ],
+     "triangles": 7434,
+     "file": "tiles/T_W1_N0/props.glb"
     }
    },
    "features": "tiles/T_W1_N0/features.json",
    "counts": {
     "buildings": 126,
     "roads": 180,
-    "walls": 18,
+    "walls": 20,
     "piers": 14,
-    "trees": 140
+    "props": 166
    },
    "land_area_m2": 227588.3
   },
@@ -6949,7 +7218,7 @@
        382.9287
       ]
      ],
-     "triangles": 6872,
+     "triangles": 7052,
      "file": "tiles/T_E0_N0/roads.glb"
     },
     "walls": {
@@ -6965,17 +7234,33 @@
        387.2564
       ]
      ],
-     "triangles": 3836,
+     "triangles": 4194,
      "file": "tiles/T_E0_N0/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       7.717,
+       16.752,
+       59.778
+      ],
+      [
+       407.861,
+       489.973,
+       396.017
+      ]
+     ],
+     "triangles": 518,
+     "file": "tiles/T_E0_N0/props.glb"
     }
    },
    "features": "tiles/T_E0_N0/features.json",
    "counts": {
     "buildings": 28,
     "roads": 64,
-    "walls": 16,
+    "walls": 20,
     "piers": 0,
-    "trees": 2
+    "props": 18
    },
    "land_area_m2": 250000.0
   },
@@ -7034,7 +7319,7 @@
        215.3187
       ]
      ],
-     "triangles": 3184,
+     "triangles": 3218,
      "file": "tiles/T_E1_N0/roads.glb"
     },
     "walls": {
@@ -7052,6 +7337,22 @@
      ],
      "triangles": 511,
      "file": "tiles/T_E1_N0/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       224.384,
+       82.1514,
+       20.111
+      ],
+      [
+       224.834,
+       82.2206,
+       22.811
+      ]
+     ],
+     "triangles": 28,
+     "file": "tiles/T_E1_N0/props.glb"
     }
    },
    "features": "tiles/T_E1_N0/features.json",
@@ -7060,7 +7361,7 @@
     "roads": 16,
     "walls": 0,
     "piers": 1,
-    "trees": 0
+    "props": 1
    },
    "land_area_m2": 166608.6
   },
@@ -7129,7 +7430,7 @@
     "roads": 0,
     "walls": 0,
     "piers": 4,
-    "trees": 0
+    "props": 0
    },
    "land_area_m2": 4295.8
   },
@@ -7188,7 +7489,7 @@
        3.06
       ]
      ],
-     "triangles": 2822,
+     "triangles": 3064,
      "file": "tiles/T_W2_N1/roads.glb"
     },
     "walls": {
@@ -7204,17 +7505,33 @@
        3.8508
       ]
      ],
-     "triangles": 8118,
+     "triangles": 8914,
      "file": "tiles/T_W2_N1/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       414.338,
+       445.798,
+       0.8
+      ],
+      [
+       496.463,
+       497.655,
+       9.985
+      ]
+     ],
+     "triangles": 392,
+     "file": "tiles/T_W2_N1/props.glb"
     }
    },
    "features": "tiles/T_W2_N1/features.json",
    "counts": {
     "buildings": 37,
     "roads": 24,
-    "walls": 11,
+    "walls": 24,
     "piers": 22,
-    "trees": 8
+    "props": 9
    },
    "land_area_m2": 80258.0
   },
@@ -7273,7 +7590,7 @@
        150.037
       ]
      ],
-     "triangles": 15707,
+     "triangles": 16771,
      "file": "tiles/T_W1_N1/roads.glb"
     },
     "walls": {
@@ -7289,17 +7606,33 @@
        142.7459
       ]
      ],
-     "triangles": 10158,
+     "triangles": 10762,
      "file": "tiles/T_W1_N1/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       -0.966,
+       -2.371,
+       0.8
+      ],
+      [
+       481.35,
+       502.331,
+       136.971
+      ]
+     ],
+     "triangles": 16370,
+     "file": "tiles/T_W1_N1/props.glb"
     }
    },
    "features": "tiles/T_W1_N1/features.json",
    "counts": {
     "buildings": 244,
     "roads": 202,
-    "walls": 22,
+    "walls": 25,
     "piers": 4,
-    "trees": 325
+    "props": 374
    },
    "land_area_m2": 240057.5
   },
@@ -7358,7 +7691,7 @@
        365.7398
       ]
      ],
-     "triangles": 3942,
+     "triangles": 3962,
      "file": "tiles/T_E0_N1/roads.glb"
     },
     "walls": {
@@ -7374,17 +7707,33 @@
        366.8815
       ]
      ],
-     "triangles": 855,
+     "triangles": 877,
      "file": "tiles/T_E0_N1/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       10.117,
+       7.98,
+       146.103
+      ],
+      [
+       34.5,
+       108.336,
+       160.577
+      ]
+     ],
+     "triangles": 144,
+     "file": "tiles/T_E0_N1/props.glb"
     }
    },
    "features": "tiles/T_E0_N1/features.json",
    "counts": {
     "buildings": 24,
     "roads": 21,
-    "walls": 5,
+    "walls": 6,
     "piers": 0,
-    "trees": 0
+    "props": 3
    },
    "land_area_m2": 250000.0
   },
@@ -7443,8 +7792,24 @@
        225.4481
       ]
      ],
-     "triangles": 3369,
+     "triangles": 3536,
      "file": "tiles/T_E1_N1/roads.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       307.221,
+       68.574,
+       19.164
+      ],
+      [
+       323.064,
+       302.9446,
+       24.24
+      ]
+     ],
+     "triangles": 68,
+     "file": "tiles/T_E1_N1/props.glb"
     }
    },
    "features": "tiles/T_E1_N1/features.json",
@@ -7453,7 +7818,7 @@
     "roads": 29,
     "walls": 0,
     "piers": 0,
-    "trees": 0
+    "props": 2
    },
    "land_area_m2": 173905.4
   },
@@ -7506,7 +7871,7 @@
     "roads": 0,
     "walls": 0,
     "piers": 3,
-    "trees": 0
+    "props": 0
    },
    "land_area_m2": 2092.8
   },
@@ -7549,7 +7914,7 @@
        3.06
       ]
      ],
-     "triangles": 272,
+     "triangles": 292,
      "file": "tiles/T_W3_N2/roads.glb"
     },
     "walls": {
@@ -7575,7 +7940,7 @@
     "roads": 8,
     "walls": 0,
     "piers": 2,
-    "trees": 0
+    "props": 0
    },
    "land_area_m2": 6375.4
   },
@@ -7618,7 +7983,7 @@
        67.0
       ]
      ],
-     "triangles": 1347,
+     "triangles": 1343,
      "file": "tiles/T_W2_N2/buildings.glb"
     },
     "roads": {
@@ -7634,7 +7999,7 @@
        3.06
       ]
      ],
-     "triangles": 8244,
+     "triangles": 8674,
      "file": "tiles/T_W2_N2/roads.glb"
     },
     "walls": {
@@ -7650,17 +8015,33 @@
        8.0
       ]
      ],
-     "triangles": 5406,
+     "triangles": 5720,
      "file": "tiles/T_W2_N2/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       75.791,
+       -2.431,
+       0.8
+      ],
+      [
+       500.769,
+       499.716,
+       9.552
+      ]
+     ],
+     "triangles": 3028,
+     "file": "tiles/T_W2_N2/props.glb"
     }
    },
    "features": "tiles/T_W2_N2/features.json",
    "counts": {
     "buildings": 66,
     "roads": 99,
-    "walls": 7,
+    "walls": 8,
     "piers": 24,
-    "trees": 63
+    "props": 70
    },
    "land_area_m2": 171326.6
   },
@@ -7703,7 +8084,7 @@
        95.05
       ]
      ],
-     "triangles": 5661,
+     "triangles": 5951,
      "file": "tiles/T_W1_N2/buildings.glb"
     },
     "roads": {
@@ -7719,7 +8100,7 @@
        87.0281
       ]
      ],
-     "triangles": 18760,
+     "triangles": 19576,
      "file": "tiles/T_W1_N2/roads.glb"
     },
     "walls": {
@@ -7735,17 +8116,33 @@
        94.3952
       ]
      ],
-     "triangles": 4630,
+     "triangles": 4658,
      "file": "tiles/T_W1_N2/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       -2.053,
+       -1.969,
+       0.8
+      ],
+      [
+       450.583,
+       501.374,
+       74.84
+      ]
+     ],
+     "triangles": 10050,
+     "file": "tiles/T_W1_N2/props.glb"
     }
    },
    "features": "tiles/T_W1_N2/features.json",
    "counts": {
     "buildings": 211,
     "roads": 239,
-    "walls": 18,
+    "walls": 19,
     "piers": 0,
-    "trees": 182
+    "props": 233
    },
    "land_area_m2": 250000.0
   },
@@ -7804,7 +8201,7 @@
        348.106
       ]
      ],
-     "triangles": 6380,
+     "triangles": 6714,
      "file": "tiles/T_E0_N2/roads.glb"
     },
     "walls": {
@@ -7820,17 +8217,33 @@
        312.8649
       ]
      ],
-     "triangles": 2646,
+     "triangles": 2702,
      "file": "tiles/T_E0_N2/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       5.994,
+       244.8751,
+       79.726
+      ],
+      [
+       249.308,
+       443.28,
+       186.358
+      ]
+     ],
+     "triangles": 286,
+     "file": "tiles/T_E0_N2/props.glb"
     }
    },
    "features": "tiles/T_E0_N2/features.json",
    "counts": {
     "buildings": 73,
     "roads": 55,
-    "walls": 14,
+    "walls": 15,
     "piers": 0,
-    "trees": 0
+    "props": 9
    },
    "land_area_m2": 250000.0
   },
@@ -7889,7 +8302,7 @@
        409.6825
       ]
      ],
-     "triangles": 4426,
+     "triangles": 4684,
      "file": "tiles/T_E1_N2/roads.glb"
     },
     "walls": {
@@ -7907,6 +8320,22 @@
      ],
      "triangles": 1877,
      "file": "tiles/T_E1_N2/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       204.03,
+       16.25,
+       17.119
+      ],
+      [
+       373.989,
+       220.3106,
+       30.608
+      ]
+     ],
+     "triangles": 740,
+     "file": "tiles/T_E1_N2/props.glb"
     }
    },
    "features": "tiles/T_E1_N2/features.json",
@@ -7915,7 +8344,7 @@
     "roads": 48,
     "walls": 18,
     "piers": 0,
-    "trees": 15
+    "props": 17
    },
    "land_area_m2": 235977.4
   },
@@ -7952,7 +8381,7 @@
     "roads": 0,
     "walls": 0,
     "piers": 0,
-    "trees": 0
+    "props": 0
    },
    "land_area_m2": 24923.4
   },
@@ -8011,7 +8440,7 @@
        3.06
       ]
      ],
-     "triangles": 2531,
+     "triangles": 2571,
      "file": "tiles/T_W3_N3/roads.glb"
     },
     "walls": {
@@ -8024,20 +8453,36 @@
       [
        500.0,
        500.0,
-       2.0
+       2.2
       ]
      ],
-     "triangles": 6078,
+     "triangles": 6230,
      "file": "tiles/T_W3_N3/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       455.842,
+       14.662,
+       0.8
+      ],
+      [
+       493.853,
+       325.734,
+       8.0
+      ]
+     ],
+     "triangles": 2464,
+     "file": "tiles/T_W3_N3/props.glb"
     }
    },
    "features": "tiles/T_W3_N3/features.json",
    "counts": {
     "buildings": 12,
     "roads": 25,
-    "walls": 1,
+    "walls": 2,
     "piers": 3,
-    "trees": 56
+    "props": 56
    },
    "land_area_m2": 50652.7
   },
@@ -8093,10 +8538,10 @@
       [
        500.0,
        500.0,
-       3.06
+       3.08
       ]
      ],
-     "triangles": 14285,
+     "triangles": 15407,
      "file": "tiles/T_W2_N3/roads.glb"
     },
     "walls": {
@@ -8109,20 +8554,36 @@
       [
        500.0,
        500.0,
-       3.8822
+       4.0951
       ]
      ],
-     "triangles": 3336,
+     "triangles": 3774,
      "file": "tiles/T_W2_N3/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       6.249,
+       12.665,
+       0.8
+      ],
+      [
+       502.367,
+       495.815,
+       10.0
+      ]
+     ],
+     "triangles": 7008,
+     "file": "tiles/T_W2_N3/props.glb"
     }
    },
    "features": "tiles/T_W2_N3/features.json",
    "counts": {
     "buildings": 117,
     "roads": 169,
-    "walls": 11,
+    "walls": 14,
     "piers": 9,
-    "trees": 152
+    "props": 161
    },
    "land_area_m2": 243954.5
   },
@@ -8181,7 +8642,7 @@
        79.9799
       ]
      ],
-     "triangles": 15330,
+     "triangles": 17069,
      "file": "tiles/T_W1_N3/roads.glb"
     },
     "walls": {
@@ -8197,17 +8658,33 @@
        99.9749
       ]
      ],
-     "triangles": 12897,
+     "triangles": 14746,
      "file": "tiles/T_W1_N3/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       0.736,
+       -2.218,
+       0.8
+      ],
+      [
+       501.554,
+       502.163,
+       74.646
+      ]
+     ],
+     "triangles": 8802,
+     "file": "tiles/T_W1_N3/props.glb"
     }
    },
    "features": "tiles/T_W1_N3/features.json",
    "counts": {
     "buildings": 166,
     "roads": 221,
-    "walls": 42,
+    "walls": 63,
     "piers": 12,
-    "trees": 165
+    "props": 203
    },
    "land_area_m2": 234209.8
   },
@@ -8266,7 +8743,7 @@
        258.1524
       ]
      ],
-     "triangles": 8808,
+     "triangles": 9073,
      "file": "tiles/T_E0_N3/roads.glb"
     },
     "walls": {
@@ -8282,17 +8759,33 @@
        260.4124
       ]
      ],
-     "triangles": 5318,
+     "triangles": 5912,
      "file": "tiles/T_E0_N3/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       0.461,
+       35.89,
+       0.8
+      ],
+      [
+       434.661,
+       501.986,
+       211.4
+      ]
+     ],
+     "triangles": 1502,
+     "file": "tiles/T_E0_N3/props.glb"
     }
    },
    "features": "tiles/T_E0_N3/features.json",
    "counts": {
     "buildings": 121,
     "roads": 83,
-    "walls": 36,
+    "walls": 42,
     "piers": 0,
-    "trees": 16
+    "props": 38
    },
    "land_area_m2": 250000.0
   },
@@ -8351,7 +8844,7 @@
        405.1609
       ]
      ],
-     "triangles": 6086,
+     "triangles": 6740,
      "file": "tiles/T_E1_N3/roads.glb"
     },
     "walls": {
@@ -8359,7 +8852,7 @@
       [
        0.0,
        0.0,
-       3.5
+       2.5
       ],
       [
        418.9257,
@@ -8367,17 +8860,33 @@
        405.7799
       ]
      ],
-     "triangles": 2155,
+     "triangles": 3565,
      "file": "tiles/T_E1_N3/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       109.475,
+       202.2714,
+       2.9
+      ],
+      [
+       262.985,
+       339.3766,
+       8.673
+      ]
+     ],
+     "triangles": 136,
+     "file": "tiles/T_E1_N3/props.glb"
     }
    },
    "features": "tiles/T_E1_N3/features.json",
    "counts": {
     "buildings": 119,
     "roads": 60,
-    "walls": 11,
+    "walls": 16,
     "piers": 0,
-    "trees": 0
+    "props": 4
    },
    "land_area_m2": 231081.7
   },
@@ -8430,7 +8939,7 @@
     "roads": 2,
     "walls": 0,
     "piers": 0,
-    "trees": 0
+    "props": 0
    },
    "land_area_m2": 21119.4
   },
@@ -8489,7 +8998,7 @@
        3.06
       ]
      ],
-     "triangles": 2744,
+     "triangles": 2932,
      "file": "tiles/T_W3_N4/roads.glb"
     },
     "walls": {
@@ -8507,6 +9016,22 @@
      ],
      "triangles": 1100,
      "file": "tiles/T_W3_N4/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       317.915,
+       37.897,
+       0.8
+      ],
+      [
+       485.671,
+       71.161,
+       8.0
+      ]
+     ],
+     "triangles": 396,
+     "file": "tiles/T_W3_N4/props.glb"
     }
    },
    "features": "tiles/T_W3_N4/features.json",
@@ -8515,7 +9040,7 @@
     "roads": 29,
     "walls": 0,
     "piers": 2,
-    "trees": 9
+    "props": 9
    },
    "land_area_m2": 61639.7
   },
@@ -8574,7 +9099,7 @@
        3.06
       ]
      ],
-     "triangles": 4500,
+     "triangles": 5038,
      "file": "tiles/T_W2_N4/roads.glb"
     },
     "walls": {
@@ -8592,6 +9117,22 @@
      ],
      "triangles": 2699,
      "file": "tiles/T_W2_N4/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       18.175,
+       -1.207,
+       0.8
+      ],
+      [
+       302.302,
+       89.472,
+       9.511
+      ]
+     ],
+     "triangles": 484,
+     "file": "tiles/T_W2_N4/props.glb"
     }
    },
    "features": "tiles/T_W2_N4/features.json",
@@ -8600,7 +9141,7 @@
     "roads": 33,
     "walls": 1,
     "piers": 10,
-    "trees": 11
+    "props": 11
    },
    "land_area_m2": 116300.8
   },
@@ -8659,7 +9200,7 @@
        3.06
       ]
      ],
-     "triangles": 5283,
+     "triangles": 5457,
      "file": "tiles/T_W1_N4/roads.glb"
     },
     "walls": {
@@ -8671,21 +9212,37 @@
       ],
       [
        500.0,
-       471.885,
+       500.0,
        5.0
       ]
      ],
-     "triangles": 6759,
+     "triangles": 9092,
      "file": "tiles/T_W1_N4/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       294.319,
+       1.135,
+       0.8
+      ],
+      [
+       421.487,
+       83.931,
+       8.0
+      ]
+     ],
+     "triangles": 320,
+     "file": "tiles/T_W1_N4/props.glb"
     }
    },
    "features": "tiles/T_W1_N4/features.json",
    "counts": {
     "buildings": 21,
     "roads": 39,
-    "walls": 5,
+    "walls": 16,
     "piers": 27,
-    "trees": 6
+    "props": 7
    },
    "land_area_m2": 163764.1
   },
@@ -8744,7 +9301,7 @@
        3.2908
       ]
      ],
-     "triangles": 11771,
+     "triangles": 13075,
      "file": "tiles/T_E0_N4/roads.glb"
     },
     "walls": {
@@ -8755,22 +9312,38 @@
        0.5
       ],
       [
-       452.9065,
-       477.1745,
+       500.0,
+       500.0,
        5.0
       ]
      ],
-     "triangles": 3209,
+     "triangles": 10541,
      "file": "tiles/T_E0_N4/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       22.37,
+       4.645,
+       0.8
+      ],
+      [
+       404.407,
+       230.973,
+       10.0
+      ]
+     ],
+     "triangles": 1252,
+     "file": "tiles/T_E0_N4/props.glb"
     }
    },
    "features": "tiles/T_E0_N4/features.json",
    "counts": {
     "buildings": 44,
     "roads": 93,
-    "walls": 12,
+    "walls": 43,
     "piers": 0,
-    "trees": 26
+    "props": 31
    },
    "land_area_m2": 250000.0
   },
@@ -8829,13 +9402,13 @@
        5.06
       ]
      ],
-     "triangles": 7372,
+     "triangles": 8062,
      "file": "tiles/T_E1_N4/roads.glb"
     },
     "walls": {
      "bounds_m": [
       [
-       350.7317,
+       0.0,
        0.0,
        0.5
       ],
@@ -8845,17 +9418,33 @@
        7.0
       ]
      ],
-     "triangles": 2948,
+     "triangles": 6550,
      "file": "tiles/T_E1_N4/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       60.297,
+       9.9715,
+       1.9
+      ],
+      [
+       273.752,
+       211.067,
+       19.9
+      ]
+     ],
+     "triangles": 1016,
+     "file": "tiles/T_E1_N4/props.glb"
     }
    },
    "features": "tiles/T_E1_N4/features.json",
    "counts": {
     "buildings": 20,
     "roads": 47,
-    "walls": 6,
+    "walls": 16,
     "piers": 0,
-    "trees": 18
+    "props": 32
    },
    "land_area_m2": 234171.8
   },
@@ -8892,7 +9481,7 @@
     "roads": 0,
     "walls": 0,
     "piers": 0,
-    "trees": 0
+    "props": 0
    },
    "land_area_m2": 583.7
   },
@@ -8929,7 +9518,7 @@
     "roads": 0,
     "walls": 0,
     "piers": 0,
-    "trees": 0
+    "props": 0
    },
    "land_area_m2": 1287.0
   },
@@ -8966,7 +9555,7 @@
     "roads": 0,
     "walls": 0,
     "piers": 0,
-    "trees": 0
+    "props": 0
    },
    "land_area_m2": 9480.9
   },
@@ -9025,7 +9614,7 @@
        3.06
       ]
      ],
-     "triangles": 1365,
+     "triangles": 1447,
      "file": "tiles/T_W2_N5/roads.glb"
     },
     "walls": {
@@ -9043,6 +9632,22 @@
      ],
      "triangles": 2222,
      "file": "tiles/T_W2_N5/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       195.52,
+       327.972,
+       1.776
+      ],
+      [
+       500.897,
+       484.742,
+       9.0
+      ]
+     ],
+     "triangles": 1100,
+     "file": "tiles/T_W2_N5/props.glb"
     }
    },
    "features": "tiles/T_W2_N5/features.json",
@@ -9051,7 +9656,7 @@
     "roads": 5,
     "walls": 0,
     "piers": 7,
-    "trees": 25
+    "props": 25
    },
    "land_area_m2": 72032.7
   },
@@ -9110,14 +9715,14 @@
        4.06
       ]
      ],
-     "triangles": 10126,
+     "triangles": 10989,
      "file": "tiles/T_W1_N5/roads.glb"
     },
     "walls": {
      "bounds_m": [
       [
        0.0,
-       4.2839,
+       0.0,
        -4.0
       ],
       [
@@ -9126,17 +9731,33 @@
        5.0
       ]
      ],
-     "triangles": 3186,
+     "triangles": 5417,
      "file": "tiles/T_W1_N5/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       6.255,
+       10.848,
+       1.349
+      ],
+      [
+       502.185,
+       501.207,
+       10.865
+      ]
+     ],
+     "triangles": 7900,
+     "file": "tiles/T_W1_N5/props.glb"
     }
    },
    "features": "tiles/T_W1_N5/features.json",
    "counts": {
     "buildings": 44,
     "roads": 104,
-    "walls": 7,
+    "walls": 15,
     "piers": 15,
-    "trees": 177
+    "props": 180
    },
    "land_area_m2": 144500.4
   },
@@ -9195,33 +9816,49 @@
        6.06
       ]
      ],
-     "triangles": 18177,
+     "triangles": 20456,
      "file": "tiles/T_E0_N5/roads.glb"
     },
     "walls": {
      "bounds_m": [
       [
        0.0,
-       8.2922,
-       1.7404
+       0.0,
+       1.5
       ],
       [
-       432.2023,
+       500.0,
        500.0,
        8.6011
       ]
      ],
-     "triangles": 2786,
+     "triangles": 9428,
      "file": "tiles/T_E0_N5/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       -1.6,
+       54.1,
+       1.8
+      ],
+      [
+       498.015,
+       496.559,
+       17.9
+      ]
+     ],
+     "triangles": 5910,
+     "file": "tiles/T_E0_N5/props.glb"
     }
    },
    "features": "tiles/T_E0_N5/features.json",
    "counts": {
     "buildings": 74,
     "roads": 217,
-    "walls": 20,
+    "walls": 63,
     "piers": 0,
-    "trees": 119
+    "props": 155
    },
    "land_area_m2": 250000.0
   },
@@ -9280,33 +9917,49 @@
        4.4981
       ]
      ],
-     "triangles": 10931,
+     "triangles": 11564,
      "file": "tiles/T_E1_N5/roads.glb"
     },
     "walls": {
      "bounds_m": [
       [
-       81.7447,
+       0.0,
        31.236,
        0.5
       ],
       [
-       473.0669,
+       500.0,
        500.0,
        6.7489
       ]
      ],
-     "triangles": 8001,
+     "triangles": 15879,
      "file": "tiles/T_E1_N5/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       -0.684,
+       104.2745,
+       1.8
+      ],
+      [
+       340.324,
+       499.209,
+       17.9
+      ]
+     ],
+     "triangles": 3028,
+     "file": "tiles/T_E1_N5/props.glb"
     }
    },
    "features": "tiles/T_E1_N5/features.json",
    "counts": {
     "buildings": 51,
     "roads": 65,
-    "walls": 15,
+    "walls": 49,
     "piers": 0,
-    "trees": 67
+    "props": 72
    },
    "land_area_m2": 250000.0
   },
@@ -9351,15 +10004,31 @@
      ],
      "triangles": 101,
      "file": "tiles/T_E2_N5/roads.glb"
+    },
+    "walls": {
+     "bounds_m": [
+      [
+       0.0,
+       32.7617,
+       0.5
+      ],
+      [
+       15.0494,
+       35.9948,
+       2.4506
+      ]
+     ],
+     "triangles": 62,
+     "file": "tiles/T_E2_N5/walls.glb"
     }
    },
    "features": "tiles/T_E2_N5/features.json",
    "counts": {
     "buildings": 0,
     "roads": 4,
-    "walls": 0,
+    "walls": 1,
     "piers": 0,
-    "trees": 0
+    "props": 0
    },
    "land_area_m2": 11243.2
   },
@@ -9396,7 +10065,7 @@
     "roads": 0,
     "walls": 0,
     "piers": 0,
-    "trees": 0
+    "props": 0
    },
    "land_area_m2": 2753.7
   },
@@ -9465,7 +10134,7 @@
     "roads": 0,
     "walls": 0,
     "piers": 1,
-    "trees": 0
+    "props": 0
    },
    "land_area_m2": 1828.1
   },
@@ -9524,7 +10193,7 @@
        3.06
       ]
      ],
-     "triangles": 3291,
+     "triangles": 3513,
      "file": "tiles/T_W2_N6/roads.glb"
     },
     "walls": {
@@ -9540,17 +10209,33 @@
        5.0
       ]
      ],
-     "triangles": 10107,
+     "triangles": 11388,
      "file": "tiles/T_W2_N6/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       154.063,
+       -2.17,
+       1.683
+      ],
+      [
+       501.5,
+       498.645,
+       10.0
+      ]
+     ],
+     "triangles": 2520,
+     "file": "tiles/T_W2_N6/props.glb"
     }
    },
    "features": "tiles/T_W2_N6/features.json",
    "counts": {
     "buildings": 11,
     "roads": 31,
-    "walls": 7,
+    "walls": 12,
     "piers": 34,
-    "trees": 54
+    "props": 57
    },
    "land_area_m2": 64882.3
   },
@@ -9609,7 +10294,7 @@
        5.06
       ]
      ],
-     "triangles": 21008,
+     "triangles": 23887,
      "file": "tiles/T_W1_N6/roads.glb"
     },
     "walls": {
@@ -9625,17 +10310,33 @@
        11.388
       ]
      ],
-     "triangles": 12178,
+     "triangles": 19896,
      "file": "tiles/T_W1_N6/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       -2.216,
+       -2.051,
+       1.732
+      ],
+      [
+       502.419,
+       502.366,
+       12.0
+      ]
+     ],
+     "triangles": 29228,
+     "file": "tiles/T_W1_N6/props.glb"
     }
    },
    "features": "tiles/T_W1_N6/features.json",
    "counts": {
     "buildings": 84,
     "roads": 272,
-    "walls": 56,
+    "walls": 93,
     "piers": 9,
-    "trees": 617
+    "props": 672
    },
    "land_area_m2": 215380.4
   },
@@ -9694,7 +10395,7 @@
        6.1949
       ]
      ],
-     "triangles": 19453,
+     "triangles": 22172,
      "file": "tiles/T_E0_N6/roads.glb"
     },
     "walls": {
@@ -9710,17 +10411,33 @@
        7.1293
       ]
      ],
-     "triangles": 5801,
+     "triangles": 7983,
      "file": "tiles/T_E0_N6/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       -2.27,
+       -1.875,
+       2.8
+      ],
+      [
+       499.324,
+       491.0466,
+       12.9
+      ]
+     ],
+     "triangles": 13240,
+     "file": "tiles/T_E0_N6/props.glb"
     }
    },
    "features": "tiles/T_E0_N6/features.json",
    "counts": {
     "buildings": 222,
     "roads": 295,
-    "walls": 46,
+    "walls": 62,
     "piers": 0,
-    "trees": 250
+    "props": 306
    },
    "land_area_m2": 250000.0
   },
@@ -9779,7 +10496,7 @@
        6.0572
       ]
      ],
-     "triangles": 12785,
+     "triangles": 13681,
      "file": "tiles/T_E1_N6/roads.glb"
     },
     "walls": {
@@ -9795,17 +10512,33 @@
        10.8276
       ]
      ],
-     "triangles": 11048,
+     "triangles": 17031,
      "file": "tiles/T_E1_N6/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       -2.294,
+       2.586,
+       1.8
+      ],
+      [
+       451.578,
+       502.289,
+       12.995
+      ]
+     ],
+     "triangles": 20114,
+     "file": "tiles/T_E1_N6/props.glb"
     }
    },
    "features": "tiles/T_E1_N6/features.json",
    "counts": {
     "buildings": 88,
     "roads": 145,
-    "walls": 83,
+    "walls": 99,
     "piers": 0,
-    "trees": 433
+    "props": 460
    },
    "land_area_m2": 250000.0
   },
@@ -9864,33 +10597,49 @@
        4.8458
       ]
      ],
-     "triangles": 1324,
+     "triangles": 1556,
      "file": "tiles/T_E2_N6/roads.glb"
     },
     "walls": {
      "bounds_m": [
       [
        0.0,
-       285.3478,
+       256.7295,
        1.5
       ],
       [
-       56.0176,
+       67.6726,
        500.0,
        10.8072
       ]
      ],
-     "triangles": 904,
+     "triangles": 1878,
      "file": "tiles/T_E2_N6/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       36.575,
+       485.321,
+       3.8
+      ],
+      [
+       43.905,
+       496.768,
+       11.0
+      ]
+     ],
+     "triangles": 88,
+     "file": "tiles/T_E2_N6/props.glb"
     }
    },
    "features": "tiles/T_E2_N6/features.json",
    "counts": {
     "buildings": 3,
     "roads": 15,
-    "walls": 4,
+    "walls": 5,
     "piers": 0,
-    "trees": 2
+    "props": 2
    },
    "land_area_m2": 39115.3
   },
@@ -9959,7 +10708,7 @@
     "roads": 1,
     "walls": 0,
     "piers": 2,
-    "trees": 0
+    "props": 0
    },
    "land_area_m2": 37672.1
   },
@@ -10012,7 +10761,7 @@
     "roads": 0,
     "walls": 0,
     "piers": 1,
-    "trees": 0
+    "props": 0
    },
    "land_area_m2": 96.9
   },
@@ -10068,17 +10817,17 @@
       [
        500.0,
        444.9125,
-       3.06
+       3.08
       ]
      ],
-     "triangles": 858,
+     "triangles": 961,
      "file": "tiles/T_W3_N7/roads.glb"
     },
     "walls": {
      "bounds_m": [
       [
-       372.4209,
-       405.1017,
+       352.7029,
+       392.1891,
        1.5
       ],
       [
@@ -10087,17 +10836,33 @@
        5.8837
       ]
      ],
-     "triangles": 1585,
+     "triangles": 2387,
      "file": "tiles/T_W3_N7/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       325.53,
+       363.243,
+       1.8
+      ],
+      [
+       494.637,
+       496.78,
+       9.574
+      ]
+     ],
+     "triangles": 660,
+     "file": "tiles/T_W3_N7/props.glb"
     }
    },
    "features": "tiles/T_W3_N7/features.json",
    "counts": {
     "buildings": 9,
     "roads": 14,
-    "walls": 14,
+    "walls": 18,
     "piers": 0,
-    "trees": 15
+    "props": 15
    },
    "land_area_m2": 6114.2
   },
@@ -10156,7 +10921,7 @@
        4.06
       ]
      ],
-     "triangles": 13613,
+     "triangles": 14924,
      "file": "tiles/T_W2_N7/roads.glb"
     },
     "walls": {
@@ -10172,17 +10937,33 @@
        6.9494
       ]
      ],
-     "triangles": 6081,
+     "triangles": 8541,
      "file": "tiles/T_W2_N7/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       38.426,
+       0.512,
+       0.8
+      ],
+      [
+       494.718,
+       501.214,
+       10.992
+      ]
+     ],
+     "triangles": 14312,
+     "file": "tiles/T_W2_N7/props.glb"
     }
    },
    "features": "tiles/T_W2_N7/features.json",
    "counts": {
     "buildings": 226,
     "roads": 239,
-    "walls": 79,
+    "walls": 84,
     "piers": 1,
-    "trees": 318
+    "props": 330
    },
    "land_area_m2": 157669.4
   },
@@ -10241,7 +11022,7 @@
        5.06
       ]
      ],
-     "triangles": 13394,
+     "triangles": 14857,
      "file": "tiles/T_W1_N7/roads.glb"
     },
     "walls": {
@@ -10257,17 +11038,33 @@
        7.6846
       ]
      ],
-     "triangles": 12548,
+     "triangles": 12826,
      "file": "tiles/T_W1_N7/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       17.429,
+       -1.496,
+       1.867
+      ],
+      [
+       479.556,
+       484.717,
+       12.0
+      ]
+     ],
+     "triangles": 5908,
+     "file": "tiles/T_W1_N7/props.glb"
     }
    },
    "features": "tiles/T_W1_N7/features.json",
    "counts": {
     "buildings": 951,
     "roads": 176,
-    "walls": 261,
+    "walls": 265,
     "piers": 0,
-    "trees": 112
+    "props": 142
    },
    "land_area_m2": 222456.2
   },
@@ -10326,7 +11123,7 @@
        7.3409
       ]
      ],
-     "triangles": 12515,
+     "triangles": 13589,
      "file": "tiles/T_E0_N7/roads.glb"
     },
     "walls": {
@@ -10342,17 +11139,33 @@
        7.0
       ]
      ],
-     "triangles": 7523,
+     "triangles": 8486,
      "file": "tiles/T_E0_N7/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       12.031,
+       5.114,
+       2.8
+      ],
+      [
+       500.602,
+       499.688,
+       11.988
+      ]
+     ],
+     "triangles": 15762,
+     "file": "tiles/T_E0_N7/props.glb"
     }
    },
    "features": "tiles/T_E0_N7/features.json",
    "counts": {
     "buildings": 591,
     "roads": 169,
-    "walls": 135,
+    "walls": 144,
     "piers": 0,
-    "trees": 347
+    "props": 360
    },
    "land_area_m2": 222456.2
   },
@@ -10411,7 +11224,7 @@
        5.9961
       ]
      ],
-     "triangles": 10940,
+     "triangles": 12814,
      "file": "tiles/T_E1_N7/roads.glb"
     },
     "walls": {
@@ -10427,17 +11240,33 @@
        7.6964
       ]
      ],
-     "triangles": 22426,
+     "triangles": 25746,
      "file": "tiles/T_E1_N7/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       -1.073,
+       -2.367,
+       2.282
+      ],
+      [
+       454.372,
+       487.209,
+       11.78
+      ]
+     ],
+     "triangles": 5328,
+     "file": "tiles/T_E1_N7/props.glb"
     }
    },
    "features": "tiles/T_E1_N7/features.json",
    "counts": {
     "buildings": 811,
     "roads": 139,
-    "walls": 546,
+    "walls": 557,
     "piers": 0,
-    "trees": 117
+    "props": 122
    },
    "land_area_m2": 222456.2
   },
@@ -10496,7 +11325,7 @@
        5.4122
       ]
      ],
-     "triangles": 2713,
+     "triangles": 3120,
      "file": "tiles/T_E2_N7/roads.glb"
     },
     "walls": {
@@ -10514,6 +11343,22 @@
      ],
      "triangles": 1268,
      "file": "tiles/T_E2_N7/walls.glb"
+    },
+    "props": {
+     "bounds_m": [
+      [
+       26.573,
+       -0.83,
+       3.8
+      ],
+      [
+       95.436,
+       497.513,
+       12.0
+      ]
+     ],
+     "triangles": 3790,
+     "file": "tiles/T_E2_N7/props.glb"
     }
    },
    "features": "tiles/T_E2_N7/features.json",
@@ -10522,7 +11367,7 @@
     "roads": 27,
     "walls": 18,
     "piers": 0,
-    "trees": 84
+    "props": 88
    },
    "land_area_m2": 50872.8
   }

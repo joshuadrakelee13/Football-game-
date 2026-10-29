@@ -1,1 +1,1 @@
-{"tile":"T_W4_N7","buildings":[],"roads":[],"walls":[{"id":"osm:way/233497865","osm_version":2,"kind":"man_made=breakwater","name":null,"deck_height_m":3.0,"height_source":"default:breakwater","width_source":"area","confidence":"estimated","in_gibraltar":false}],"trees":[],"tunnels":[]}
+{"tile":"T_W4_N7","buildings":[],"roads":[],"walls":[{"id":"osm:way/233497865","osm_version":2,"kind":"man_made=breakwater","name":null,"deck_height_m":3.0,"height_source":"default:breakwater","width_source":"area","confidence":"estimated","in_gibraltar":false}],"props":[],"tunnels":[]}

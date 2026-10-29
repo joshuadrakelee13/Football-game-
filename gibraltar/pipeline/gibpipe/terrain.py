@@ -64,6 +64,7 @@ class Terrain:
         self.land_prepared = shapely.prepared.prep(self.land)
         self.gibraltar = gibraltar_polygon(data)
         self._build_landcover()
+        self._load_imagery()
 
     # ---- elevation ---------------------------------------------------------
     def _load_dem(self):
@@ -125,6 +126,31 @@ class Terrain:
         """1.0 where the DEM has a LiDAR measurement, 0.0 where it was filled."""
         return 1.0 - self.dem_sample(x, y, self.dem_filled_mask)
 
+    # ---- imagery -----------------------------------------------------------
+    def _load_imagery(self):
+        """Sentinel-2 true-colour image (10 m), if fetched. Used only for
+        ground colour."""
+        from pyproj import Transformer
+        files = sorted((config.RAW / "imagery").glob("*_TCI.tif"))
+        self.imagery = None
+        if not files:
+            return
+        src = rasterio.open(files[-1])
+        self.imagery = src.read().astype(np.float64) / 255.0       # sRGB, 0..1, shape (3, h, w)
+        self.imagery_name = files[-1].name
+        self.img_inv = ~src.transform
+        self._eng_to_img = Transformer.from_crs(crs.ENGINE_CRS, src.crs, always_xy=True)
+
+    def imagery_colour(self, x, y):
+        """(linear RGB [N,3], usable[N]) from the satellite image."""
+        e, n = self._eng_to_img.transform(np.ravel(x), np.ravel(y))
+        col, row = self.img_inv * (e, n)
+        rgb = np.stack([ndimage.map_coordinates(self.imagery[k], [np.asarray(row) - 0.5, np.asarray(col) - 0.5],
+                                                order=1, mode="nearest") for k in range(3)], -1)
+        # Pixels that mix in sea (shoreline, harbour edges) are dark and blue-dominant.
+        water = (rgb[:, 2] > rgb[:, 0]) & (rgb[:, 2] >= rgb[:, 1] * 0.95) & (rgb.mean(1) < 0.32)
+        return srgb_to_linear(np.clip(rgb, 0, 1)), ~water
+
     # ---- land cover --------------------------------------------------------
     def _build_landcover(self):
         x0, y0, x1, y1 = self.clip_box.bounds
@@ -138,26 +164,44 @@ class Terrain:
             if shapes:
                 rfeatures.rasterize(shapes, out=grid, transform=self.lc_transform)
         self.landcover = grid
+        # Where buildings are close together the 10 m satellite pixels mix
+        # roof colours into the ground, so the image isn't used within 4 m
+        # of a building footprint.
+        near = np.zeros_like(grid)
+        bshapes = [(p.buffer(4.0), 1) for _, _, p in osm.iter_areas(self.osm, lambda t: "building" in t)]
+        if bshapes:
+            rfeatures.rasterize(bshapes, out=near, transform=self.lc_transform)
+        self.near_building = near
 
-    def landcover_at(self, x, y):
+    def landcover_at(self, x, y, grid=None):
+        g = self.landcover if grid is None else grid
         col = ((np.asarray(x) - self.lc_x0) / self.lc_res).astype(int)
         row = ((self.lc_y1 - np.asarray(y)) / self.lc_res).astype(int)
-        h, w = self.landcover.shape
+        h, w = g.shape
         ok = (row >= 0) & (row < h) & (col >= 0) & (col < w)
         out = np.zeros(np.shape(x), np.uint8)
-        out[ok] = self.landcover[row[ok], col[ok]]
+        out[ok] = g[row[ok], col[ok]]
         return out
 
     def colours(self, x, y, z, nz):
-        """Vertex colours (linear RGB) from land cover, with slope-based rock
-        where nothing is mapped."""
+        """Vertex colours (linear RGB): the Sentinel-2 true-colour image where
+        it shows land; otherwise land cover, with slope-based rock where
+        nothing is mapped."""
         cls = self.landcover_at(x, y)
         steep = nz < np.cos(np.radians(40))
         upper = z > 60
         cls = np.where((cls == 0) & steep, 6, cls)
+        near = self.landcover_at(x, y, self.near_building) > 0
+        cls = np.where((cls == 0) & near, 1, cls)       # between buildings: paved
         cls = np.where((cls == 0) & upper, 3, cls)      # Upper Rock: maquis scrub
         table = np.array([LANDCOVER[k][1] for k in sorted(LANDCOVER)])
-        return srgb_to_linear(table[cls])
+        out = srgb_to_linear(table[cls])
+        if self.imagery is not None:
+            img, ok = self.imagery_colour(x, y)
+            # Built-up ground keeps the paved palette (see near_building).
+            ok &= ~np.isin(cls, (1, 9, 10)) & ~near
+            out[ok] = img[ok]
+        return out
 
     # ---- tile mesh ---------------------------------------------------------
     def tile_mesh(self, ix, iy):

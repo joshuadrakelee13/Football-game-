@@ -1,11 +1,11 @@
-"""Walls, fortifications, piers and breakwaters, plus point features (trees,
-points of interest)."""
+"""Walls, fortifications, fences, hedges, barriers, piers and breakwaters,
+plus points of interest."""
 import numpy as np
 import shapely
 from shapely.geometry import box
 
 from . import config, osm
-from .buildings import parse_length
+from .buildings import MATERIAL_COLOURS, parse_colour, parse_length
 from .roads import drape
 from .terrain import _polys, _triangulate, srgb_to_linear
 
@@ -13,8 +13,21 @@ from .terrain import _polys, _triangulate, srgb_to_linear
 WALL_DEFAULTS = {
     "barrier=wall": (2.0, 0.4), "barrier=city_wall": (6.0, 2.5), "historic=citywalls": (6.0, 2.5),
     "historic=city_walls": (6.0, 2.5), "barrier=retaining_wall": (1.0, 0.5),
+    "barrier=fence": (1.2, 0.06), "barrier=hedge": (1.5, 0.8), "barrier=jersey_barrier": (0.8, 0.6),
+    "barrier=guard_rail": (0.75, 0.12), "barrier=handrail": (1.0, 0.06),
 }
 WALL_COLOUR = (0.78, 0.74, 0.64)
+KIND_COLOURS = {"barrier=fence": (0.30, 0.31, 0.32), "barrier=hedge": (0.20, 0.34, 0.16),
+                "barrier=jersey_barrier": (0.80, 0.79, 0.76), "barrier=guard_rail": (0.62, 0.64, 0.66),
+                "barrier=handrail": (0.35, 0.36, 0.38)}
+
+
+def wall_colour(r):
+    t = r["_tags"]
+    c = parse_colour(t.get("colour"))
+    if c is None:
+        c = MATERIAL_COLOURS.get(t.get("material") or t.get("wall:material") or t.get("fence_type"))
+    return c or KIND_COLOURS.get(r["kind"], WALL_COLOUR)
 DECK_COLOUR = (0.55, 0.52, 0.47)
 
 
@@ -44,7 +57,7 @@ def collect_walls(d, gib):
             "thickness_m": th or th0, "confidence": "measured" if h else "estimated",
             "length_m": round(line.length, 2),
             "in_gibraltar": bool(gib is not None and gib.intersects(line)),
-            "_line": line,
+            "_line": line, "_tags": w.tags,
         })
     return recs
 
@@ -90,12 +103,17 @@ def walls_mesh(walls, piers, terrain, ix, iy, feature_index):
     ts = config.TILE_SIZE
     ox, oy = ix * ts, iy * ts
     tbox = box(ox, oy, ox + ts, oy + ts)
-    WP, WN, WI, WF = [], [], [], []
-    DP, DN, DI, DF = [], [], [], []
+    groups = {}       # material -> (P, N, C, I, F)
 
-    def add_prism(P, N, I, F, poly, zbot_fn, ztop_fn, fid, follow_ground):
+    def lists(mat):
+        return groups.setdefault(mat, ([], [], [], [], []))
+
+    def add_prism(mat, colour, poly, zbot_fn, ztop_fn, fid, follow_ground):
+        P, N, C, I, F = lists(mat)
+        n0 = sum(len(p) for p in P)
         for dens in _polys(shapely.segmentize(poly, 2.5)):
             prism(P, N, I, F, shapely.geometry.polygon.orient(dens, 1.0), zbot_fn, ztop_fn, fid, follow_ground)
+        C.append(np.tile(srgb_to_linear(colour), (sum(len(p) for p in P) - n0, 1)))
 
     def prism(P, N, I, F, dens, zbot_fn, ztop_fn, fid, follow_ground):
         # A top that follows the ground is split along the terrain triangles
@@ -127,47 +145,23 @@ def walls_mesh(walls, piers, terrain, ix, iy, feature_index):
         poly = line.buffer(r["thickness_m"] / 2, cap_style="flat", join_style="mitre").intersection(tbox)
         fid = feature_index.get(r["id"], -1)
         h = r["height_m"]
+        mat = "M_Foliage" if r["kind"] == "barrier=hedge" else "M_Wall"
         for p in _polys(poly):
-            add_prism(WP, WN, WI, WF, p, lambda c: terrain.surface(c[:, 0], c[:, 1]) - 0.5,
+            add_prism(mat, wall_colour(r), p, lambda c: terrain.surface(c[:, 0], c[:, 1]) - 0.5,
                       lambda c, h=h: terrain.surface(c[:, 0], c[:, 1]) + h, fid, True)
     for r in piers:
         poly = r["_poly"].intersection(tbox)
         fid = feature_index.get(r["id"], -1)
         h = r["deck_height_m"]
         for p in _polys(poly):
-            add_prism(DP, DN, DI, DF, p, lambda c: np.full(len(c), config.SKIRT_DEPTH),
+            add_prism("M_Path", DECK_COLOUR, p, lambda c: np.full(len(c), config.SKIRT_DEPTH),
                       lambda c, h=h: np.full(len(c), h), fid, False)
     prims = []
-    for P, N, I, F, mat, colour in ((WP, WN, WI, WF, "M_Wall", WALL_COLOUR), (DP, DN, DI, DF, "M_Path", DECK_COLOUR)):
+    for mat, (P, N, C, I, F) in sorted(groups.items()):
         if P:
             pos = np.concatenate(P); pos[:, 0] -= ox; pos[:, 1] -= oy
-            prims.append(Primitive(mat, pos, np.concatenate(N), np.tile(srgb_to_linear(colour), (len(pos), 1)),
-                                   np.concatenate(I), np.concatenate(F)))
+            prims.append(Primitive(mat, pos, np.concatenate(N), np.concatenate(C), np.concatenate(I), np.concatenate(F)))
     return prims
-
-
-def collect_trees(d, terrain):
-    out = []
-    for nid, t in d.node_tags.items():
-        if t.get("natural") == "tree":
-            x, y = d.node_xy[nid]
-            out.append({"id": f"osm:node/{nid}", "position_m": [x, y], "species": t.get("species") or t.get("genus"),
-                        "source": "osm:natural=tree"})
-    for w in d.ways.values():
-        if w.tags.get("natural") == "tree_row":
-            line = d.way_line(w)
-            if line is None:
-                continue
-            n = max(2, int(line.length / 8.0) + 1)
-            for k, p in enumerate(shapely.line_interpolate_point(line, np.linspace(0, line.length, n))):
-                out.append({"id": f"osm:way/{w.id}#{k}", "position_m": [p.x, p.y], "species": w.tags.get("species"),
-                            "source": "osm:natural=tree_row (spacing 8 m, estimated)"})
-    if out:
-        xy = np.array([o["position_m"] for o in out])
-        z = terrain.surface(xy[:, 0], xy[:, 1])
-        for o, zz in zip(out, z):
-            o["position_m"] = [round(o["position_m"][0], 3), round(o["position_m"][1], 3), round(float(zz), 3)]
-    return out
 
 
 POI_KEYS = [("tourism", ("attraction", "viewpoint", "museum", "artwork", "gallery", "information")),

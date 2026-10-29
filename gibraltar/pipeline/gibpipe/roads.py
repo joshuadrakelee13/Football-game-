@@ -33,6 +33,26 @@ LANE_WIDTH = 3.2
 PRIORITY = ["road", "steps", "path"]          # earlier wins where surfaces overlap
 MATERIAL = {"road": "M_Road", "path": "M_Path", "steps": "M_Steps"}
 COLOUR = {"road": (0.22, 0.22, 0.23), "path": (0.62, 0.60, 0.56), "steps": (0.70, 0.67, 0.60)}
+
+# OSM `surface` -> surface group; colour per (class, group). "default" = untagged.
+SURFACE_GROUPS = {
+    "asphalt": "asphalt", "chipseal": "asphalt", "paved": "default",
+    "paving_stones": "paving", "sett": "paving", "cobblestone": "paving", "unhewn_cobblestone": "paving",
+    "bricks": "paving", "concrete:plates": "paving",
+    "concrete": "concrete", "concrete:lanes": "concrete",
+    "unpaved": "unpaved", "gravel": "unpaved", "fine_gravel": "unpaved", "ground": "unpaved", "dirt": "unpaved",
+    "compacted": "unpaved", "rock": "unpaved", "earth": "unpaved", "grass": "unpaved", "sand": "unpaved",
+    "wood": "wood", "metal": "wood",
+}
+SURFACE_ORDER = ["default", "asphalt", "concrete", "paving", "unpaved", "wood"]
+SURFACE_COLOUR = {
+    ("road", "default"): COLOUR["road"], ("road", "asphalt"): COLOUR["road"], ("road", "concrete"): (0.58, 0.57, 0.54),
+    ("road", "paving"): (0.52, 0.48, 0.43), ("road", "unpaved"): (0.55, 0.48, 0.38), ("road", "wood"): (0.45, 0.34, 0.24),
+    ("path", "default"): COLOUR["path"], ("path", "asphalt"): (0.30, 0.30, 0.31), ("path", "concrete"): (0.64, 0.63, 0.60),
+    ("path", "paving"): (0.68, 0.61, 0.52), ("path", "unpaved"): (0.62, 0.53, 0.40), ("path", "wood"): (0.50, 0.38, 0.25),
+}
+MARKING_COLOUR = (0.92, 0.92, 0.90)
+ZEBRA_TAGS = ("uncontrolled", "zebra", "marked")
 AIRFIELD = {"runway": 45.0, "taxiway": 23.0}   # metres; Gibraltar runway is 45 m wide per AIP (default if untagged)
 
 
@@ -52,7 +72,7 @@ def width_for(tags, cls_default):
 
 def collect(d: osm.OsmData, gibraltar_poly):
     """Return (records, {class: [buffered polygons]}, tunnels)."""
-    records, shapes, tunnels, bridges = [], {k: [] for k in PRIORITY}, [], []
+    records, shapes, tunnels, bridges = [], {}, [], []
     for w in d.ways.values():
         t = w.tags
         hw = t.get("highway")
@@ -83,6 +103,7 @@ def collect(d: osm.OsmData, gibraltar_poly):
                "class": cls, "width_m": width, "width_source": wsrc, "length_m": round(length, 2),
                "tunnel": t.get("tunnel") not in (None, "no"), "bridge": t.get("bridge") not in (None, "no"),
                "layer": t.get("layer", "0"), "surface": t.get("surface"),
+               "surface_group": SURFACE_GROUPS.get(t.get("surface"), "default"),
                "in_gibraltar": bool(gibraltar_poly is not None and gibraltar_poly.intersects(geom))}
         if t.get("tunnel") in ("yes", "culvert") or t.get("indoor") == "yes" or str(t.get("layer", "0")).startswith("-"):
             tunnels.append(rec)
@@ -93,7 +114,8 @@ def collect(d: osm.OsmData, gibraltar_poly):
             # is drawn separately, interpolated between its two ends.
             bridges.append({"id": ref, "class": cls, "line": d.way_line(w), "width": width})
             continue
-        shapes[cls].append(geom)
+        key = (cls, "default" if cls == "steps" else rec["surface_group"])
+        shapes.setdefault(key, []).append(geom)
     return records, shapes, tunnels, bridges
 
 
@@ -140,37 +162,105 @@ def bridge_mesh(bridges, terrain, ix, iy):
 
 
 def merge(shapes, land):
-    """Union per class, subtract higher-priority classes, clip to land."""
+    """Union per (class, surface), subtract everything of higher priority,
+    clip to land. Surfaces therefore never overlap."""
     merged, taken = {}, None
-    for cls in PRIORITY:
-        if not shapes[cls]:
-            continue
-        u = shapely.union_all(shapes[cls]).intersection(land)
+    keys = [(c, s) for c in PRIORITY for s in SURFACE_ORDER if (c, s) in shapes]
+    for key in keys:
+        u = shapely.union_all(shapes[key]).intersection(land)
         if taken is not None:
             u = u.difference(taken)
-        merged[cls] = u
+        merged[key] = u
         taken = u if taken is None else shapely.union_all([taken, u])
     return merged
 
 
-def tile_mesh(merged, terrain, ix, iy):
+def collect_crossings(d, merged):
+    """Zebra stripes for marked/uncontrolled pedestrian crossings.
+
+    A crossing way (footway=crossing) gives the walking direction directly;
+    a crossing node on a road takes the road's direction. Stripes are 0.5 m
+    bands 1 m apart, parallel to the traffic, clipped to the carriageway.
+    Positions are OSM; stripe dimensions are the standard UK zebra layout."""
+    road = shapely.union_all([g for (c, _), g in merged.items() if c == "road"])
+    shapely.prepare(road)
+    out, done = [], []
+
+    def stripes(cx, cy, n, length):
+        t = np.array([n[1], -n[0]])          # along the traffic
+        polys = []
+        for s in np.arange(-length / 2 + 0.25, length / 2 - 0.24, 1.0):
+            c = np.array([cx, cy]) + n * s
+            corners = [c + t * 1.25 + n * 0.25, c - t * 1.25 + n * 0.25, c - t * 1.25 - n * 0.25, c + t * 1.25 - n * 0.25]
+            polys.append(shapely.Polygon(corners))
+        return shapely.union_all(polys).intersection(road)
+
+    for w in d.ways.values():
+        t = w.tags
+        if t.get("footway") != "crossing" or not (t.get("crossing") in ZEBRA_TAGS or t.get("crossing_ref") == "zebra"):
+            continue
+        line = d.way_line(w)
+        if line is None or line.length < 1:
+            continue
+        c = np.asarray(line.coords)
+        n = (c[-1] - c[0]) / np.hypot(*(c[-1] - c[0]))
+        mid = line.interpolate(0.5, normalized=True)
+        g = stripes(mid.x, mid.y, n, line.length + 2)
+        if not g.is_empty:
+            out.append({"id": f"osm:way/{w.id}", "kind": "zebra", "_geom": g})
+            done.append((mid.x, mid.y))
+    # node crossings: find the road way through the node for its direction
+    node_ways = {}
+    for w in d.ways.values():
+        if w.tags.get("highway") in CLASSES and CLASSES[w.tags["highway"]][0] == "road":
+            for k, nid in enumerate(w.nodes):
+                node_ways.setdefault(nid, (w, k))
+    for nid, t in d.node_tags.items():
+        if t.get("highway") != "crossing" or not (t.get("crossing") in ZEBRA_TAGS or t.get("crossing_ref") == "zebra"):
+            continue
+        if nid not in node_ways:
+            continue
+        x, y = d.node_xy[nid]
+        if any(abs(x - a) < 6 and abs(y - b) < 6 for a, b in done):
+            continue
+        w, k = node_ways[nid]
+        a_, b_ = w.nodes[max(k - 1, 0)], w.nodes[min(k + 1, len(w.nodes) - 1)]
+        tvec = np.array(d.node_xy[b_]) - np.array(d.node_xy[a_])
+        if np.hypot(*tvec) < 0.1:
+            continue
+        tvec /= np.hypot(*tvec)
+        n = np.array([-tvec[1], tvec[0]])
+        width, _ = width_for(w.tags, CLASSES[w.tags["highway"]][1])
+        g = stripes(x, y, n, width + 1)
+        if not g.is_empty:
+            out.append({"id": f"osm:node/{nid}", "kind": "zebra", "_geom": g})
+    return out
+
+
+def tile_mesh(merged, terrain, ix, iy, crossings=()):
     from .glb import Primitive
     ts = config.TILE_SIZE
     ox, oy = ix * ts, iy * ts
     tbox = box(ox, oy, ox + ts, oy + ts)
     prims = []
-    for cls, geom in merged.items():
+    marks = [c["_geom"] for c in crossings if c["_geom"].intersects(tbox)]
+    layers = list(merged.items())
+    if marks:
+        layers.append((("marking", "zebra"), shapely.union_all(marks)))
+    for (cls, sg), geom in layers:
         g = geom.intersection(tbox)
         if g.is_empty:
             continue
         P, I = drape(g)
         if not len(P):
             continue
-        z = terrain.surface(P[:, 0], P[:, 1]) + OFFSET
+        lift = OFFSET + (0.02 if cls == "marking" else 0.0)
+        z = terrain.surface(P[:, 0], P[:, 1]) + lift
         nrm = terrain._surface_normals(P[:, 0], P[:, 1])
         pos = np.column_stack([P[:, 0] - ox, P[:, 1] - oy, z])
-        col = np.tile(srgb_to_linear(COLOUR[cls]), (len(pos), 1))
-        prims.append(Primitive(MATERIAL[cls], pos, nrm, col, I))
+        colour = MARKING_COLOUR if cls == "marking" else SURFACE_COLOUR.get((cls, sg), COLOUR[cls])
+        col = np.tile(srgb_to_linear(colour), (len(pos), 1))
+        prims.append(Primitive("M_Road" if cls == "marking" else MATERIAL[cls], pos, nrm, col, I))
     return prims
 
 

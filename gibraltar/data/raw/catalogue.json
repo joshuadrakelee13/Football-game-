@@ -2,11 +2,11 @@
   "files": {
     "dem/ign_mdt05_25830.tif": {
       "source": "ign_mdt05",
-      "name": "MDT05 Digital Terrain Model (5 m, LiDAR PNOA)",
+      "name": "MDT05 Digital Terrain Model, 5 m (over Gibraltar: from aerial stereo-photogrammetry, per IGN metadata)",
       "publisher": "Instituto Geográfico Nacional (IGN), Spain",
       "licence": "CC BY 4.0",
       "licence_url": "https://www.scne.es/",
-      "attribution": "MDT05 CC BY 4.0 scne.es (Instituto Geográfico Nacional)",
+      "attribution": "Obra derivada de MDT05-cob1 2008-2015 CC-BY 4.0 scne.es (Instituto Geográfico Nacional, resampled to the GIB-LTM grid)",
       "url": "https://servicios.idee.es/wcs-inspire/mdt?SERVICE=WCS&REQUEST=GetCoverage&VERSION=2.0.1&COVERAGEID=Elevacion25830_5&SUBSET=x(285095,291080)&SUBSET=y(3997340,4005200)&FORMAT=image/tiff",
       "retrieved_utc": "2026-10-29T15:41:26Z",
       "bytes": 3768016,
@@ -62,6 +62,24 @@
       "sha256": "7db45f2f93675ecd408abdcf0121a2f94f5f3814a4ad8aa35c5c8a923d77d276",
       "extract_last_modified": "Thu, 29 Oct 2026 01:25:26 GMT",
       "provider": "openstreetmap.fr daily extracts"
+    },
+    "imagery/S2B_30STF_20260818_0_L2A_TCI.tif": {
+      "source": "sentinel2",
+      "name": "Sentinel-2 L2A true-colour image (10 m)",
+      "publisher": "European Union Copernicus programme / ESA; hosted by Element 84 on AWS",
+      "licence": "Copernicus Sentinel data legal notice (free, full and open; modification allowed)",
+      "licence_url": "https://sentinels.copernicus.eu/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "attribution": "Contains modified Copernicus Sentinel data 2026",
+      "url": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/30/S/TF/2026/8/S2B_30STF_20260818_0_L2A/TCI.tif",
+      "retrieved_utc": "2026-10-29T16:27:51Z",
+      "bytes": 1119439,
+      "sha256": "4e0d602dba476358a61a27690410d3b34beb52fb687b5f593cd61605a1288b20",
+      "scene": "S2B_30STF_20260818_0_L2A",
+      "acquired": "2026-08-18T11:21:05.378000Z",
+      "cloud_cover_pct": 0.017034,
+      "crs": "EPSG:32630",
+      "resolution_m": 10.0,
+      "stac_item": "https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a/items/S2B_30STF_20260818_0_L2A"
     }
   }
 }

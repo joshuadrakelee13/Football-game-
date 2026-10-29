@@ -15,6 +15,10 @@ combined with terrain heights from the Instituto Geográfico Nacional (IGN).
   EPSG:25830 to the GIB-LTM grid, bilinearly resampled onto a 5 m lattice,
   sea cells filled from the nearest land height, and clipped to the
   OpenStreetMap coastline.
+* Terrain vertex colours: "Contains modified Copernicus Sentinel data 2026"
+  (scene S2B_30STF_20260818_0_L2A, true-colour image sampled onto the
+  terrain vertices), under the Copernicus Sentinel data legal notice
+  (free, full and open access; modification allowed).
 * `audio/` contains sounds synthesised by `pipeline/gibpipe/audio.py`; they
   carry no third-party rights.
 

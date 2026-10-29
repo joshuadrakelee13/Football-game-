@@ -6,6 +6,7 @@
 Output: data/build (see docs/MANIFEST.md).
 """
 import argparse
+from collections import Counter
 import datetime as dt
 import json
 import multiprocessing as mp
@@ -15,7 +16,7 @@ import time
 import numpy as np
 from shapely.geometry import box
 
-from . import buildings, config, crs, glb, osm, roads, structures, terrain
+from . import buildings, config, crs, glb, osm, props, roads, structures, terrain
 
 G = {}      # shared state for worker processes (inherited via fork)
 
@@ -38,17 +39,18 @@ def prepare():
     n_lidar = buildings.apply_lidar_heights(blds, T)
     road_recs, shapes, tunnels, bridges = roads.collect(d, T.gibraltar)
     merged = roads.merge(shapes, T.land)
+    crossings = roads.collect_crossings(d, merged)
     walls = structures.collect_walls(d, T.gibraltar)
     piers = structures.collect_piers(d, T.land, T.gibraltar)
-    trees = structures.collect_trees(d, T)
+    prop_recs = props.collect(d, T)
     pois = structures.collect_pois(d, T)
-    G.update(d=d, T=T, blds=_assign(blds, lambda r: r["centroid_m"]), merged=merged, bridges=bridges,
+    G.update(d=d, T=T, blds=_assign(blds, lambda r: r["centroid_m"]), merged=merged, bridges=bridges, crossings=crossings,
              roads=road_recs, tunnels=tunnels, walls=walls, piers=piers,
-             trees=_assign(trees, lambda r: r["position_m"][:2]), pois=pois, overrides=overrides,
+             props=_assign(prop_recs, lambda r: r["position_m"][:2]), pois=pois, overrides=overrides,
              all_blds=blds, n_lidar=n_lidar)
     print(f"prepared in {time.time() - t0:.1f}s: {len(blds)} buildings ({n_lidar} LiDAR heights), "
           f"{len(road_recs)} road ways, {len(tunnels)} tunnels, {len(bridges)} bridges, {len(walls)} walls, "
-          f"{len(piers)} piers, {len(trees)} trees, {len(pois)} POIs")
+          f"{len(piers)} piers, {len(prop_recs)} props, {len(crossings)} zebra crossings, {len(pois)} POIs")
 
 
 def candidate_tiles():
@@ -96,7 +98,7 @@ def build_tile(ixy):
     put("buildings", buildings.mesh(blds, (ox, oy), bidx))
 
     # roads
-    put("roads", roads.tile_mesh(G["merged"], T, ix, iy) + roads.bridge_mesh(G["bridges"], T, ix, iy))
+    put("roads", roads.tile_mesh(G["merged"], T, ix, iy, G["crossings"]) + roads.bridge_mesh(G["bridges"], T, ix, iy))
 
     # walls and piers
     walls = [w for w in G["walls"] if w["_line"].intersects(tbox)]
@@ -104,16 +106,21 @@ def build_tile(ixy):
     widx = {w["id"]: k for k, w in enumerate(walls + piers)}
     put("walls", structures.walls_mesh(walls, piers, T, ix, iy, widx))
 
+    # props: trees and street furniture at their OSM positions
+    prs = G["props"].get((ix, iy), [])
+    pidx = {p_["id"]: k for k, p_ in enumerate(prs)}
+    put("props", props.mesh(prs, (ox, oy), pidx))
+
     def strip(r):
         return {k: v for k, v in r.items() if not k.startswith("_")}
 
     road_recs = [r for r in G["roads"] if _touches(r, tbox)]
     features = {
         "tile": tid,
-        "buildings": [strip(b) for b in blds],
+        "buildings": [buildings.public_record(b) for b in blds],
         "roads": road_recs,
         "walls": [strip(w) for w in walls + piers],
-        "trees": G["trees"].get((ix, iy), []),
+        "props": [props.public_record(p_) for p_ in prs],
         "tunnels": [r for r in G["tunnels"] if _touches(r, tbox)],
     }
     if not layers and not features["buildings"]:
@@ -124,7 +131,7 @@ def build_tile(ixy):
         "id": tid, "ix": ix, "iy": iy, "origin_m": [ox, oy, 0.0], "layers": layers,
         "features": f"tiles/{tid}/features.json",
         "counts": {"buildings": len(blds), "roads": len(road_recs), "walls": len(walls), "piers": len(piers),
-                   "trees": len(features["trees"])},
+                   "props": len(prs)},
         "land_area_m2": round(T.land.intersection(tbox).area, 1),
     }
 
@@ -176,7 +183,11 @@ def main():
         results = sorted(old.values(), key=lambda r: (r["iy"], r["ix"]))
     cat = json.loads((config.RAW / "catalogue.json").read_text())
     shutil.copy(config.RAW / "catalogue.json", config.BUILD / "catalogue.json")
-    attributions = sorted({f["attribution"] for f in cat["files"].values() if f["source"] != "copernicus_glo30"})
+    # Credit strings come from the current source definitions, so a corrected
+    # string applies even to files catalogued before the correction.
+    from .fetch import SOURCES
+    attributions = sorted({SOURCES[f["source"]]["attribution"] for f in cat["files"].values()
+                           if f["source"] != "copernicus_glo30"})
     xs = [r["ix"] for r in results]; ys = [r["iy"] for r in results]
     gl = T.land.intersection(T.gibraltar) if T.gibraltar is not None else T.land
     manifest = {
@@ -199,6 +210,9 @@ def main():
                                         for c in ("measured", "derived", "estimated")},
             "road_ways": len(G["roads"]), "tunnels": len(G["tunnels"]), "walls": len(G["walls"]),
             "piers": len(G["piers"]), "pois": len(G["pois"]),
+            "props_by_kind": dict(sorted(Counter(p_["kind"] for v in G["props"].values() for p_ in v).items())),
+            "roofs_by_shape": dict(sorted(Counter(b["roof"]["shape"] for b in G["all_blds"]).items())),
+            "building_colours_from_tags": sum(1 for b in G["all_blds"] if b["wall_colour_source"] != "default"),
         },
         "tiles": results,
     }

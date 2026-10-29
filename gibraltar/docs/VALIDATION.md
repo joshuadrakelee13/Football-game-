@@ -1,6 +1,6 @@
 # Validation report
 
-Generated 2026-10-29T16:20:20Z by `python -m gibpipe.validate` from the build made at 2026-10-29T16:14:14Z. Regenerate it after every build; do not edit by hand.
+Generated 2026-10-29T16:42:23Z by `python -m gibpipe.validate` from the build made at 2026-10-29T16:41:01Z. Regenerate it after every build; do not edit by hand.
 
 | Status | Check | Value | Notes |
 |---|---|---|---|
@@ -18,10 +18,11 @@ Generated 2026-10-29T16:20:20Z by `python -m gibpipe.validate` from the build ma
 | info | Carriageway length in Gibraltar (OSM, excluding tunnels) | 115.2 km | official: 'more than 48 km' of roads (GeoPortal) |
 | info | Tunnel ways recorded but not drawn on the surface | 171 ways | 8.6 km; official tunnel total ~52 km (mostly military, unmapped) |
 | info | Road network: largest connected component share of nodes | 98.13 % | 39 components in source OSM network (incl. tunnels); topology copied 1:1 from OSM |
-| pass | Building roofs: rendered footprint area vs source, max relative error | 0.224 % | 5586 buildings read back from buildings.glb |
+| pass | Building roofs: rendered footprint area vs source, max relative error | 0.224 % | 5585 buildings read back from buildings.glb |
 | pass | Building roofs: centroid offset vs source, max | 0.7 mm | float32 storage relative to tile origin |
 | pass | Footprint area in GIB-LTM vs ellipsoidal (geodesic) area, max relative error | 0.432 ppm | 400 footprints |
 | info | Building heights by confidence | measured: 50, derived: 120, estimated: 5416 buildings | measured = OSM height tag; derived = OSM building:levels × 3 m; estimated = type default |
+| pass | Mapped props (trees, street furniture) missing from the build | 0 items | 4742 OSM props inside the built tiles |
 | pass | Layer files whose bounds disagree with manifest bounds_m | 0 files |  |
 
 ## Distances between landmarks

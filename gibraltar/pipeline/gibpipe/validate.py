@@ -267,7 +267,17 @@ def main():
     out.append(result("Building heights by confidence", conf, "buildings", "info",
                       "measured = OSM height tag; derived = OSM building:levels × 3 m; estimated = type default"))
 
-    # 7. Manifest bounds consistency --------------------------------------------
+    # 7. Props: every mapped item inside the built tiles is present in a tile
+    from . import props as pmod
+    src_props = [p_ for p_ in pmod.collect(d, T) if shapely.contains_xy(tiles_area, *p_["position_m"][:2])]
+    built_ids = set()
+    for t in m["tiles"]:
+        built_ids |= {p_["id"] for p_ in json.loads((build / t["features"]).read_text()).get("props", [])}
+    missing = [p_["id"] for p_ in src_props if p_["id"] not in built_ids]
+    out.append(result("Mapped props (trees, street furniture) missing from the build", len(missing), "items",
+                      "pass" if not missing else "FAIL", f"{len(src_props)} OSM props inside the built tiles"))
+
+    # 8. Manifest bounds consistency --------------------------------------------
     bad = 0
     for t in m["tiles"]:
         for name, L in t["layers"].items():

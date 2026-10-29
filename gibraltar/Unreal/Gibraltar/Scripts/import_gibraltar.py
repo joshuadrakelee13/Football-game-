@@ -61,11 +61,13 @@ MATERIAL_PARAMS = {
     "M_BuildingWall": (0.85, 0.45),
     "M_BuildingRoof": (0.70, 0.45),
     "M_Wall": (0.92, 0.35),
+    "M_Prop": (0.70, 0.40),       # street furniture at OSM positions (generic models)
+    "M_Foliage": (0.90, 0.25),    # tree crowns and hedges
 }
 FALLBACK_MATERIAL = "M_Terrain"
 
-LAYERS = ["terrain", "roads", "buildings", "walls"]
-NANITE_LAYERS = {"terrain", "buildings", "walls"}
+LAYERS = ["terrain", "roads", "buildings", "walls", "props"]
+NANITE_LAYERS = {"terrain", "buildings", "walls", "props"}
 # Terrain is small (~100 tiles x ~20k triangles) and must be visible from far away: never stream it out.
 ALWAYS_LOADED_LAYERS = {"terrain"}
 

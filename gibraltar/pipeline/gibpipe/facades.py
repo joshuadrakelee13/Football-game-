@@ -228,7 +228,7 @@ def mesh(records, origin, feature_index, terrain):
             w = door["width_m"]
             quad("M_Door", c, t, out, w + 0.2, z0, z0 + 2.4, OFF_FRAME, FRAME, fid)
             quad("M_Door", c, t, out, w, z0, z0 + 2.2, OFF_GLASS, DOOR, fid)
-            door_pts.append(c)
+            door_pts.append((c, z0, w))
         if bt in NO_OPENINGS:
             continue
         # windows
@@ -274,7 +274,9 @@ def mesh(records, origin, feature_index, terrain):
                         z0 = g0 + k * LEVEL_HEIGHT + s_
                         if z0 < gz + 0.3 or z0 + h_ > tz:
                             continue        # below ground on a slope, or above the eaves
-                        if k == 0 and any(np.hypot(*(c - dp)) < 1.6 for dp in door_pts):
+                        # never overlap a door (on a slope a door can sit at an upper floor's level)
+                        if any(np.hypot(*(c - dp)) < (dw + w_) / 2 + 0.3 and z0 < dz + 2.6 and z0 + h_ > dz
+                               for dp, dz, dw in door_pts):
                             continue
                         floor_z = g0 + k * LEVEL_HEIGHT
                         balcony = None

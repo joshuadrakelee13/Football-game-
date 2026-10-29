@@ -19,6 +19,7 @@ from shapely.ops import linemerge, polygonize, unary_union
 from . import config, crs, osm
 
 CELL = config.TERRAIN_CELL
+BEACH_FILL_M = 1.0      # height given to unsurveyed beach (documented estimate)
 
 # Land cover classes -> sRGB colour. Colours are for readability, not photo-realism.
 LANDCOVER = {
@@ -64,6 +65,7 @@ class Terrain:
         self.land_prepared = shapely.prepared.prep(self.land)
         self.gibraltar = gibraltar_polygon(data)
         self._build_landcover()
+        self._refine_fill()
         self._load_imagery()
 
     # ---- elevation ---------------------------------------------------------
@@ -125,6 +127,18 @@ class Terrain:
     def measured_fraction(self, x, y):
         """1.0 where the DEM has a LiDAR measurement, 0.0 where it was filled."""
         return 1.0 - self.dem_sample(x, y, self.dem_filled_mask)
+
+    def _refine_fill(self):
+        """Beaches newer than the DTM survey (sea cells in the DTM that OSM maps
+        as beach or sand) are set to 1 m rather than the 3 m quay default."""
+        rows, cols = np.nonzero(self.dem_filled_mask > 0)
+        if not len(rows):
+            return
+        e, n = self.dem_transform * (cols + 0.5, rows + 0.5)
+        x, y = crs.utm_to_engine(e, n)
+        beach = self.landcover_at(x, y) == 7
+        r, c = rows[beach], cols[beach]
+        self.dem[r, c] = np.minimum(self.dem[r, c], BEACH_FILL_M)
 
     # ---- imagery -----------------------------------------------------------
     def _load_imagery(self):

@@ -68,10 +68,22 @@ def _num(v):
         return None
 
 
+SEAMARK_STRUCTURE = re.compile(r"^seamark:(beacon_[a-z_]+|landmark|daymark|light_float|light_vessel):height$")
+
+
 def height_for(tags):
     h = parse_length(tags.get("height"))
     if h and 0.5 < h < 300:
         return h, "osm:height", "measured"
+    # Navigation structures (lighthouses, beacons, landmarks) often carry
+    # their charted structure height as a seamark tag, e.g. from the US NGA
+    # List of Lights. seamark:light:*:height is the light's height above the
+    # sea, not the structure's, so it is not used.
+    for k, v in tags.items():
+        if SEAMARK_STRUCTURE.match(k):
+            h = parse_length(v)
+            if h and 0.5 < h < 300:
+                return h, f"osm:{k}", "measured"
     lv = _num(tags.get("building:levels"))
     if lv is not None and 0 < lv < 80:
         rl = _num(tags.get("roof:levels")) or 0
@@ -229,6 +241,13 @@ def colours_for(r):
     """(wall sRGB, roof sRGB, sources) from tags, else documented defaults."""
     t = r["_tags"]
     wall = parse_colour(t.get("building:colour")); wsrc = "osm:building:colour"
+    if wall is None:
+        for k, v in t.items():     # e.g. seamark:beacon_special_purpose:colour=white;red
+            if k.startswith("seamark:") and k.endswith(":colour") and ":light" not in k:
+                wall = parse_colour(v.split(";")[0])
+                if wall is not None:
+                    wsrc = f"osm:{k}"
+                    break
     if wall is None and t.get("building:material") in MATERIAL_COLOURS:
         wall, wsrc = MATERIAL_COLOURS[t["building:material"]], "osm:building:material"
     if wall is None:

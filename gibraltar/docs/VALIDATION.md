@@ -1,6 +1,6 @@
 # Validation report
 
-Generated 2026-10-29T18:12:26Z by `python -m gibpipe.validate` from the build made at 2026-10-29T18:11:34Z. Regenerate it after every build; do not edit by hand.
+Generated 2026-10-29T18:25:57Z by `python -m gibpipe.validate` from the build made at 2026-10-29T18:23:02Z. Regenerate it after every build; do not edit by hand.
 
 | Status | Check | Value | Notes |
 |---|---|---|---|
@@ -21,9 +21,9 @@ Generated 2026-10-29T18:12:26Z by `python -m gibpipe.validate` from the build ma
 | pass | Building roofs: rendered footprint area vs source, max relative error | 0.224 % | 5585 buildings read back from buildings.glb |
 | pass | Building roofs: centroid offset vs source, max | 0.7 mm | float32 storage relative to tile origin |
 | pass | Footprint area in GIB-LTM vs ellipsoidal (geodesic) area, max relative error | 0.432 ppm | 400 footprints |
-| info | Building heights by confidence | measured: 50, derived: 120, estimated: 5416 buildings | measured = OSM height tag; derived = OSM building:levels × 3 m; estimated = type default |
+| info | Building heights by confidence | measured: 51, derived: 120, estimated: 5415 buildings | measured = OSM height tag; derived = OSM building:levels × 3 m; estimated = type default |
 | pass | Mapped props (trees, street furniture) missing from the build | 0 items | 4742 OSM props inside the built tiles |
-| pass | Window corners below the ground in front of them | 0 vertices | about 171412 procedural windows checked |
+| pass | Window corners below the ground in front of them | 0 vertices | about 171354 procedural windows checked |
 | pass | Layer files whose bounds disagree with manifest bounds_m | 0 files |  |
 
 ## Distances between landmarks

@@ -1,6 +1,6 @@
 {
- "generated_utc": "2026-10-29T18:12:26Z",
- "manifest_generated_utc": "2026-10-29T18:11:34Z",
+ "generated_utc": "2026-10-29T18:25:57Z",
+ "manifest_generated_utc": "2026-10-29T18:23:02Z",
  "checks": [
   {
    "check": "Projection round trip (lon/lat -> GIB-LTM -> lon/lat), max error",
@@ -124,9 +124,9 @@
   {
    "check": "Building heights by confidence",
    "value": {
-    "measured": 50,
+    "measured": 51,
     "derived": 120,
-    "estimated": 5416
+    "estimated": 5415
    },
    "unit": "buildings",
    "status": "info",
@@ -144,7 +144,7 @@
    "value": 0,
    "unit": "vertices",
    "status": "pass",
-   "detail": "about 171412 procedural windows checked"
+   "detail": "about 171354 procedural windows checked"
   },
   {
    "check": "Layer files whose bounds disagree with manifest bounds_m",

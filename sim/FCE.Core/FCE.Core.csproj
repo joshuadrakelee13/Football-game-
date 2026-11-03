@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Compiles the Unity project's engine-free Core sources so they can be tested and simulated without Unity. -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <RootNamespace>FCE.Core</RootNamespace>
+    <AssemblyName>FCE.Core</AssemblyName>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../FootballClubEmpire/Assets/_Project/Scripts/Core/**/*.cs" LinkBase="Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Matches the Newtonsoft build shipped in com.unity.nuget.newtonsoft-json 3.2.x -->
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+</Project>

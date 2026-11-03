@@ -1,0 +1,6 @@
+{
+  "currencies": [
+    { "id": "cash", "name": "Cash", "premium": false },
+    { "id": "credits", "name": "Club Credits", "premium": true }
+  ]
+}

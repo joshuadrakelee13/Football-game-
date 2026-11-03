@@ -1,0 +1,13 @@
+{
+  "stats": [
+    { "id": "construction_crews", "name": "Construction crews", "description": "How many building projects can run at once.", "baseValue": 1 },
+    { "id": "reputation", "name": "Reputation", "description": "How well known and respected the club is. Attracts players, sponsors and supporters.", "baseValue": 0 },
+    { "id": "stadium_capacity", "name": "Ground capacity", "description": "Supporters the ground can hold, standing and seated.", "baseValue": 100 },
+    { "id": "seated_capacity", "name": "Seats", "description": "Seated places. Higher divisions require a minimum.", "baseValue": 0 },
+    { "id": "pitch_quality", "name": "Pitch quality", "description": "The playing surface, out of 100.", "baseValue": 20, "format": "percent" },
+    { "id": "training_quality", "name": "Training quality", "description": "How quickly players improve, out of 100.", "baseValue": 10, "format": "percent" },
+    { "id": "fitness_quality", "name": "Fitness", "description": "Conditioning and stamina work, out of 100.", "baseValue": 10, "format": "percent" },
+    { "id": "youth_quality", "name": "Youth development", "description": "The quality of prospects the academy produces, out of 100.", "baseValue": 0, "format": "percent" },
+    { "id": "medical_quality", "name": "Medical care", "description": "Injury prevention and recovery speed, out of 100.", "baseValue": 0, "format": "percent" }
+  ]
+}

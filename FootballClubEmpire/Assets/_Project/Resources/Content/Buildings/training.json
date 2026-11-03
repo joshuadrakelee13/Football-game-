@@ -1,0 +1,36 @@
+{
+  "buildings": [
+    {
+      "id": "training_ground",
+      "name": "Training Ground",
+      "description": "A patch of grass and a bag of cones, to begin with. Better facilities make every player improve faster.",
+      "department": "training",
+      "footprintWidth": 6,
+      "footprintHeight": 4,
+      "maxLevel": 10,
+      "cost":         { "base": 500, "growth": 1.7, "round": 50 },
+      "buildSeconds": { "base": 30, "growth": 2.2, "round": 5 },
+      "requiredClubhouse": [1, 2, 2, 3, 4, 5, 6, 7, 8, 9],
+      "limits": [ { "clubhouseLevel": 1, "count": 1 } ],
+      "stats": [
+        { "stat": "training_quality", "value": { "values": [15, 20, 26, 32, 39, 46, 54, 62, 71, 80] } }
+      ]
+    },
+    {
+      "id": "gym",
+      "name": "Gym",
+      "description": "Weights, bikes and a sports scientist with a clipboard. Fitter players fade less late in matches.",
+      "department": "training",
+      "footprintWidth": 3,
+      "footprintHeight": 3,
+      "maxLevel": 10,
+      "cost":         { "base": 900, "growth": 1.68, "round": 50 },
+      "buildSeconds": { "base": 60, "growth": 2.15, "round": 10 },
+      "requiredClubhouse": [2, 2, 3, 3, 4, 5, 6, 7, 8, 9],
+      "limits": [ { "clubhouseLevel": 2, "count": 1 } ],
+      "stats": [
+        { "stat": "fitness_quality", "value": { "values": [15, 20, 26, 32, 39, 46, 54, 62, 71, 80] } }
+      ]
+    }
+  ]
+}

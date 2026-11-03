@@ -1,0 +1,10 @@
+<Project>
+  <PropertyGroup>
+    <!-- Unity 6 compiles C# 9. Pinning it here means anything that builds headlessly also builds in Unity. -->
+    <LangVersion>9.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+</Project>

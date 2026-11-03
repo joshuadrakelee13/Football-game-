@@ -3,3 +3,7 @@ node_modules/
 *.log
 .playwright/
 screenshots/
+# .NET headless build
+sim/**/bin/
+sim/**/obj/
+sim/**/TestResults/

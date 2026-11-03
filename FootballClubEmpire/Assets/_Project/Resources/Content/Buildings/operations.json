@@ -1,0 +1,44 @@
+{
+  "buildings": [
+    {
+      "id": "clubhouse",
+      "name": "Clubhouse",
+      "description": "The heart of the club. Its level decides how far every other facility can be developed, and how many projects can run at once.",
+      "department": "operations",
+      "isHeadquarters": true,
+      "footprintWidth": 4,
+      "footprintHeight": 4,
+      "maxLevel": 10,
+      "cost":         { "values": [0, 1200, 4500, 12000, 30000, 70000, 150000, 300000, 600000, 1200000] },
+      "buildSeconds": { "values": [0, 120, 900, 3600, 10800, 28800, 57600, 115200, 172800, 259200] },
+      "levelRequirements": [
+        { "atLevel": 3, "building": "training_ground", "level": 2 },
+        { "atLevel": 4, "building": "club_shop", "level": 3 },
+        { "atLevel": 4, "building": "main_stand", "level": 3 },
+        { "atLevel": 5, "building": "youth_pitch", "level": 1 },
+        { "atLevel": 5, "building": "medical_room", "level": 2 }
+      ],
+      "limits": [ { "clubhouseLevel": 1, "count": 1 } ],
+      "stats": [
+        { "stat": "construction_crews", "value": { "values": [1, 1, 2, 2, 2, 3, 3, 3, 4, 4] } },
+        { "stat": "reputation",         "value": { "values": [5, 10, 18, 28, 40, 55, 72, 92, 115, 140] } }
+      ]
+    },
+    {
+      "id": "groundskeepers_shed",
+      "name": "Groundskeeper's Shed",
+      "description": "Mowers, rollers and a kettle. Better kit keeps the pitch in better condition.",
+      "department": "operations",
+      "footprintWidth": 2,
+      "footprintHeight": 2,
+      "maxLevel": 5,
+      "cost":         { "base": 700, "growth": 2.2, "round": 50 },
+      "buildSeconds": { "base": 60, "growth": 3.0, "round": 10 },
+      "requiredClubhouse": [2, 3, 5, 7, 9],
+      "limits": [ { "clubhouseLevel": 2, "count": 1 } ],
+      "stats": [
+        { "stat": "pitch_quality", "value": { "values": [2, 4, 6, 8, 10] } }
+      ]
+    }
+  ]
+}

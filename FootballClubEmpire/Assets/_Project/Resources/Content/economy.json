@@ -1,0 +1,22 @@
+{
+  "startingWallet": { "cash": 2500, "credits": 100 },
+  "startingBuildings": [
+    { "building": "clubhouse",  "level": 1, "x": 12, "y": 20 },
+    { "building": "pitch",      "level": 1, "x": 18, "y": 20 },
+    { "building": "main_stand", "level": 1, "x": 18, "y": 18 }
+  ],
+  "speedUpCost": [
+    { "seconds": 0,      "cost": 0 },
+    { "seconds": 60,     "cost": 1 },
+    { "seconds": 3600,   "cost": 20 },
+    { "seconds": 86400,  "cost": 260 },
+    { "seconds": 604800, "cost": 1000 }
+  ],
+  "freeFinishSeconds": 30,
+  "cancelRefundPercent": 50,
+  "site": {
+    "width": 48,
+    "height": 48,
+    "buildableArea": { "x": 10, "y": 10, "width": 28, "height": 26 }
+  }
+}

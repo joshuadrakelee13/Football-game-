@@ -26,7 +26,7 @@
       "maxLevel": 10,
       "cost":         { "base": 800, "growth": 1.75, "round": 50 },
       "buildSeconds": { "base": 40, "growth": 2.3, "round": 5 },
-      "requiredClubhouse": [1, 2, 3, 3, 4, 5, 6, 7, 8, 10],
+      "requiredClubhouse": [1, 1, 2, 3, 4, 5, 6, 7, 8, 10],
       "limits": [ { "clubhouseLevel": 1, "count": 1 } ],
       "stats": [
         { "stat": "stadium_capacity", "value": { "values": [150, 250, 400, 600, 850, 1150, 1500, 1900, 2400, 3000] } },

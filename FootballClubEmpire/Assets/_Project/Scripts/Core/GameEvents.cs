@@ -1,0 +1,78 @@
+namespace FCE.Core
+{
+    /// <summary>
+    /// Something that happened in the game. Rules raise these; the presentation layer listens to animate, play sounds
+    /// and refresh UI, and never has to poll or diff state.
+    /// </summary>
+    public abstract class GameEvent
+    {
+        protected GameEvent(long at) { At = at; }
+        /// <summary>Game time the event happened, which during offline catch-up is in the past.</summary>
+        public long At { get; }
+    }
+
+    public sealed class BuildingPlaced : GameEvent
+    {
+        public BuildingPlaced(long at, int buildingId, string def, int x, int y) : base(at)
+        { BuildingId = buildingId; Def = def; X = x; Y = y; }
+        public int BuildingId { get; }
+        public string Def { get; }
+        public int X { get; }
+        public int Y { get; }
+    }
+
+    public sealed class UpgradeStarted : GameEvent
+    {
+        public UpgradeStarted(long at, int buildingId, int targetLevel, long endsAt, string currency, long cost) : base(at)
+        { BuildingId = buildingId; TargetLevel = targetLevel; EndsAt = endsAt; Currency = currency; Cost = cost; }
+        public int BuildingId { get; }
+        public int TargetLevel { get; }
+        public long EndsAt { get; }
+        public string Currency { get; }
+        public long Cost { get; }
+    }
+
+    public sealed class UpgradeCompleted : GameEvent
+    {
+        public UpgradeCompleted(long at, int buildingId, string def, int newLevel) : base(at)
+        { BuildingId = buildingId; Def = def; NewLevel = newLevel; }
+        public int BuildingId { get; }
+        public string Def { get; }
+        public int NewLevel { get; }
+    }
+
+    public sealed class UpgradeCancelled : GameEvent
+    {
+        public UpgradeCancelled(long at, int buildingId, bool buildingRemoved, string currency, long refund) : base(at)
+        { BuildingId = buildingId; BuildingRemoved = buildingRemoved; Currency = currency; Refund = refund; }
+        public int BuildingId { get; }
+        /// <summary>True when the cancelled project was the initial construction, so the building no longer exists.</summary>
+        public bool BuildingRemoved { get; }
+        public string Currency { get; }
+        public long Refund { get; }
+    }
+
+    public sealed class UpgradeFinishedEarly : GameEvent
+    {
+        public UpgradeFinishedEarly(long at, int buildingId, long creditsSpent) : base(at)
+        { BuildingId = buildingId; CreditsSpent = creditsSpent; }
+        public int BuildingId { get; }
+        public long CreditsSpent { get; }
+    }
+
+    public sealed class WalletChanged : GameEvent
+    {
+        public WalletChanged(long at, string currency, long delta, long balance) : base(at)
+        { Currency = currency; Delta = delta; Balance = balance; }
+        public string Currency { get; }
+        public long Delta { get; }
+        public long Balance { get; }
+    }
+
+    public sealed class ClockRollbackDetected : GameEvent
+    {
+        public ClockRollbackDetected(long at, long reportedTime) : base(at) { ReportedTime = reportedTime; }
+        /// <summary>The earlier time the device claimed. The game holds at <see cref="GameEvent.At"/> until real time catches up.</summary>
+        public long ReportedTime { get; }
+    }
+}

@@ -34,9 +34,12 @@ namespace FCE.Core.Tests
         public void LevelTablesArePrecomputed()
         {
             var shop = TestContent.Shipped.GetLevel("club_shop", 1);
-            Assert.That(shop.Cost, Is.EqualTo(300));
-            Assert.That(shop.RatePerHour, Is.EqualTo(240));
-            Assert.That(shop.Capacity, Is.EqualTo(720));
+            Assert.That(shop.Cost, Is.EqualTo(1500));
+            Assert.That(shop.AmountPerCycle, Is.EqualTo(50));
+            Assert.That(shop.CycleSeconds, Is.EqualTo(120));
+            Assert.That(shop.IncomePerHour, Is.EqualTo(1500));
+            Assert.That(shop.Capacity, Is.EqualTo(6000));
+            Assert.That(shop.SecondsToFill, Is.EqualTo(4 * 3600));
             Assert.That(shop.RequiredClubhouse, Is.EqualTo(1));
         }
 
@@ -104,6 +107,24 @@ namespace FCE.Core.Tests
             sources.Economy = sources.Economy.Replace("\"x\": 12, \"y\": 20", "\"x\": 16, \"y\": 20");
             var e = Assert.Throws<ContentException>(() => ContentLoader.Load(sources));
             Assert.That(e.Errors, Has.Some.Contains("overlaps"));
+        }
+    
+        [Test]
+        public void PricesAboveTheEconomyCeilingAreRejected()
+        {
+            var sources = TestContent.ShippedSources();
+            sources.Buildings["operations.json"] = sources.Buildings["operations.json"].Replace("600000, 1200000]", "600000, 1000000000000]");
+            var e = Assert.Throws<ContentException>(() => ContentLoader.Load(sources));
+            Assert.That(e.Errors, Has.Some.Contains("ceiling"));
+        }
+
+        [Test]
+        public void ProducersMustRecordIncomeUnderAnIncomeCategory()
+        {
+            var sources = TestContent.ShippedSources();
+            sources.Buildings["commercial.json"] = sources.Buildings["commercial.json"].Replace("\"incomeCategory\": \"merchandise\"", "\"incomeCategory\": \"wages\"");
+            var e = Assert.Throws<ContentException>(() => ContentLoader.Load(sources));
+            Assert.That(e.Errors, Has.Some.Contains("not an income category"));
         }
     }
 }

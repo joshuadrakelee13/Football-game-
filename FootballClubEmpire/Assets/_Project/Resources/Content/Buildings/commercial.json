@@ -1,15 +1,62 @@
 {
   "buildings": [
     {
+      "id": "drinks_stand",
+      "name": "Drinks Stand",
+      "description": "Tea, coffee and cold drinks from a hatch. Small, quick takings that need collecting often.",
+      "department": "commercial",
+      "footprintWidth": 2,
+      "footprintHeight": 2,
+      "maxLevel": 10,
+      "cost":         { "base": 100, "growth": 1.5, "round": 25 },
+      "buildSeconds": { "base": 10, "growth": 2.0, "round": 5 },
+      "requiredClubhouse": [1, 1, 2, 2, 3, 4, 5, 6, 7, 8],
+      "limits": [
+        { "clubhouseLevel": 1, "count": 1 },
+        { "clubhouseLevel": 3, "count": 2 },
+        { "clubhouseLevel": 6, "count": 3 }
+      ],
+      "producer": {
+        "currency": "cash",
+        "incomeCategory": "food_drink",
+        "amountPerCycle": { "base": 5, "add": 1 },
+        "cycleSeconds":   { "base": 5 },
+        "capacity":       { "base": 600, "add": 120 }
+      }
+    },
+    {
+      "id": "food_stall",
+      "name": "Food Stall",
+      "description": "Pies, burgers and bacon rolls. Steady takings that can be left for half an hour.",
+      "department": "commercial",
+      "footprintWidth": 3,
+      "footprintHeight": 2,
+      "maxLevel": 10,
+      "cost":         { "base": 500, "growth": 1.5, "round": 50 },
+      "buildSeconds": { "base": 60, "growth": 2.0, "round": 10 },
+      "requiredClubhouse": [2, 2, 3, 3, 4, 5, 6, 7, 8, 9],
+      "limits": [
+        { "clubhouseLevel": 2, "count": 1 },
+        { "clubhouseLevel": 5, "count": 2 }
+      ],
+      "producer": {
+        "currency": "cash",
+        "incomeCategory": "food_drink",
+        "amountPerCycle": { "base": 20, "add": 4 },
+        "cycleSeconds":   { "base": 30 },
+        "capacity":       { "base": 1200, "add": 240 }
+      }
+    },
+    {
       "id": "club_shop",
       "name": "Club Shop",
-      "description": "Scarves, shirts and programmes. Earns cash around the clock; collect it before the stockroom fills.",
+      "description": "Scarves, shirts and programmes. Earns slowly but holds hours of takings, so it keeps earning while you are away.",
       "department": "commercial",
       "footprintWidth": 3,
       "footprintHeight": 3,
       "maxLevel": 10,
-      "cost":         { "base": 300, "growth": 1.6, "round": 25 },
-      "buildSeconds": { "base": 15, "growth": 2.1, "round": 5 },
+      "cost":         { "base": 1500, "growth": 1.5, "round": 50 },
+      "buildSeconds": { "base": 120, "growth": 2.0, "round": 10 },
       "requiredClubhouse": [1, 1, 2, 2, 3, 4, 5, 6, 7, 8],
       "limits": [
         { "clubhouseLevel": 1, "count": 1 },
@@ -18,29 +65,10 @@
       ],
       "producer": {
         "currency": "cash",
-        "ratePerHour": { "base": 240, "growth": 1.32, "round": 10 },
-        "capacity":    { "base": 720, "growth": 1.36, "round": 10 }
-      }
-    },
-    {
-      "id": "tea_hut",
-      "name": "Tea Hut",
-      "description": "Tea, pies and bacon rolls. Small takings, but it fills up fast.",
-      "department": "commercial",
-      "footprintWidth": 2,
-      "footprintHeight": 2,
-      "maxLevel": 10,
-      "cost":         { "base": 150, "growth": 1.6, "round": 25 },
-      "buildSeconds": { "base": 10, "growth": 2.0, "round": 5 },
-      "requiredClubhouse": [1, 1, 2, 3, 3, 4, 5, 6, 7, 8],
-      "limits": [
-        { "clubhouseLevel": 1, "count": 1 },
-        { "clubhouseLevel": 5, "count": 2 }
-      ],
-      "producer": {
-        "currency": "cash",
-        "ratePerHour": { "base": 120, "growth": 1.3, "round": 10 },
-        "capacity":    { "base": 200, "growth": 1.33, "round": 10 }
+        "incomeCategory": "merchandise",
+        "amountPerCycle": { "base": 50, "add": 10 },
+        "cycleSeconds":   { "base": 120 },
+        "capacity":       { "base": 6000, "add": 1200 }
       }
     }
   ]

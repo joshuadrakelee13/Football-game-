@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using FCE.Core.State;
 
 namespace FCE.Core.Systems
@@ -10,6 +11,14 @@ namespace FCE.Core.Systems
         public long ElapsedSeconds => To - From;
         public int UpgradesCompleted { get; internal set; }
         public bool ClockRolledBack { get; internal set; }
+        /// <summary>Takings that built up in producers during the advance, by currency (waiting to be collected).</summary>
+        public Dictionary<string, long> Earned { get; } = new Dictionary<string, long>();
+
+        internal void AddEarned(Dictionary<string, long> earned)
+        {
+            if (earned == null) return;
+            foreach (var kv in earned) Earned[kv.Key] = (Earned.TryGetValue(kv.Key, out var v) ? v : 0) + kv.Value;
+        }
     }
 
     /// <summary>
@@ -39,14 +48,14 @@ namespace FCE.Core.Systems
                 if (next == null || next.Value > target) break;
 
                 long at = next.Value < state.Now ? state.Now : next.Value;
-                ProductionSystem.TickAll(ctx, at);
+                report.AddEarned(ProductionSystem.TickAll(ctx, at));
                 state.Now = at;
                 int before = CountUpgrading(state);
                 ConstructionSystem.CompleteDue(ctx, at);
                 report.UpgradesCompleted += before - CountUpgrading(state);
             }
 
-            ProductionSystem.TickAll(ctx, target);
+            report.AddEarned(ProductionSystem.TickAll(ctx, target));
             state.Now = target;
             report.To = target;
             return report;

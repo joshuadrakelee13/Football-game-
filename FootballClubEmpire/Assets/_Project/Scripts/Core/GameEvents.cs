@@ -62,11 +62,22 @@ namespace FCE.Core
 
     public sealed class WalletChanged : GameEvent
     {
-        public WalletChanged(long at, string currency, long delta, long balance) : base(at)
-        { Currency = currency; Delta = delta; Balance = balance; }
+        public WalletChanged(long at, string currency, long delta, long balance, string category) : base(at)
+        { Currency = currency; Delta = delta; Balance = balance; Category = category; }
         public string Currency { get; }
         public long Delta { get; }
         public long Balance { get; }
+        /// <summary>The ledger category: what the money was for.</summary>
+        public string Category { get; }
+    }
+
+    public sealed class TakingsCollected : GameEvent
+    {
+        public TakingsCollected(long at, int buildingId, string currency, long amount) : base(at)
+        { BuildingId = buildingId; Currency = currency; Amount = amount; }
+        public int BuildingId { get; }
+        public string Currency { get; }
+        public long Amount { get; }
     }
 
     public sealed class ClockRollbackDetected : GameEvent

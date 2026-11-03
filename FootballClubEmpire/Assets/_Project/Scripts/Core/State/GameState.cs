@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using FCE.Core.Economy;
 
 namespace FCE.Core.State
 {
@@ -12,6 +13,7 @@ namespace FCE.Core.State
         public long Now { get; set; }
         public long CreatedAt { get; set; }
         public Wallet Wallet { get; set; } = new Wallet();
+        public Ledger Ledger { get; set; } = new Ledger();
         public List<BuildingState> Buildings { get; set; } = new List<BuildingState>();
         public int NextBuildingId { get; set; } = 1;
     }
@@ -45,13 +47,13 @@ namespace FCE.Core.State
 
     public sealed class ProducerState
     {
-        /// <summary>Whole units waiting to be collected.</summary>
+        /// <summary>Takings waiting to be collected.</summary>
         public long Stored { get; set; }
         /// <summary>
-        /// Production carried between ticks in unit-seconds-per-hour (rate x seconds, not yet divided by 3600),
-        /// so splitting time into many small ticks yields exactly what one large tick would.
+        /// Seconds into the current cycle, carried between ticks so that many small ticks earn exactly what one
+        /// large tick would.
         /// </summary>
-        public long Remainder { get; set; }
+        public long CycleProgress { get; set; }
         public long LastTick { get; set; }
     }
 
@@ -64,10 +66,15 @@ namespace FCE.Core.State
 
         public bool CanAfford(string currency, long amount) => amount <= 0 || Get(currency) >= amount;
 
-        internal void Add(string currency, long amount)
+        /// <summary>Adds up to the <see cref="Money.MaxBalance"/> ceiling. Returns how much was actually added.</summary>
+        internal long Add(string currency, long amount)
         {
             if (amount < 0) throw new System.ArgumentOutOfRangeException(nameof(amount));
-            Balances[currency] = Get(currency) + amount;
+            long current = Get(currency);
+            long added = System.Math.Min(amount, Money.MaxBalance - current);
+            if (added < 0) added = 0;
+            Balances[currency] = current + added;
+            return added;
         }
 
         internal void Spend(string currency, long amount)

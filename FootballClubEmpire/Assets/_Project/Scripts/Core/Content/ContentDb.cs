@@ -91,7 +91,8 @@ namespace FCE.Core.Content
                     def.IsHeadquarters || def.RequiredClubhouse == null ? 0 : def.RequiredClubhouse[level - 1],
                     requirements,
                     stats,
-                    def.Producer?.RatePerHour.Evaluate(level) ?? 0,
+                    def.Producer?.AmountPerCycle.Evaluate(level) ?? 0,
+                    def.Producer?.CycleSeconds.Evaluate(level) ?? 0,
                     def.Producer?.Capacity.Evaluate(level) ?? 0);
             }
             return table;
@@ -103,7 +104,7 @@ namespace FCE.Core.Content
     {
         public BuildingLevel(int level, long cost, long buildSeconds, int requiredClubhouse,
             IReadOnlyList<LevelRequirement> requirements, IReadOnlyDictionary<string, long> stats,
-            long ratePerHour, long capacity)
+            long amountPerCycle, long cycleSeconds, long capacity)
         {
             Level = level;
             Cost = cost;
@@ -111,7 +112,8 @@ namespace FCE.Core.Content
             RequiredClubhouse = requiredClubhouse;
             Requirements = requirements;
             Stats = stats;
-            RatePerHour = ratePerHour;
+            AmountPerCycle = amountPerCycle;
+            CycleSeconds = cycleSeconds;
             Capacity = capacity;
         }
 
@@ -121,7 +123,18 @@ namespace FCE.Core.Content
         public int RequiredClubhouse { get; }
         public IReadOnlyList<LevelRequirement> Requirements { get; }
         public IReadOnlyDictionary<string, long> Stats { get; }
-        public long RatePerHour { get; }
+        /// <summary>Producers: takings per cycle (0 for buildings that do not produce).</summary>
+        public long AmountPerCycle { get; }
+        public long CycleSeconds { get; }
+        /// <summary>Producers: how much the building holds before it stops earning.</summary>
         public long Capacity { get; }
+
+        public bool Produces => AmountPerCycle > 0 && CycleSeconds > 0;
+
+        /// <summary>Takings per hour while it is being collected before it fills.</summary>
+        public double IncomePerHour => Produces ? AmountPerCycle * 3600.0 / CycleSeconds : 0;
+
+        /// <summary>Seconds from empty to full: how long it can be left before it stops earning.</summary>
+        public long SecondsToFill => Produces ? (Capacity + AmountPerCycle - 1) / AmountPerCycle * CycleSeconds : 0;
     }
 }

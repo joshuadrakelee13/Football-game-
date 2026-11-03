@@ -1,6 +1,6 @@
 {
   "currencies": [
-    { "id": "cash", "name": "Cash", "premium": false },
-    { "id": "credits", "name": "Club Credits", "premium": true }
+    { "id": "cash", "name": "Pounds", "symbol": "£", "premium": false },
+    { "id": "credits", "name": "Club Credits", "symbol": "", "premium": true }
   ]
 }

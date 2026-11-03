@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using FCE.Core.Economy;
 
 namespace FCE.Core.Content
 {
@@ -112,8 +113,13 @@ namespace FCE.Core.Content
             if (b.Producer != null)
             {
                 if (!currencyIds.Contains(b.Producer.Currency ?? "")) errors.Add($"{where} produces unknown currency '{b.Producer.Currency}'.");
-                CheckCurve(b.Producer.RatePerHour, b.MaxLevel, $"{where} producer rate", errors, allowZero: false, nonDecreasing: true);
-                CheckCurve(b.Producer.Capacity, b.MaxLevel, $"{where} producer capacity", errors, allowZero: false, nonDecreasing: true);
+                CheckCurve(b.Producer.AmountPerCycle, b.MaxLevel, $"{where} amountPerCycle", errors, allowZero: false, nonDecreasing: true);
+                CheckCurve(b.Producer.CycleSeconds, b.MaxLevel, $"{where} cycleSeconds", errors, allowZero: false, nonDecreasing: false);
+                CheckCurve(b.Producer.Capacity, b.MaxLevel, $"{where} capacity", errors, allowZero: false, nonDecreasing: true);
+                if (b.Producer.AmountPerCycle != null && b.Producer.Capacity != null)
+                    for (int level = 1; level <= b.MaxLevel; level++)
+                        if (SafeEval(b.Producer.Capacity, level) < SafeEval(b.Producer.AmountPerCycle, level))
+                        { errors.Add($"{where} level {level} holds less than one cycle's takings."); break; }
             }
         }
 
@@ -142,8 +148,27 @@ namespace FCE.Core.Content
             foreach (var kv in e.StartingWallet)
             {
                 if (!currencyIds.Contains(kv.Key)) errors.Add($"Starting wallet has unknown currency '{kv.Key}'.");
-                if (kv.Value < 0) errors.Add($"Starting wallet {kv.Key} is negative.");
+                if (kv.Value < 0 || kv.Value > Money.MaxBalance) errors.Add($"Starting wallet {kv.Key} must be between 0 and the economy ceiling.");
             }
+
+            var categoryKinds = new Dictionary<string, string>();
+            foreach (var c in e.LedgerCategories ?? new List<LedgerCategoryDef>())
+            {
+                if (string.IsNullOrWhiteSpace(c.Id) || string.IsNullOrWhiteSpace(c.Name)) { errors.Add("A ledger category needs an id and a name."); continue; }
+                if (c.Kind != "income" && c.Kind != "expense") errors.Add($"Ledger category '{c.Id}' must be income or expense.");
+                if (categoryKinds.ContainsKey(c.Id)) errors.Add($"Duplicate ledger category '{c.Id}'.");
+                categoryKinds[c.Id] = c.Kind;
+            }
+            RequireCategory(categoryKinds, LedgerCategories.Construction, "expense", errors);
+            RequireCategory(categoryKinds, LedgerCategories.Refunds, "income", errors);
+            foreach (var b in byId.Values)
+                if (b.Producer != null)
+                {
+                    if (!categoryKinds.TryGetValue(b.Producer.IncomeCategory ?? "", out var kind))
+                        errors.Add($"Building '{b.Id}' produces under unknown ledger category '{b.Producer.IncomeCategory}'.");
+                    else if (kind != "income")
+                        errors.Add($"Building '{b.Id}' produces under '{b.Producer.IncomeCategory}', which is not an income category.");
+                }
 
             if (e.SpeedUpCost == null || e.SpeedUpCost.Count < 2) errors.Add("speedUpCost needs at least two points.");
             else
@@ -176,6 +201,17 @@ namespace FCE.Core.Content
             if (!hasHq) errors.Add("The club must start with its headquarters.");
         }
 
+        static long SafeEval(Curve c, int level)
+        {
+            try { return c.Evaluate(level); } catch (System.ArgumentOutOfRangeException) { return 0; }
+        }
+
+        static void RequireCategory(Dictionary<string, string> kinds, string id, string kind, List<string> errors)
+        {
+            if (!kinds.TryGetValue(id, out var actual)) errors.Add($"Ledger category '{id}' must be defined.");
+            else if (actual != kind) errors.Add($"Ledger category '{id}' must be {kind}.");
+        }
+
         static void CheckCurve(Curve curve, int maxLevel, string what, List<string> errors, bool allowZero, bool nonDecreasing)
         {
             if (curve == null) { errors.Add($"{what} is missing."); return; }
@@ -191,6 +227,7 @@ namespace FCE.Core.Content
             {
                 long v = curve.Evaluate(level);
                 if (v < 0 || (!allowZero && v == 0)) { errors.Add($"{what} level {level} is {v}."); return; }
+                if (v > Money.MaxBalance) { errors.Add($"{what} level {level} is {v}, above the £999bn economy ceiling."); return; }
                 if (nonDecreasing && v < previous) { errors.Add($"{what} decreases at level {level}."); return; }
                 previous = v;
             }

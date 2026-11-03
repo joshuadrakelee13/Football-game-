@@ -4,6 +4,8 @@ namespace FCE.Core.Content
     {
         public string Id { get; set; }
         public string Name { get; set; }
+        /// <summary>Shown before amounts, e.g. "£".</summary>
+        public string Symbol { get; set; }
         /// <summary>True for the premium currency. It may only buy time and cosmetics, never competitive advantage.</summary>
         public bool Premium { get; set; }
     }

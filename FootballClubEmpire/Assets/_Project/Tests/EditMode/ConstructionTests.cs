@@ -25,13 +25,13 @@ namespace FCE.Core.Tests
         public void PlacedBuildingCompletesWhenItsTimerEnds()
         {
             var t = new TestGame();
-            var result = t.Game.PlaceBuilding("tea_hut", FreeX, FreeY);
+            var result = t.Game.PlaceBuilding("drinks_stand", FreeX, FreeY);
             Assert.That(result.Ok, Is.True, result.Error);
 
             var hut = t.Game.FindBuilding(result.BuildingId);
             Assert.That(hut.Level, Is.EqualTo(0));
             Assert.That(hut.Construction.EndsAt, Is.EqualTo(TestGame.Start + 10));
-            Assert.That(t.Game.Balance(Currencies.Cash), Is.EqualTo(2500 - 150));
+            Assert.That(t.Game.Balance(Currencies.Cash), Is.EqualTo(2500 - 100));
             Assert.That(t.Game.FreeCrews, Is.EqualTo(1));
 
             t.Wait(9);
@@ -80,7 +80,7 @@ namespace FCE.Core.Tests
             var t = new TestGame();
             Assert.That(t.Game.StartUpgrade(t.Find("pitch").Id).Ok, Is.True);
             Assert.That(t.Game.StartUpgrade(t.Find("main_stand").Id).Ok, Is.True);
-            Assert.That(t.Game.PlaceBuilding("tea_hut", FreeX, FreeY).Error, Is.EqualTo(Errors.NoFreeCrew));
+            Assert.That(t.Game.PlaceBuilding("drinks_stand", FreeX, FreeY).Error, Is.EqualTo(Errors.NoFreeCrew));
         }
 
         [Test]
@@ -116,10 +116,10 @@ namespace FCE.Core.Tests
         public void BuildingCountsAreLimitedByClubhouseLevel()
         {
             var t = new TestGame();
-            Assert.That(t.Game.PlaceBuilding("tea_hut", FreeX, FreeY).Ok, Is.True);
-            Assert.That(t.Game.PlaceBuilding("tea_hut", FreeX, FreeY + 3).Error, Is.EqualTo(Errors.LimitReached));
+            Assert.That(t.Game.PlaceBuilding("drinks_stand", FreeX, FreeY).Ok, Is.True);
+            Assert.That(t.Game.PlaceBuilding("drinks_stand", FreeX, FreeY + 3).Error, Is.EqualTo(Errors.LimitReached));
             Assert.That(t.Game.PlaceBuilding("gym", FreeX, FreeY + 3).Error, Is.EqualTo(Errors.LimitReached), "the gym unlocks at Clubhouse 2");
-            Assert.That(t.Game.RemainingAllowance("tea_hut"), Is.EqualTo(0));
+            Assert.That(t.Game.RemainingAllowance("drinks_stand"), Is.EqualTo(0));
             Assert.That(t.Game.RemainingAllowance("club_shop"), Is.EqualTo(1));
         }
 
@@ -127,21 +127,21 @@ namespace FCE.Core.Tests
         public void PlacementMustBeInsideTheBuildableAreaAndNotOverlap()
         {
             var t = new TestGame();
-            Assert.That(t.Game.CheckPlacement("tea_hut", 0, 0), Is.EqualTo(Errors.InvalidPosition));
-            Assert.That(t.Game.CheckPlacement("tea_hut", 37, 20), Is.EqualTo(Errors.InvalidPosition), "2 wide at x=37 pokes out of an area ending at 38");
-            Assert.That(t.Game.CheckPlacement("tea_hut", 36, 20), Is.Null);
-            Assert.That(t.Game.CheckPlacement("tea_hut", 14, 22), Is.EqualTo(Errors.Overlaps), "on top of the Clubhouse");
-            Assert.That(t.Game.CheckPlacement("tea_hut", 16, 22), Is.Null, "directly beside it is fine");
+            Assert.That(t.Game.CheckPlacement("drinks_stand", 0, 0), Is.EqualTo(Errors.InvalidPosition));
+            Assert.That(t.Game.CheckPlacement("drinks_stand", 37, 20), Is.EqualTo(Errors.InvalidPosition), "2 wide at x=37 pokes out of an area ending at 38");
+            Assert.That(t.Game.CheckPlacement("drinks_stand", 36, 20), Is.Null);
+            Assert.That(t.Game.CheckPlacement("drinks_stand", 14, 22), Is.EqualTo(Errors.Overlaps), "on top of the Clubhouse");
+            Assert.That(t.Game.CheckPlacement("drinks_stand", 16, 22), Is.Null, "directly beside it is fine");
         }
 
         [Test]
         public void CannotSpendMoneyTheClubDoesNotHave()
         {
             var t = new TestGame();
-            t.State.Wallet.Balances[Currencies.Cash] = 100;
-            Assert.That(t.Game.PlaceBuilding("tea_hut", FreeX, FreeY).Error, Is.EqualTo(Errors.NotEnoughCurrency));
+            t.State.Wallet.Balances[Currencies.Cash] = 99; // the stand costs £100
+            Assert.That(t.Game.PlaceBuilding("drinks_stand", FreeX, FreeY).Error, Is.EqualTo(Errors.NotEnoughCurrency));
             Assert.That(t.State.Buildings.Count, Is.EqualTo(3));
-            Assert.That(t.Game.Balance(Currencies.Cash), Is.EqualTo(100));
+            Assert.That(t.Game.Balance(Currencies.Cash), Is.EqualTo(99));
         }
 
         [Test]
@@ -173,7 +173,7 @@ namespace FCE.Core.Tests
         public void FinishNowIsFreeInTheLastThirtySeconds()
         {
             var t = new TestGame();
-            var placed = t.Game.PlaceBuilding("club_shop", FreeX, FreeY); // 15 seconds
+            var placed = t.Game.PlaceBuilding("drinks_stand", FreeX, FreeY); // 10 seconds
             Assert.That(t.Game.FinishNowCost(placed.BuildingId), Is.EqualTo(0));
             Assert.That(t.Game.FinishNow(placed.BuildingId).Ok, Is.True);
             Assert.That(t.Game.FindBuilding(placed.BuildingId).Level, Is.EqualTo(1));

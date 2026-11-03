@@ -56,18 +56,23 @@ namespace FCE.Core.Systems
 
         public int FreeCrews => TotalCrews - BusyCrews;
 
-        public void Credit(string currency, long amount)
+        /// <summary>Pays money in, recording it in the ledger under <paramref name="category"/>. Returns what was actually added (the ceiling can clip it).</summary>
+        public long Credit(string currency, long amount, string category)
         {
-            if (amount <= 0) return;
-            State.Wallet.Add(currency, amount);
-            Raise(new WalletChanged(State.Now, currency, amount, State.Wallet.Get(currency)));
+            if (amount <= 0) return 0;
+            long added = State.Wallet.Add(currency, amount);
+            if (added <= 0) return 0;
+            if (currency == Currencies.Cash) State.Ledger.Record(State.Now, category, added);
+            Raise(new WalletChanged(State.Now, currency, added, State.Wallet.Get(currency), category));
+            return added;
         }
 
-        public void Debit(string currency, long amount)
+        public void Debit(string currency, long amount, string category)
         {
             if (amount <= 0) return;
             State.Wallet.Spend(currency, amount);
-            Raise(new WalletChanged(State.Now, currency, -amount, State.Wallet.Get(currency)));
+            if (currency == Currencies.Cash) State.Ledger.Record(State.Now, category, -amount);
+            Raise(new WalletChanged(State.Now, currency, -amount, State.Wallet.Get(currency), category));
         }
     }
 }

@@ -79,6 +79,13 @@ namespace FCE.Core
         public CommandResult CancelConstruction(int buildingId) =>
             Run(() => ConstructionSystem.Cancel(_ctx, buildingId));
 
+        /// <summary>Moves a producer's waiting takings into the club's account.</summary>
+        public CommandResult Collect(int buildingId) =>
+            Run(() => ProductionSystem.Collect(_ctx, buildingId));
+
+        public CommandResult CollectAll() =>
+            Run(() => ProductionSystem.CollectAll(_ctx));
+
         CommandResult Run(Func<CommandResult> action)
         {
             Timeline.AdvanceTo(_ctx, _clock.UtcNowSeconds);
@@ -128,33 +135,74 @@ namespace FCE.Core
             var b = _ctx.FindBuilding(buildingId);
             if (b == null) return null;
             var def = Content.GetBuilding(b.Def);
-            var quote = new UpgradeQuote { BuildingId = b.Id, Def = def, CurrentLevel = b.Level, IsMaxLevel = b.Level >= def.MaxLevel };
-            if (quote.IsMaxLevel) { quote.BlockedBy = Errors.MaxLevel; return quote; }
+            if (b.Level >= def.MaxLevel)
+                return new UpgradeQuote(b.Id, def, b.Level, Content.GetLevel(def.Id, b.Level), null, Errors.MaxLevel);
+            return new UpgradeQuote(b.Id, def, b.Level,
+                b.Level >= 1 ? Content.GetLevel(def.Id, b.Level) : null,
+                Content.GetLevel(def.Id, b.Level + 1),
+                ConstructionSystem.ValidateUpgrade(_ctx, b.Id));
+        }
 
-            var next = Content.GetLevel(def.Id, b.Level + 1);
-            quote.NextLevel = next;
-            quote.BlockedBy = ConstructionSystem.ValidateUpgrade(_ctx, b.Id);
-            foreach (var kv in next.Stats)
-            {
-                long current = b.Level >= 1 && Content.GetLevel(def.Id, b.Level).Stats.TryGetValue(kv.Key, out var c) ? c : 0;
-                quote.StatChanges.Add(new StatChange(kv.Key, current, kv.Value));
-            }
-            return quote;
+        /// <summary>The build-menu view of a new building: level-1 cost, time, income and whether it can be built now.</summary>
+        public UpgradeQuote QuoteNew(string buildingDef)
+        {
+            var def = Content.GetBuilding(buildingDef);
+            return new UpgradeQuote(0, def, 0, null, Content.GetLevel(def.Id, 1), ConstructionSystem.ValidateBuild(_ctx, def.Id));
         }
     }
 
+    /// <summary>
+    /// What a level costs and what it gives: cost, build time, stat changes, and for producers the income change and
+    /// how long the upgrade takes to pay for itself. Every upgrade shows these, so the player always knows what money buys.
+    /// </summary>
     public sealed class UpgradeQuote
     {
-        public int BuildingId { get; internal set; }
-        public BuildingDef Def { get; internal set; }
-        public int CurrentLevel { get; internal set; }
-        public bool IsMaxLevel { get; internal set; }
+        internal UpgradeQuote(int buildingId, BuildingDef def, int currentLevel, BuildingLevel current, BuildingLevel next, string blockedBy)
+        {
+            BuildingId = buildingId;
+            Def = def;
+            CurrentLevel = currentLevel;
+            Current = current;
+            NextLevel = next;
+            BlockedBy = blockedBy;
+            if (next == null) return;
+
+            foreach (var kv in next.Stats)
+            {
+                long from = current != null && current.Stats.TryGetValue(kv.Key, out var c) ? c : 0;
+                StatChanges.Add(new StatChange(kv.Key, from, kv.Value));
+            }
+
+            if (next.Produces)
+            {
+                IncomePerHourFrom = current?.IncomePerHour ?? 0;
+                IncomePerHourTo = next.IncomePerHour;
+                double gainPerSecond = (IncomePerHourTo - IncomePerHourFrom) / 3600.0;
+                if (gainPerSecond > 0) PaybackSeconds = (long)System.Math.Ceiling(next.Cost / gainPerSecond);
+            }
+        }
+
+        /// <summary>0 when quoting a new building.</summary>
+        public int BuildingId { get; }
+        public BuildingDef Def { get; }
+        public int CurrentLevel { get; }
+        /// <summary>The level as it stands, or null for a building not yet built.</summary>
+        public BuildingLevel Current { get; }
         /// <summary>The level being bought: its cost, build time and requirements. Null at max level.</summary>
-        public BuildingLevel NextLevel { get; internal set; }
-        /// <summary>Null when the upgrade can start right now, otherwise an <see cref="Errors"/> code.</summary>
-        public string BlockedBy { get; internal set; }
+        public BuildingLevel NextLevel { get; }
+        public bool IsMaxLevel => NextLevel == null;
+        /// <summary>Null when it can start right now, otherwise an <see cref="Errors"/> code.</summary>
+        public string BlockedBy { get; }
         public bool CanStart => BlockedBy == null;
         public List<StatChange> StatChanges { get; } = new List<StatChange>();
+
+        public double IncomePerHourFrom { get; }
+        public double IncomePerHourTo { get; }
+        /// <summary>
+        /// Seconds of extra income needed to recover the cost, assuming the building is collected before it fills.
+        /// Null when the level does not change income.
+        /// </summary>
+        public long? PaybackSeconds { get; }
     }
 
     public readonly struct StatChange

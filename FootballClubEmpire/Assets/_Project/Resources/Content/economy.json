@@ -18,5 +18,25 @@
     "width": 48,
     "height": 48,
     "buildableArea": { "x": 10, "y": 10, "width": 28, "height": 26 }
-  }
+  },
+  "ledgerCategories": [
+    { "id": "tickets",        "name": "Ticket sales",              "kind": "income" },
+    { "id": "food_drink",     "name": "Food and drink",            "kind": "income" },
+    { "id": "merchandise",    "name": "Merchandise",               "kind": "income" },
+    { "id": "sponsorship",    "name": "Sponsorship",               "kind": "income" },
+    { "id": "broadcasting",   "name": "Broadcasting",              "kind": "income" },
+    { "id": "prize_money",    "name": "Prize money",               "kind": "income" },
+    { "id": "transfers_in",   "name": "Transfer fees received",    "kind": "income" },
+    { "id": "commercial",     "name": "Commercial partnerships",   "kind": "income" },
+    { "id": "events",         "name": "Stadium events",            "kind": "income" },
+    { "id": "refunds",        "name": "Refunds",                   "kind": "income" },
+    { "id": "construction",   "name": "Construction",              "kind": "expense" },
+    { "id": "wages",          "name": "Player wages",              "kind": "expense" },
+    { "id": "staff",          "name": "Staff salaries",            "kind": "expense" },
+    { "id": "maintenance",    "name": "Maintenance",               "kind": "expense" },
+    { "id": "recruitment",    "name": "Recruitment",               "kind": "expense" },
+    { "id": "matchday_ops",   "name": "Matchday operations",       "kind": "expense" },
+    { "id": "running_costs",  "name": "Facility running costs",    "kind": "expense" },
+    { "id": "transfers_out",  "name": "Transfer fees paid",        "kind": "expense" }
+  ]
 }

@@ -16,6 +16,17 @@ namespace FCE.Core.Content
         public int CancelRefundPercent { get; set; } = 50;
 
         public SiteDef Site { get; set; } = new SiteDef();
+
+        /// <summary>Every heading money can be earned or spent under. Producers and rules refer to these by id.</summary>
+        public List<LedgerCategoryDef> LedgerCategories { get; set; } = new List<LedgerCategoryDef>();
+    }
+
+    public sealed class LedgerCategoryDef
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        /// <summary>"income" or "expense".</summary>
+        public string Kind { get; set; }
     }
 
     public sealed class StartingBuilding

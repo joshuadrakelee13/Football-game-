@@ -68,11 +68,18 @@ namespace FCE.Core.Content
         public Curve Value { get; set; }
     }
 
+    /// <summary>
+    /// A building that earns money in cycles: <c>AmountPerCycle</c> every <c>CycleSeconds</c>, e.g. £5 every 5 seconds.
+    /// Earnings wait in the building until collected; once <c>Capacity</c> is full it stops earning, which is what
+    /// bounds offline income and rewards checking in.
+    /// </summary>
     public sealed class ProducerDef
     {
         public string Currency { get; set; } = Currencies.Cash;
-        public Curve RatePerHour { get; set; }
-        /// <summary>How much the building holds before it stops producing and must be collected.</summary>
+        /// <summary>Ledger income category the takings are recorded under, e.g. "food_drink".</summary>
+        public string IncomeCategory { get; set; }
+        public Curve AmountPerCycle { get; set; }
+        public Curve CycleSeconds { get; set; }
         public Curve Capacity { get; set; }
     }
 }

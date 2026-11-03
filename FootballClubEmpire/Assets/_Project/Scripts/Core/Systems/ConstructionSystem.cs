@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using FCE.Core.Content;
+using FCE.Core.Economy;
 using FCE.Core.State;
 
 namespace FCE.Core.Systems
@@ -17,15 +18,20 @@ namespace FCE.Core.Systems
 
         public static string ValidatePlace(GameContext ctx, string defId, int x, int y)
         {
+            string error = ValidateBuild(ctx, defId);
+            if (error != null) return error;
+            return SitePlacement.Check(ctx, ctx.Content.GetBuilding(defId), x, y, ignoreBuildingId: 0);
+        }
+
+        /// <summary>Everything about building a new one except where it goes: for the build menu.</summary>
+        public static string ValidateBuild(GameContext ctx, string defId)
+        {
             if (defId == null || !ctx.Content.Buildings.TryGetValue(defId, out var def)) return Errors.UnknownBuilding;
             if (ctx.CountOwned(defId) >= ctx.Content.AllowedCount(defId, ctx.ClubhouseLevel)) return Errors.LimitReached;
 
             var first = ctx.Content.GetLevel(defId, 1);
             string requirement = CheckRequirements(ctx, def, first);
             if (requirement != null) return requirement;
-
-            string position = SitePlacement.Check(ctx, def, x, y, ignoreBuildingId: 0);
-            if (position != null) return position;
 
             if (ctx.FreeCrews < 1) return Errors.NoFreeCrew;
             if (!ctx.State.Wallet.CanAfford(def.CostCurrency, first.Cost)) return Errors.NotEnoughCurrency;
@@ -93,7 +99,7 @@ namespace FCE.Core.Systems
         static void Begin(GameContext ctx, BuildingState building, BuildingDef def, int targetLevel)
         {
             var level = ctx.Content.GetLevel(def.Id, targetLevel);
-            ctx.Debit(def.CostCurrency, level.Cost);
+            ctx.Debit(def.CostCurrency, level.Cost, LedgerCategories.Construction);
             building.Construction = new ConstructionState
             {
                 TargetLevel = targetLevel,
@@ -123,7 +129,7 @@ namespace FCE.Core.Systems
             long cost = FinishNowCost(ctx, building);
             if (!ctx.State.Wallet.CanAfford(Currencies.Credits, cost)) return CommandResult.Fail(Errors.NotEnoughCurrency);
 
-            ctx.Debit(Currencies.Credits, cost);
+            ctx.Debit(Currencies.Credits, cost, LedgerCategories.Construction);
             ctx.Raise(new UpgradeFinishedEarly(ctx.State.Now, buildingId, cost));
             Complete(ctx, building);
             return CommandResult.Success(buildingId);
@@ -142,7 +148,7 @@ namespace FCE.Core.Systems
             if (removed) ctx.State.Buildings.Remove(building);
             else ProductionSystem.OnConstructionEnded(ctx, building);
 
-            ctx.Credit(project.PaidCurrency, refund);
+            ctx.Credit(project.PaidCurrency, refund, LedgerCategories.Refunds);
             ctx.Raise(new UpgradeCancelled(ctx.State.Now, buildingId, removed, project.PaidCurrency, refund));
             return CommandResult.Success(buildingId);
         }

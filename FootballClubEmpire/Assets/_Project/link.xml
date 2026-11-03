@@ -1,0 +1,7 @@
+<!--
+  IL2CPP (iOS and Android builds) strips code it believes is unused. Content files and saves are read with
+  Newtonsoft JSON through reflection, which the stripper cannot see, so keep every type in the rules assembly.
+-->
+<linker>
+  <assembly fullname="FCE.Core" preserve="all"/>
+</linker>

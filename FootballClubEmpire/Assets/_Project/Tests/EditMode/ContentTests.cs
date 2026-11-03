@@ -146,8 +146,8 @@ namespace FCE.Core.Tests
         [Test]
         public void CurveThatStopsShortIsRejected()
         {
-            var e = Broken(s => Edit(s, "stadium.json", "[1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6]",
-                                                        "[1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6]"));
+            var e = Broken(s => Edit(s, "stadium.json", "[1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7]",
+                                                        "[1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7]"));
             Assert.That(e.Errors, Has.Some.Contains("lists 24 values but there are 25 levels"));
         }
 
@@ -187,7 +187,7 @@ namespace FCE.Core.Tests
         [Test]
         public void PricesAboveTheEconomyCeilingAreRejected()
         {
-            var e = Broken(s => Edit(s, "stadium.json", "[0, 1000, 8000, 40000, 150000]", "[0, 1000, 8000, 40000, 1000000000000]"));
+            var e = Broken(s => Edit(s, "stadium.json", "[0, 1000, 4000, 12000, 450000]", "[0, 1000, 4000, 12000, 1000000000000]"));
             Assert.That(e.Errors, Has.Some.Contains("ceiling"));
         }
 

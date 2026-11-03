@@ -8,8 +8,8 @@
       "footprintWidth": 6,
       "footprintHeight": 4,
       "maxLevel": 30,
-      "cost": {"values": [50], "base": 14, "growth": 1.265, "significant": 2},
-      "buildSeconds": {"values": [0, 0, 0], "base": 3, "growth": 1.4, "significant": 2},
+      "cost": {"values": [50], "base": 30, "growth": 1.265, "significant": 2},
+      "buildSeconds": {"values": [0, 0, 0], "base": 4, "growth": 1.4, "significant": 2},
       "levelCaps": [
         {"stadiumLevel": 1, "maxLevel": 10},
         {"stadiumLevel": 2, "maxLevel": 12},
@@ -27,7 +27,8 @@
       ],
       "stats": [
         {"stat": "training_quality", "value": {"base": 5, "add": 2.5}}
-      ]
+      ],
+      "notes": "Facilities buy stats, not income, so they cost about three times a producer's upgrade at the same level and take longer: instant for levels 1-3, minutes by 15, hours by 25. They are what crews and money go on between Stadium levels."
     },
     {
       "id": "gym",
@@ -37,8 +38,8 @@
       "footprintWidth": 3,
       "footprintHeight": 3,
       "maxLevel": 30,
-      "cost": {"values": [500], "base": 14, "growth": 1.265, "significant": 2},
-      "buildSeconds": {"values": [0, 0, 0], "base": 3, "growth": 1.4, "significant": 2},
+      "cost": {"values": [500], "base": 30, "growth": 1.265, "significant": 2},
+      "buildSeconds": {"values": [0, 0, 0], "base": 4, "growth": 1.4, "significant": 2},
       "levelCaps": [
         {"stadiumLevel": 3, "maxLevel": 10},
         {"stadiumLevel": 4, "maxLevel": 12},
@@ -56,7 +57,8 @@
       ],
       "stats": [
         {"stat": "fitness_quality", "value": {"base": 5, "add": 2.5}}
-      ]
+      ],
+      "notes": "Facilities buy stats, not income, so they cost about three times a producer's upgrade at the same level and take longer: instant for levels 1-3, minutes by 15, hours by 25. They are what crews and money go on between Stadium levels."
     }
   ]
 }

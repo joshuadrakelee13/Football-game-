@@ -25,9 +25,9 @@ namespace FCE.Core.Tests
             t.ReachStadium(3);
             var reached = t.EventsOf<StadiumLevelReached>().Single(e => e.Level == 3);
             Assert.That(reached.Unlocks.NewBuildings.Select(n => n.def.Id), Is.EquivalentTo(new[] { "club_shop", "gym" }));
-            Assert.That(reached.Unlocks.ExtraCrews, Is.EqualTo(1));
             Assert.That(reached.Unlocks.NewLandTiles, Is.GreaterThan(0));
             Assert.That(reached.Unlocks.Reward[Currencies.Cash], Is.EqualTo(1000));
+            Assert.That(t.EventsOf<StadiumLevelReached>().Single(e => e.Level == 2).Unlocks.ExtraCrews, Is.EqualTo(1));
             Assert.That(t.Game.TotalCrews, Is.EqualTo(3));
         }
 

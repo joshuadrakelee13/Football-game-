@@ -2,49 +2,67 @@ using System;
 
 namespace FCE.Sim
 {
-    /// <summary>When a simulated player is in the game: sessions as (start minute of the day, length in minutes).</summary>
+    /// <summary>
+    /// How a simulated player uses the game: a first session on the day they install, then a daily routine of
+    /// sessions given as (start minute of the day, length in minutes). Install happens at 08:00 on day 1.
+    /// </summary>
     sealed class PlayProfile
     {
-        public PlayProfile(string name, string description, params (int start, int minutes)[] sessions)
+        public PlayProfile(string name, string description, int firstSessionMinutes, params (int start, int minutes)[] routine)
         {
             Name = name;
             Description = description;
-            Sessions = sessions;
+            FirstSessionMinutes = firstSessionMinutes;
+            Routine = routine;
         }
+
+        public const int InstallMinute = 8 * 60;
 
         public string Name { get; }
         public string Description { get; }
-        public (int start, int minutes)[] Sessions { get; }
+        public int FirstSessionMinutes { get; }
+        public (int start, int minutes)[] Routine { get; }
 
-        public int MinutesPerDay { get { int m = 0; foreach (var s in Sessions) m += s.minutes; return m; } }
+        public int RoutineMinutesPerDay { get { int m = 0; foreach (var s in Routine) m += s.minutes; return m; } }
 
-        public bool IsPlaying(int minuteOfDay)
+        /// <summary>Is the player in the game at this minute since midnight of day 1?</summary>
+        public bool IsPlaying(long minuteSinceDayOneMidnight)
         {
-            foreach (var s in Sessions)
+            long sinceInstall = minuteSinceDayOneMidnight - InstallMinute;
+            if (sinceInstall < 0) return false;
+            if (sinceInstall < FirstSessionMinutes) return true;
+
+            int minuteOfDay = (int)(minuteSinceDayOneMidnight % 1440);
+            bool dayOne = minuteSinceDayOneMidnight < 1440;
+            foreach (var s in Routine)
+            {
+                // On day one the routine only begins once the first session is over.
+                if (dayOne && s.start < InstallMinute + FirstSessionMinutes) continue;
                 if (minuteOfDay >= s.start && minuteOfDay < s.start + s.minutes) return true;
+            }
             return false;
         }
 
         static int At(int hour, int minute) => hour * 60 + minute;
 
-        public static readonly PlayProfile Engaged = new PlayProfile("engaged",
-            "five sessions a day, about two hours in total",
+        public static readonly PlayProfile Active = new PlayProfile("active",
+            "2-hour first session, then five sessions a day (about 2 hours)", 120,
             (At(7, 30), 20), (At(12, 30), 15), (At(17, 30), 30), (At(20, 0), 40), (At(22, 30), 15));
 
-        public static readonly PlayProfile Casual = new PlayProfile("casual",
-            "three short check-ins a day, half an hour in total",
-            (At(8, 0), 10), (At(13, 0), 5), (At(21, 0), 15));
+        public static readonly PlayProfile Regular = new PlayProfile("regular",
+            "1-hour first session, then three sessions a day (about 45 minutes)", 60,
+            (At(8, 0), 10), (At(13, 0), 10), (At(20, 30), 25));
 
-        public static readonly PlayProfile Daily = new PlayProfile("daily",
-            "one ten-minute visit each evening",
-            (At(19, 0), 10));
+        public static readonly PlayProfile Collector = new PlayProfile("collector",
+            "30-minute first session, then two 10-minute check-ins a day, living mostly on offline income", 30,
+            (At(12, 30), 10), (At(21, 0), 10));
 
-        public static readonly PlayProfile[] All = { Engaged, Casual, Daily };
+        public static readonly PlayProfile[] All = { Active, Regular, Collector };
 
         public static PlayProfile Named(string name)
         {
             foreach (var p in All) if (p.Name == name) return p;
-            throw new ArgumentException($"Unknown profile '{name}'. Use engaged, casual or daily.");
+            throw new ArgumentException($"Unknown profile '{name}'. Use active, regular or collector.");
         }
     }
 }

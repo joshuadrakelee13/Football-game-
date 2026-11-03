@@ -9,9 +9,9 @@
       "footprintWidth": 16,
       "footprintHeight": 12,
       "maxLevel": 25,
-      "notes": "Levels 2-5 are explicit so the first day moves quickly; from level 6 cost grows 1.5x and build time about 1.19x a level, reaching about £890m and a week at level 25.",
-      "cost": {"values": [0, 1000, 8000, 40000, 150000], "base": 52675, "growth": 1.5, "significant": 2},
-      "buildSeconds": {"values": [0, 60, 600, 2700, 10800], "base": 8981, "growth": 1.1919, "significant": 2},
+      "notes": "Levels 2-4 fall inside the first session; level 5 (£450k, 3 hours) is the first real milestone, around day 3 for an active player. From level 6 cost grows about 1.44x and build time about 1.19x a level, reaching about £900m and a week at level 25.",
+      "cost": {"values": [0, 1000, 4000, 12000, 450000], "base": 146300, "growth": 1.4384, "significant": 2},
+      "buildSeconds": {"values": [0, 60, 300, 1200, 10800], "base": 8981, "growth": 1.1919, "significant": 2},
       "levelRequirements": [
         {"atLevel": 3, "building": "training_ground", "level": 5},
         {"atLevel": 4, "building": "club_shop", "level": 5},
@@ -24,7 +24,7 @@
       "stats": [
         {
           "stat": "construction_crews",
-          "value": {"values": [1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6]}
+          "value": {"values": [1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7]}
         },
         {"stat": "stadium_capacity", "value": {"base": 250, "growth": 1.27, "significant": 2}},
         {"stat": "seated_capacity", "value": {"base": 50, "growth": 1.33, "significant": 2}},

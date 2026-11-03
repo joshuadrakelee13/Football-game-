@@ -10,129 +10,236 @@ using FCE.Core.Time;
 namespace FCE.Sim
 {
     /// <summary>
-    /// Plays a club from day one with a <see cref="Bot"/>, on a real-time schedule from a <see cref="PlayProfile"/>,
-    /// through the actual game rules. The game is advanced every simulated minute (the rules give the same result
-    /// however time is sliced), but the bot only acts during sessions.
+    /// Plays a club from install with a <see cref="Bot"/> on a <see cref="PlayProfile"/>'s schedule, through the real
+    /// game rules, and measures the experience: what the player achieved by each point, how their time in the game
+    /// was spent, when each Stadium level arrived and what it opened up.
     /// </summary>
     static class Progression
     {
-        // Monday 5 January 2026, 00:00 UTC. Sessions are at fixed times of day from here.
-        const long Start = 1_767_571_200;
+        // Monday 5 January 2026, 00:00 UTC.
+        const long Midnight = 1_767_571_200;
+        const long Install = Midnight + PlayProfile.InstallMinute * 60L;
 
-        public static int Run(ContentDb content, PlayProfile profile, int days, bool printDaily, TextWriter o)
+        sealed class Snapshot
         {
-            var clock = new ManualClock(Start);
-            var state = Game.NewGame(content, Start);
+            public string Label;
+            public int Stadium, Upgrades, Buildings, Types, Unlocked;
+            public long Cash, Earned;
+            public double SessionMinutes;
+        }
+
+        sealed class Phase
+        {
+            public string Label;
+            public long From, To;
+            public double SessionSeconds;
+            public Dictionary<Moment, double> Seconds = Enum.GetValues(typeof(Moment)).Cast<Moment>().ToDictionary(m => m, m => 0.0);
+        }
+
+        public static int Run(ContentDb content, PlayProfile profile, int days, TextWriter o)
+        {
+            var clock = new ManualClock(Midnight);
+            var state = Game.NewGame(content, Midnight);
             var game = new Game(content, state, clock);
             var bot = new Bot(game);
 
-            var clubhouseReached = new SortedDictionary<int, long> { [1] = Start };
+            int upgrades = 0;
+            var stadiumReached = new SortedDictionary<int, long>();
+            var firstSessionSpend = new SortedDictionary<string, long>();
+            long firstSessionEnd = Install + profile.FirstSessionMinutes * 60L;
             game.EventRaised += e =>
             {
-                if (e is UpgradeCompleted c && c.Def == content.Headquarters.Id) clubhouseReached[c.NewLevel] = c.At;
+                if (e is UpgradeCompleted) upgrades++;
+                if (e is StadiumLevelReached s) stadiumReached[s.Level] = s.At;
+                if (e is UpgradeStarted started && started.At < firstSessionEnd && started.Currency == Currencies.Cash)
+                {
+                    var def = content.GetBuilding(state.Buildings.First(b => b.Id == started.BuildingId).Def);
+                    string group = def.IsHeadquarters ? "Stadium" : def.Producer != null ? "producers" : "facilities";
+                    firstSessionSpend[group] = (firstSessionSpend.TryGetValue(group, out var v) ? v : 0) + started.Cost;
+                }
             };
 
-            long maxBalance = 0, potential = 0, lastIncomeTotal = 0;
-            double crewBusyMinutes = 0, crewMinutes = 0;
-            long? everythingMaxedAt = null;
-            var waitingOnReturn = new List<long>();
-            var fullOnReturn = new List<int>();
-            var dailyRows = new List<string>();
-            bool wasPlaying = false;
-
-            for (long minute = 0; minute < days * 1440L; minute++)
+            var checkpoints = new List<(long at, string label)>
             {
-                if (minute > 0) clock.Advance(60);
+                (Install + 30 * 60, "30 minutes in"), (Install + 60 * 60, "1 hour in"), (Install + 120 * 60, "2 hours in"),
+                (Midnight + 86400, "end of day 1"), (Midnight + 3 * 86400, "end of day 3"),
+                (Midnight + 7 * 86400, "end of day 7"), (Midnight + 30 * 86400, "end of day 30"),
+            }.Where(c => c.at <= Midnight + days * 86400L).ToList();
+            var snapshots = new List<Snapshot>();
+
+            var phases = new List<Phase>
+            {
+                new Phase { Label = "first session", From = Install, To = Install + profile.FirstSessionMinutes * 60L },
+                new Phase { Label = "days 1-3", From = Midnight, To = Midnight + 3 * 86400 },
+                new Phase { Label = "days 4-7", From = Midnight + 3 * 86400, To = Midnight + 7 * 86400 },
+                new Phase { Label = "days 8-30", From = Midnight + 7 * 86400, To = Midnight + 30 * 86400 },
+            };
+
+            long maxBalanceGrassroots = 0, longestIdle = 0, idleRun = 0;
+            double sessionSeconds = 0;
+            var waitingOnReturn = new List<long>();
+            bool wasPlaying = false;
+            int checkpoint = 0;
+            long end = Midnight + days * 86400L;
+
+            while (clock.UtcNowSeconds < end)
+            {
+                long now = clock.UtcNowSeconds;
+                bool playing = profile.IsPlaying((now - Midnight) / 60);
+                long step = playing ? 10 : 60;
                 game.Update();
 
-                int minuteOfDay = (int)(minute % 1440);
-                bool playing = profile.IsPlaying(minuteOfDay);
                 if (playing && !wasPlaying)
-                {
-                    // The player just opened the game: what has built up since they left?
                     waitingOnReturn.Add(state.Buildings.Where(b => b.Producer != null).Sum(b => b.Producer.Stored));
-                    fullOnReturn.Add(state.Buildings.Count(b => b.Producer != null && b.Level >= 1 &&
-                        b.Producer.Stored >= content.GetLevel(b.Def, b.Level).Capacity));
+
+                if (playing)
+                {
+                    int before = upgrades;
+                    var moment = bot.PlayTurn();
+                    sessionSeconds += step;
+                    foreach (var p in phases)
+                        if (now >= p.From && now < p.To) { p.SessionSeconds += step; p.Seconds[moment] += step; }
+                    idleRun = moment == Moment.NothingToDo ? idleRun + step : 0;
+                    longestIdle = Math.Max(longestIdle, idleRun);
                 }
-                if (playing) bot.PlayTurn();
+                else idleRun = 0;
                 wasPlaying = playing;
 
-                // What every producer could have earned this minute if it were never left full.
-                foreach (var b in state.Buildings)
-                    if (b.Producer != null && b.Level >= 1 && !b.IsUnderConstruction)
-                        potential += (long)(content.GetLevel(b.Def, b.Level).IncomePerHour / 60);
+                if (game.StadiumLevel <= 5) maxBalanceGrassroots = Math.Max(maxBalanceGrassroots, game.Balance(Currencies.Cash));
 
-                crewMinutes += game.TotalCrews;
-                crewBusyMinutes += game.TotalCrews - game.FreeCrews;
-                maxBalance = Math.Max(maxBalance, game.Balance(Currencies.Cash));
-                if (everythingMaxedAt == null && AllMaxed(game)) everythingMaxedAt = clock.UtcNowSeconds;
-
-                if (minuteOfDay == 1439)
+                clock.Advance(step);
+                while (checkpoint < checkpoints.Count && clock.UtcNowSeconds >= checkpoints[checkpoint].at)
                 {
-                    var book = state.Ledger.Day(clock.UtcNowSeconds);
-                    long income = state.Ledger.Lifetime.TotalIncome;
-                    dailyRows.Add($"  {minute / 1440 + 1,4}  {game.StadiumLevel,3}  {MoneyFormat.Full(game.Balance(Currencies.Cash)),12}  {MoneyFormat.Full(income - lastIncomeTotal),10}  {MoneyFormat.Full(book.TotalExpenses),10}  {LevelsOwned(game),5}");
-                    lastIncomeTotal = income;
+                    game.Update();
+                    snapshots.Add(Snap(game, state, checkpoints[checkpoint].label, upgrades, sessionSeconds));
+                    checkpoint++;
                 }
             }
 
-            long stillWaiting = state.Buildings.Where(b => b.Producer != null).Sum(b => b.Producer.Stored);
-            long produced = state.Ledger.Lifetime.Income.Where(kv => kv.Key != LedgerCategories.Refunds).Sum(kv => kv.Value) + stillWaiting;
-            double efficiency = potential > 0 ? (double)produced / potential : 0;
+            Print(content, profile, days, snapshots, phases, stadiumReached, maxBalanceGrassroots, longestIdle, waitingOnReturn, game, o);
+            o.WriteLine($"  First session spent        {string.Join(", ", firstSessionSpend.Select(kv => $"{kv.Key} {MoneyFormat.Full(kv.Value)}"))}");
+            return Check(content, profile, snapshots, phases, stadiumReached, maxBalanceGrassroots, longestIdle, o);
+        }
+
+        static Snapshot Snap(Game game, Core.State.GameState state, string label, int upgrades, double sessionSeconds) => new Snapshot
+        {
+            Label = label,
+            Stadium = game.StadiumLevel,
+            Upgrades = upgrades,
+            Buildings = state.Buildings.Count,
+            Types = state.Buildings.Select(b => b.Def).Distinct().Count(),
+            Unlocked = game.Content.BuildingOrder.Count(d => game.Content.AllowedCount(d.Id, game.StadiumLevel) > 0),
+            Cash = game.Balance(Currencies.Cash),
+            Earned = state.Ledger.Lifetime.TotalIncome,
+            SessionMinutes = sessionSeconds / 60,
+        };
+
+        static void Print(ContentDb content, PlayProfile profile, int days, List<Snapshot> snapshots, List<Phase> phases,
+            SortedDictionary<int, long> stadiumReached, long maxBalance, long longestIdle, List<long> waitingOnReturn, Game game, TextWriter o)
+        {
+            o.WriteLine();
+            o.WriteLine($"=== PLAYER EXPERIENCE: {profile.Name} ({profile.Description}), {days} days, no purchases ===");
+            o.WriteLine();
+            o.WriteLine("  Checkpoint      Played   Stadium  Upgrades  Buildings  Types  Unlocked       Cash       Earned");
+            foreach (var s in snapshots)
+                o.WriteLine($"  {s.Label,-14}  {MoneyFormat.Duration((long)(s.SessionMinutes * 60)),7}  {s.Stadium,7}  {s.Upgrades,8}  {s.Buildings,9}  {s.Types,5}  {s.Unlocked,8}  {MoneyFormat.Full(s.Cash),9}  {MoneyFormat.Full(s.Earned),11}");
 
             o.WriteLine();
-            o.WriteLine($"=== PROGRESSION: {profile.Name} ({profile.Description}), {days} days, no purchases ===");
-            o.WriteLine();
-            o.WriteLine("  Clubhouse  Reached");
-            foreach (var kv in clubhouseReached)
-                o.WriteLine($"  {kv.Key,9}  {When(kv.Value)}");
-            int maxHq = content.Headquarters.MaxLevel;
-            if (!clubhouseReached.ContainsKey(maxHq)) o.WriteLine($"  {maxHq,9}  not within {days} days");
+            o.WriteLine("  How time in the game was spent");
+            o.WriteLine("  Phase           In game   Acting  Waiting for crews  Saving up  Nothing to do");
+            foreach (var p in phases.Where(p => p.SessionSeconds > 0))
+                o.WriteLine($"  {p.Label,-14}  {MoneyFormat.Duration((long)p.SessionSeconds),8}  {Share(p, Moment.Acting),6}  {Share(p, Moment.WaitingForCrews),17}  {Share(p, Moment.Saving),9}  {Share(p, Moment.NothingToDo),13}");
+            o.WriteLine($"  Longest stretch with nothing to do: {MoneyFormat.Duration(longestIdle)}");
+            o.WriteLine($"  Activities available besides building: 0 (mini-games, squad and league are not built yet)");
 
-            if (printDaily)
+            o.WriteLine();
+            o.WriteLine("  Stadium  Reached                        Opened up");
+            foreach (var kv in stadiumReached)
             {
-                o.WriteLine();
-                o.WriteLine("   Day   CH       Balance      Earned       Spent  Levels");
-                foreach (var row in dailyRows) o.WriteLine(row);
+                var u = game.UnlocksAtStadium(kv.Key);
+                o.WriteLine($"  {kv.Key,7}  {When(kv.Value),-29}  {Describe(u)}");
             }
+            int maxStadium = content.Headquarters.MaxLevel;
+            int reached = stadiumReached.Count == 0 ? 1 : stadiumReached.Keys.Max();
+            if (reached < maxStadium) o.WriteLine($"  {reached + 1,7}  not within {days} days");
 
             o.WriteLine();
-            o.WriteLine($"  Earned in total        {MoneyFormat.Full(produced)}");
-            o.WriteLine($"  Spent on construction  {MoneyFormat.Full(state.Ledger.Lifetime.Expenses.TryGetValue(LedgerCategories.Construction, out var built) ? built : 0)}");
-            o.WriteLine($"  Highest balance        {MoneyFormat.Full(maxBalance)}");
-            o.WriteLine($"  Balance at the end     {MoneyFormat.Full(game.Balance(Currencies.Cash))}");
-            o.WriteLine($"  Waiting on return      median {MoneyFormat.Full(Median(waitingOnReturn))}, largest {MoneyFormat.Full(waitingOnReturn.DefaultIfEmpty(0).Max())}");
-            o.WriteLine($"  Producers full on return  {fullOnReturn.Average():0.0} on average");
-            o.WriteLine($"  Production captured    {efficiency:P0} of what was possible (the rest was lost to full buildings)");
-            o.WriteLine($"  Crews busy             {crewBusyMinutes / Math.Max(1, crewMinutes):P0} of the time");
-            o.WriteLine($"  Building levels        {LevelsOwned(game)} of {content.BuildingOrder.Sum(d => d.MaxLevel * MaxCount(content, d))} possible");
-            o.WriteLine($"  Everything maxed       {(everythingMaxedAt.HasValue ? When(everythingMaxedAt.Value) : "no")}");
+            o.WriteLine($"  Highest balance (Grassroots)  {MoneyFormat.Full(maxBalance)}");
+            o.WriteLine($"  Waiting on return             median {MoneyFormat.Full(Median(waitingOnReturn))}, largest {MoneyFormat.Full(waitingOnReturn.DefaultIfEmpty(0).Max())}");
+        }
 
+        static int Check(ContentDb content, PlayProfile profile, List<Snapshot> snapshots, List<Phase> phases,
+            SortedDictionary<int, long> stadiumReached, long maxBalance, long longestIdle, TextWriter o)
+        {
             int warnings = 0;
             void Warn(string message) { o.WriteLine($"  WARN {message}"); warnings++; }
+            Snapshot At(string label) => snapshots.FirstOrDefault(s => s.Label == label);
+            double DayOf(int level) => stadiumReached.TryGetValue(level, out var at) ? (at - Midnight) / 86400.0 : double.PositiveInfinity;
+
+            var first30 = At("30 minutes in");
+            if (first30 != null && first30.Upgrades < Thresholds.MinUpgradesFirst30Minutes)
+                Warn($"only {first30.Upgrades} upgrades in the first 30 minutes; target is at least {Thresholds.MinUpgradesFirst30Minutes}");
+            if (stadiumReached.TryGetValue(2, out var s2) && (s2 - Install) / 60.0 > Thresholds.MaxMinutesToStadium2)
+                Warn($"Stadium 2 took {(s2 - Install) / 60.0:0} minutes; target is within {Thresholds.MaxMinutesToStadium2}");
+
+            foreach (var p in phases.Where(p => p.SessionSeconds > 0))
+            {
+                double nothing = p.Seconds[Moment.NothingToDo] / p.SessionSeconds;
+                if (nothing > Thresholds.MaxNothingToDoShare)
+                    Warn($"{p.Label}: nothing at all to do for {nothing:P0} of the time in game; target is under {Thresholds.MaxNothingToDoShare:P0}");
+            }
+            var firstSession = phases[0];
+            if (firstSession.SessionSeconds > 0)
+            {
+                double waiting = firstSession.Seconds[Moment.WaitingForCrews] / firstSession.SessionSeconds;
+                if (waiting > Thresholds.MaxWaitingShareFirstSession)
+                    Warn($"first session: waiting for crews {waiting:P0} of the time; target is under {Thresholds.MaxWaitingShareFirstSession:P0}");
+            }
+
             if (maxBalance > Thresholds.MaxGrassrootsBalance)
-                Warn($"balance reached {MoneyFormat.Full(maxBalance)}, above the grassroots ceiling of {MoneyFormat.Full(Thresholds.MaxGrassrootsBalance)}");
-            if (profile == PlayProfile.Engaged && clubhouseReached.TryGetValue(maxHq, out var maxAt) &&
-                (maxAt - Start) / 86400.0 < Thresholds.MinDaysToMaxClubhouse)
-                Warn($"an engaged player reached Clubhouse {maxHq} in {(maxAt - Start) / 86400.0:0.0} days; target is at least {Thresholds.MinDaysToMaxClubhouse}");
-            if (profile == PlayProfile.Engaged && efficiency < Thresholds.MinEngagedEfficiency)
-                Warn($"an engaged player captured only {efficiency:P0} of possible production; buildings fill up too fast");
-            if (everythingMaxedAt.HasValue)
-                Warn($"all content was finished on {When(everythingMaxedAt.Value)}");
+                Warn($"balance reached {MoneyFormat.Full(maxBalance)} during Grassroots; ceiling is {MoneyFormat.Full(Thresholds.MaxGrassrootsBalance)}");
+
+            if (profile == PlayProfile.Active)
+            {
+                if (DayOf(5) < Thresholds.ActiveStadium5Days.min)
+                    Warn($"an active player reached Stadium 5 on day {DayOf(5) + 1:0.0}; target is no sooner than day {Thresholds.ActiveStadium5Days.min + 1}");
+                if (DayOf(5) > Thresholds.ActiveStadium5Days.max)
+                    Warn($"an active player had not reached Stadium 5 by day {Thresholds.ActiveStadium5Days.max + 1}");
+            }
+
+            // Early days should move faster than the ones after.
+            var d3 = At("end of day 3");
+            var d7 = At("end of day 7");
+            var d1 = At("end of day 1");
+            if (d1 != null && d3 != null && d7 != null && d7.SessionMinutes > d3.SessionMinutes)
+            {
+                double early = d3.Upgrades / Math.Max(1, d3.SessionMinutes / 60);
+                double later = (d7.Upgrades - d3.Upgrades) / Math.Max(1, (d7.SessionMinutes - d3.SessionMinutes) / 60);
+                o.WriteLine($"  Upgrades per hour played: {early:0} in days 1-3, {later:0} in days 4-7");
+                if (early <= later) Warn("days 1-3 were not faster than days 4-7");
+            }
             return warnings;
         }
 
-        static bool AllMaxed(Game game) =>
-            game.Content.BuildingOrder.All(d => game.Buildings.Count(b => b.Def == d.Id && b.Level >= d.MaxLevel) >= MaxCount(game.Content, d));
+        static string Share(Phase p, Moment m) => $"{p.Seconds[m] / p.SessionSeconds:P0}";
 
-        static int MaxCount(ContentDb content, BuildingDef d) => d.Limits.Max(l => l.Count);
+        static string Describe(Core.Systems.StadiumUnlocks u)
+        {
+            var parts = new List<string>();
+            if (u.NewBuildings.Count > 0) parts.Add("new: " + string.Join(", ", u.NewBuildings.Select(n => n.def.Name)));
+            foreach (var e in u.ExtraInstances) parts.Add($"{Ordinal(e.to)} {e.def.Name}");
+            if (u.ExtraCrews > 0) parts.Add($"+{u.ExtraCrews} crew");
+            parts.Add($"{u.NewUpgradeLevels} new upgrade levels");
+            return string.Join("; ", parts);
+        }
 
-        static int LevelsOwned(Game game) => game.Buildings.Sum(b => b.Level);
+        static string Ordinal(int n) => n == 2 ? "2nd" : n == 3 ? "3rd" : $"{n}th";
 
         static string When(long at)
         {
-            long s = at - Start;
-            return $"day {s / 86400 + 1}, {s % 86400 / 3600:00}:{s % 3600 / 60:00}  ({MoneyFormat.Duration(s)} in)";
+            long s = at - Midnight;
+            long sinceInstall = at - Install;
+            return $"day {s / 86400 + 1}, {s % 86400 / 3600:00}:{s % 3600 / 60:00} ({MoneyFormat.Duration(sinceInstall)} in)";
         }
 
         static long Median(List<long> values)

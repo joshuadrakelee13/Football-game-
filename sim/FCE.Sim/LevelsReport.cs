@@ -19,8 +19,8 @@ namespace FCE.Sim
                 o.WriteLine($"{def.Name} ({def.Id}, {def.Department}, max level {def.MaxLevel})");
                 bool producer = def.Producer != null;
                 o.WriteLine(producer
-                    ? "  Lvl  Cost        Build     CH  Takings          Per hour    Step   Holds      Fills in  Payback"
-                    : "  Lvl  Cost        Build     CH  Gives");
+                    ? "  Lvl  Cost        Build     St  Takings          Per hour    Step   Holds      Fills in  Payback"
+                    : "  Lvl  Cost        Build     St  Gives");
 
                 BuildingLevel previous = null;
                 for (int level = 1; level <= def.MaxLevel; level++)

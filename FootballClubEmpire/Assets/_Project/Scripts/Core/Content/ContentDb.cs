@@ -62,14 +62,34 @@ namespace FCE.Core.Content
             return table[level - 1];
         }
 
-        /// <summary>How many of a building the club may own at a given Clubhouse level.</summary>
-        public int AllowedCount(string buildingId, int clubhouseLevel)
+        /// <summary>How many of a building the club may own at a given Stadium level.</summary>
+        public int AllowedCount(string buildingId, int stadiumLevel)
         {
             var def = GetBuilding(buildingId);
             int allowed = 0;
             foreach (var limit in def.Limits)
-                if (limit.ClubhouseLevel <= clubhouseLevel) allowed = limit.Count;
+                if (limit.StadiumLevel <= stadiumLevel) allowed = limit.Count;
             return allowed;
+        }
+
+        /// <summary>How far a building may be upgraded at a given Stadium level (0 if it is not available yet).</summary>
+        public int MaxLevelAt(string buildingId, int stadiumLevel)
+        {
+            var def = GetBuilding(buildingId);
+            if (def.IsHeadquarters) return def.MaxLevel;
+            int cap = 0;
+            foreach (var c in def.LevelCaps)
+                if (c.StadiumLevel <= stadiumLevel) cap = c.MaxLevel;
+            return Math.Min(cap, def.MaxLevel);
+        }
+
+        /// <summary>The named chapter of the game a Stadium level belongs to, or null if none are defined.</summary>
+        public ChapterDef ChapterAt(int stadiumLevel)
+        {
+            ChapterDef chapter = null;
+            foreach (var c in Economy.Chapters)
+                if (c.FromLevel <= stadiumLevel) chapter = c;
+            return chapter;
         }
 
         static BuildingLevel[] Precompute(BuildingDef def)
@@ -88,7 +108,7 @@ namespace FCE.Core.Content
                     level,
                     def.Cost.Evaluate(level),
                     def.BuildSeconds.Evaluate(level),
-                    def.IsHeadquarters || def.RequiredClubhouse == null ? 0 : def.RequiredClubhouse[level - 1],
+                    RequiredStadium(def, level),
                     requirements,
                     stats,
                     def.Producer?.AmountPerCycle.Evaluate(level) ?? 0,
@@ -97,19 +117,28 @@ namespace FCE.Core.Content
             }
             return table;
         }
+
+        /// <summary>The lowest Stadium level whose cap allows this level, or int.MaxValue if none does yet.</summary>
+        internal static int RequiredStadium(BuildingDef def, int level)
+        {
+            if (def.IsHeadquarters) return 0;
+            foreach (var c in def.LevelCaps)
+                if (c.MaxLevel >= level) return c.StadiumLevel;
+            return int.MaxValue;
+        }
     }
 
     /// <summary>One precomputed level of a building.</summary>
     public sealed class BuildingLevel
     {
-        public BuildingLevel(int level, long cost, long buildSeconds, int requiredClubhouse,
+        public BuildingLevel(int level, long cost, long buildSeconds, int requiredStadium,
             IReadOnlyList<LevelRequirement> requirements, IReadOnlyDictionary<string, long> stats,
             long amountPerCycle, long cycleSeconds, long capacity)
         {
             Level = level;
             Cost = cost;
             BuildSeconds = buildSeconds;
-            RequiredClubhouse = requiredClubhouse;
+            RequiredStadium = requiredStadium;
             Requirements = requirements;
             Stats = stats;
             AmountPerCycle = amountPerCycle;
@@ -120,7 +149,11 @@ namespace FCE.Core.Content
         public int Level { get; }
         public long Cost { get; }
         public long BuildSeconds { get; }
-        public int RequiredClubhouse { get; }
+        /// <summary>The Stadium level that opens this level (0 for the Stadium itself; int.MaxValue if no Stadium level does yet).</summary>
+        public int RequiredStadium { get; }
+
+        /// <summary>Instant levels complete the moment they are bought and need no construction crew.</summary>
+        public bool IsInstant => BuildSeconds <= 0;
         public IReadOnlyList<LevelRequirement> Requirements { get; }
         public IReadOnlyDictionary<string, long> Stats { get; }
         /// <summary>Producers: takings per cycle (0 for buildings that do not produce).</summary>

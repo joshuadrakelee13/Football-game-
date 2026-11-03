@@ -5,8 +5,9 @@ using FCE.Core.Economy;
 namespace FCE.Core.Content
 {
     /// <summary>
-    /// Checks authored content for mistakes that would otherwise surface as a broken game:
-    /// dangling references, curves of the wrong length, levels that can never be reached, overlapping start buildings.
+    /// Checks authored content for mistakes that would otherwise surface as a broken game: dangling references,
+    /// curves that do not cover every level, building levels no Stadium level ever opens, requirements that can
+    /// never be met, prices above the economy ceiling, overlapping start buildings.
     /// Runs on every load, in the headless tests and from the Unity editor menu.
     /// </summary>
     public static class ContentValidator
@@ -20,7 +21,7 @@ namespace FCE.Core.Content
             var errors = new List<string>();
             var currencyIds = Ids(currencies.Select(c => c.Id), "currency", errors);
             var statIds = Ids(stats.Select(s => s.Id), "stat", errors);
-            var buildingIds = Ids(buildings.Select(b => b.Id), "building", errors);
+            Ids(buildings.Select(b => b.Id), "building", errors);
             var byId = buildings.Where(b => !string.IsNullOrEmpty(b.Id)).GroupBy(b => b.Id).ToDictionary(g => g.Key, g => g.First());
 
             if (!currencyIds.Contains(Currencies.Cash)) errors.Add($"Currency '{Currencies.Cash}' must be defined.");
@@ -29,10 +30,11 @@ namespace FCE.Core.Content
             var hqs = buildings.Where(b => b.IsHeadquarters).ToList();
             if (hqs.Count != 1) errors.Add($"Exactly one building must be the headquarters (found {hqs.Count}).");
             var hq = hqs.Count == 1 ? hqs[0] : null;
+            int maxStadium = hq?.MaxLevel ?? 1;
 
-            foreach (var b in buildings) ValidateBuilding(b, hq, byId, currencyIds, statIds, economy, errors);
-            if (hq != null) ValidateHeadquartersProgression(hq, byId, errors);
-            ValidateEconomy(economy, byId, currencyIds, errors);
+            foreach (var b in buildings) ValidateBuilding(b, maxStadium, currencyIds, statIds, economy, errors);
+            foreach (var b in buildings) ValidateRequirements(b, byId, errors);
+            ValidateEconomy(economy, byId, hq, currencyIds, errors);
             return errors;
         }
 
@@ -47,8 +49,8 @@ namespace FCE.Core.Content
             return set;
         }
 
-        static void ValidateBuilding(BuildingDef b, BuildingDef hq, Dictionary<string, BuildingDef> byId,
-            HashSet<string> currencyIds, HashSet<string> statIds, EconomyDef economy, List<string> errors)
+        static void ValidateBuilding(BuildingDef b, int maxStadium, HashSet<string> currencyIds, HashSet<string> statIds,
+            EconomyDef economy, List<string> errors)
         {
             string where = $"Building '{b.Id}'";
             if (string.IsNullOrWhiteSpace(b.Name)) errors.Add($"{where} has no name.");
@@ -58,64 +60,43 @@ namespace FCE.Core.Content
                 errors.Add($"{where} is larger than the site.");
             if (!currencyIds.Contains(b.CostCurrency ?? "")) errors.Add($"{where} costs unknown currency '{b.CostCurrency}'.");
 
-            CheckCurve(b.Cost, b.MaxLevel, $"{where} cost", errors, allowZero: true, nonDecreasing: true);
-            CheckCurve(b.BuildSeconds, b.MaxLevel, $"{where} buildSeconds", errors, allowZero: true, nonDecreasing: false);
+            // Building a new one may cost more than its first upgrade, so prices only need to rise from level 2.
+            CheckCurve(b.Cost, b.MaxLevel, $"{where} cost", errors, allowZero: true, nonDecreasingFrom: 2);
+            CheckCurve(b.BuildSeconds, b.MaxLevel, $"{where} buildSeconds", errors, allowZero: true, nonDecreasingFrom: 0);
 
             if (b.IsHeadquarters)
             {
-                if (b.RequiredClubhouse != null) errors.Add($"{where} is the headquarters and cannot require a Clubhouse level.");
-            }
-            else if (b.RequiredClubhouse == null || b.RequiredClubhouse.Length != b.MaxLevel)
-            {
-                errors.Add($"{where} needs requiredClubhouse with exactly {b.MaxLevel} entries.");
+                if (b.LevelCaps != null && b.LevelCaps.Count > 0) errors.Add($"{where} is the headquarters; it has no level caps.");
+                if (b.Limits == null || b.Limits.Count != 1 || b.Limits[0].Count != 1 || b.Limits[0].StadiumLevel != 1)
+                    errors.Add($"{where}: the club has exactly one headquarters from the start.");
             }
             else
             {
-                for (int i = 0; i < b.RequiredClubhouse.Length; i++)
+                ValidateSteps(b.LevelCaps?.Select(c => (c.StadiumLevel, c.MaxLevel)).ToList(), "levelCaps", where, maxStadium, errors);
+                ValidateSteps(b.Limits?.Select(c => (c.StadiumLevel, c.Count)).ToList(), "limits", where, maxStadium, errors);
+                if (b.LevelCaps != null && b.LevelCaps.Count > 0)
                 {
-                    int r = b.RequiredClubhouse[i];
-                    if (r < 1) errors.Add($"{where} level {i + 1} requires Clubhouse level {r}; minimum is 1.");
-                    if (hq != null && r > hq.MaxLevel) errors.Add($"{where} level {i + 1} requires Clubhouse {r}, above its max {hq.MaxLevel}.");
-                    if (i > 0 && r < b.RequiredClubhouse[i - 1]) errors.Add($"{where} requiredClubhouse must not decrease (level {i + 1}).");
+                    var last = b.LevelCaps[b.LevelCaps.Count - 1].MaxLevel;
+                    if (last > b.MaxLevel) errors.Add($"{where} caps level {last} but only has {b.MaxLevel} levels.");
+                    if (last < b.MaxLevel) errors.Add($"{where} levels {last + 1}-{b.MaxLevel} are never opened by any Stadium level.");
+                    if (b.Limits != null && b.Limits.Count > 0 && b.Limits[0].StadiumLevel != b.LevelCaps[0].StadiumLevel)
+                        errors.Add($"{where} becomes available at Stadium {b.Limits[0].StadiumLevel} but its first level cap is at Stadium {b.LevelCaps[0].StadiumLevel}; make them agree.");
                 }
-            }
-
-            foreach (var req in b.LevelRequirements ?? new List<LevelRequirement>())
-            {
-                if (req.AtLevel < 1 || req.AtLevel > b.MaxLevel) errors.Add($"{where} has a requirement at invalid level {req.AtLevel}.");
-                if (req.Building == b.Id) errors.Add($"{where} cannot require itself.");
-                if (!byId.TryGetValue(req.Building ?? "", out var other)) { errors.Add($"{where} requires unknown building '{req.Building}'."); continue; }
-                if (req.Level < 1 || req.Level > other.MaxLevel) errors.Add($"{where} requires {req.Building} level {req.Level}, which does not exist.");
-                if (other.IsHeadquarters) errors.Add($"{where}: use requiredClubhouse, not levelRequirements, for the Clubhouse.");
-            }
-
-            if (b.Limits == null || b.Limits.Count == 0) errors.Add($"{where} has no count limits, so it can never be built.");
-            else
-            {
-                for (int i = 0; i < b.Limits.Count; i++)
-                {
-                    if (b.Limits[i].Count < 1) errors.Add($"{where} limit {i} has count < 1.");
-                    if (i > 0 && b.Limits[i].ClubhouseLevel <= b.Limits[i - 1].ClubhouseLevel) errors.Add($"{where} limits must be sorted by clubhouseLevel.");
-                    if (i > 0 && b.Limits[i].Count <= b.Limits[i - 1].Count) errors.Add($"{where} limits must increase the count.");
-                }
-                if (b.IsHeadquarters && (b.Limits.Count != 1 || b.Limits[0].Count != 1)) errors.Add($"{where}: the club has exactly one headquarters.");
-                if (!b.IsHeadquarters && b.RequiredClubhouse != null && b.RequiredClubhouse.Length > 0 && b.Limits[0].ClubhouseLevel > b.RequiredClubhouse[0])
-                    errors.Add($"{where} level 1 needs Clubhouse {b.RequiredClubhouse[0]} but cannot be owned until Clubhouse {b.Limits[0].ClubhouseLevel}; make them agree.");
             }
 
             foreach (var grant in b.Stats ?? new List<StatGrant>())
             {
                 if (!statIds.Contains(grant.Stat ?? "")) errors.Add($"{where} grants unknown stat '{grant.Stat}'.");
-                CheckCurve(grant.Value, b.MaxLevel, $"{where} stat '{grant.Stat}'", errors, allowZero: true, nonDecreasing: true);
+                CheckCurve(grant.Value, b.MaxLevel, $"{where} stat '{grant.Stat}'", errors, allowZero: true, nonDecreasingFrom: 1);
             }
             if (b.Stats != null && b.Stats.GroupBy(s => s.Stat).Any(g => g.Count() > 1)) errors.Add($"{where} grants the same stat twice.");
 
             if (b.Producer != null)
             {
                 if (!currencyIds.Contains(b.Producer.Currency ?? "")) errors.Add($"{where} produces unknown currency '{b.Producer.Currency}'.");
-                CheckCurve(b.Producer.AmountPerCycle, b.MaxLevel, $"{where} amountPerCycle", errors, allowZero: false, nonDecreasing: true);
-                CheckCurve(b.Producer.CycleSeconds, b.MaxLevel, $"{where} cycleSeconds", errors, allowZero: false, nonDecreasing: false);
-                CheckCurve(b.Producer.Capacity, b.MaxLevel, $"{where} capacity", errors, allowZero: false, nonDecreasing: true);
+                CheckCurve(b.Producer.AmountPerCycle, b.MaxLevel, $"{where} amountPerCycle", errors, allowZero: false, nonDecreasingFrom: 1);
+                CheckCurve(b.Producer.CycleSeconds, b.MaxLevel, $"{where} cycleSeconds", errors, allowZero: false, nonDecreasingFrom: 0);
+                CheckCurve(b.Producer.Capacity, b.MaxLevel, $"{where} capacity", errors, allowZero: false, nonDecreasingFrom: 1);
                 if (b.Producer.AmountPerCycle != null && b.Producer.Capacity != null)
                     for (int level = 1; level <= b.MaxLevel; level++)
                         if (SafeEval(b.Producer.Capacity, level) < SafeEval(b.Producer.AmountPerCycle, level))
@@ -123,34 +104,53 @@ namespace FCE.Core.Content
             }
         }
 
-        /// <summary>
-        /// Clubhouse level N may require other buildings, but only ones that can be built and levelled
-        /// with Clubhouse N-1, otherwise the club is stuck forever.
-        /// </summary>
-        static void ValidateHeadquartersProgression(BuildingDef hq, Dictionary<string, BuildingDef> byId, List<string> errors)
+        /// <summary>A step table keyed by Stadium level: sorted, values rising, within the Stadium's range.</summary>
+        static void ValidateSteps(List<(int stadium, int value)> steps, string name, string where, int maxStadium, List<string> errors)
         {
-            foreach (var req in hq.LevelRequirements ?? new List<LevelRequirement>())
+            if (steps == null || steps.Count == 0) { errors.Add($"{where} has no {name}, so it can never be built."); return; }
+            for (int i = 0; i < steps.Count; i++)
             {
-                if (!byId.TryGetValue(req.Building ?? "", out var other) || other.RequiredClubhouse == null) continue;
-                if (req.Level < 1 || req.Level > other.RequiredClubhouse.Length) continue;
-                int available = req.AtLevel - 1;
-                int needed = other.RequiredClubhouse[req.Level - 1];
-                if (needed > available)
-                    errors.Add($"Clubhouse level {req.AtLevel} requires {other.Id} level {req.Level}, which itself needs Clubhouse {needed}. Unreachable.");
-                if (other.Limits != null && other.Limits.Count > 0 && other.Limits[0].ClubhouseLevel > available)
-                    errors.Add($"Clubhouse level {req.AtLevel} requires {other.Id}, which cannot be owned until Clubhouse {other.Limits[0].ClubhouseLevel}. Unreachable.");
+                if (steps[i].stadium < 1 || steps[i].stadium > maxStadium) errors.Add($"{where} {name} refers to Stadium level {steps[i].stadium}, which does not exist.");
+                if (steps[i].value < 1) errors.Add($"{where} {name} entry {i} must be at least 1.");
+                if (i > 0 && steps[i].stadium <= steps[i - 1].stadium) errors.Add($"{where} {name} must be sorted by Stadium level.");
+                if (i > 0 && steps[i].value <= steps[i - 1].value) errors.Add($"{where} {name} must increase at every step.");
             }
         }
 
-        static void ValidateEconomy(EconomyDef e, Dictionary<string, BuildingDef> byId, HashSet<string> currencyIds, List<string> errors)
+        /// <summary>
+        /// Every "building X at level Y" requirement must be satisfiable by the time the level that needs it opens;
+        /// otherwise the club is stuck forever. For the Stadium, level N's requirements must be reachable at N-1.
+        /// </summary>
+        static void ValidateRequirements(BuildingDef b, Dictionary<string, BuildingDef> byId, List<string> errors)
+        {
+            string where = $"Building '{b.Id}'";
+            foreach (var req in b.LevelRequirements ?? new List<LevelRequirement>())
+            {
+                if (req.AtLevel < 1 || req.AtLevel > b.MaxLevel) { errors.Add($"{where} has a requirement at invalid level {req.AtLevel}."); continue; }
+                if (req.Building == b.Id) { errors.Add($"{where} cannot require itself."); continue; }
+                if (!byId.TryGetValue(req.Building ?? "", out var other)) { errors.Add($"{where} requires unknown building '{req.Building}'."); continue; }
+                if (other.IsHeadquarters) { errors.Add($"{where}: Stadium levels gate buildings through levelCaps, not levelRequirements."); continue; }
+                if (req.Level < 1 || req.Level > other.MaxLevel) { errors.Add($"{where} requires {req.Building} level {req.Level}, which does not exist."); continue; }
+
+                int availableStadium = b.IsHeadquarters ? req.AtLevel - 1 : ContentDb.RequiredStadium(b, req.AtLevel);
+                int needed = ContentDb.RequiredStadium(other, req.Level);
+                if (needed > availableStadium)
+                    errors.Add($"{where} level {req.AtLevel} requires {other.Id} level {req.Level}, which needs Stadium {(needed == int.MaxValue ? "(never)" : needed.ToString())}. Unreachable.");
+            }
+        }
+
+        static void ValidateEconomy(EconomyDef e, Dictionary<string, BuildingDef> byId, BuildingDef hq, HashSet<string> currencyIds, List<string> errors)
         {
             if (e == null) { errors.Add("Economy is missing."); return; }
+            int maxStadium = hq?.MaxLevel ?? 1;
+
             foreach (var kv in e.StartingWallet)
             {
                 if (!currencyIds.Contains(kv.Key)) errors.Add($"Starting wallet has unknown currency '{kv.Key}'.");
                 if (kv.Value < 0 || kv.Value > Money.MaxBalance) errors.Add($"Starting wallet {kv.Key} must be between 0 and the economy ceiling.");
             }
 
+            // Ledger categories.
             var categoryKinds = new Dictionary<string, string>();
             foreach (var c in e.LedgerCategories ?? new List<LedgerCategoryDef>())
             {
@@ -161,6 +161,7 @@ namespace FCE.Core.Content
             }
             RequireCategory(categoryKinds, LedgerCategories.Construction, "expense", errors);
             RequireCategory(categoryKinds, LedgerCategories.Refunds, "income", errors);
+            if (e.StadiumRewards.Count > 0) RequireCategory(categoryKinds, LedgerCategories.Rewards, "income", errors);
             foreach (var b in byId.Values)
                 if (b.Producer != null)
                 {
@@ -170,40 +171,66 @@ namespace FCE.Core.Content
                         errors.Add($"Building '{b.Id}' produces under '{b.Producer.IncomeCategory}', which is not an income category.");
                 }
 
+            // Speed-ups and refunds.
             if (e.SpeedUpCost == null || e.SpeedUpCost.Count < 2) errors.Add("speedUpCost needs at least two points.");
             else
                 for (int i = 1; i < e.SpeedUpCost.Count; i++)
                     if (e.SpeedUpCost[i].Seconds <= e.SpeedUpCost[i - 1].Seconds || e.SpeedUpCost[i].Cost < e.SpeedUpCost[i - 1].Cost)
                         errors.Add("speedUpCost points must increase in seconds and not decrease in cost.");
-
             if (e.CancelRefundPercent < 0 || e.CancelRefundPercent > 100) errors.Add("cancelRefundPercent must be 0..100.");
             if (e.FreeFinishSeconds < 0) errors.Add("freeFinishSeconds must not be negative.");
 
+            // Chapters and rewards.
+            for (int i = 0; i < e.Chapters.Count; i++)
+            {
+                var c = e.Chapters[i];
+                if (string.IsNullOrWhiteSpace(c.Name)) errors.Add($"Chapter {i} has no name.");
+                if (i == 0 && c.FromLevel != 1) errors.Add("The first chapter must start at Stadium level 1.");
+                if (i > 0 && c.FromLevel <= e.Chapters[i - 1].FromLevel) errors.Add("Chapters must be sorted by fromLevel.");
+                if (c.FromLevel > maxStadium) errors.Add($"Chapter '{c.Name}' starts beyond the Stadium's max level.");
+            }
+            foreach (var r in e.StadiumRewards)
+            {
+                if (r.Level < 2 || r.Level > maxStadium) errors.Add($"Stadium reward at level {r.Level} can never be earned.");
+                foreach (var kv in r.Currencies)
+                {
+                    if (!currencyIds.Contains(kv.Key)) errors.Add($"Stadium reward at level {r.Level} pays unknown currency '{kv.Key}'.");
+                    if (kv.Value <= 0 || kv.Value > Money.MaxBalance) errors.Add($"Stadium reward at level {r.Level} must pay a positive amount within the ceiling.");
+                }
+            }
+            if (e.StadiumRewards.GroupBy(r => r.Level).Any(g => g.Count() > 1)) errors.Add("Each Stadium level may have only one reward entry.");
+
+            // The site and the land that opens up.
             var site = e.Site;
-            if (site == null || site.BuildableArea == null) { errors.Add("Site and buildableArea are required."); return; }
-            if (!new RectDef { X = 0, Y = 0, Width = site.Width, Height = site.Height }
-                    .Contains(site.BuildableArea.X, site.BuildableArea.Y, site.BuildableArea.Width, site.BuildableArea.Height))
-                errors.Add("buildableArea must lie within the site.");
+            if (site == null || site.Areas == null || site.Areas.Count == 0) { errors.Add("The site needs at least one buildable area."); return; }
+            var whole = new RectDef { X = 0, Y = 0, Width = site.Width, Height = site.Height };
+            for (int i = 0; i < site.Areas.Count; i++)
+            {
+                var a = site.Areas[i];
+                if (a.Area == null) { errors.Add($"Site area {i} has no rectangle."); return; }
+                if (i == 0 && a.StadiumLevel != 1) errors.Add("The first site area must be for Stadium level 1.");
+                if (i > 0 && a.StadiumLevel <= site.Areas[i - 1].StadiumLevel) errors.Add("Site areas must be sorted by Stadium level.");
+                if (a.StadiumLevel > maxStadium) errors.Add($"Site area for Stadium {a.StadiumLevel} can never open.");
+                if (!whole.Contains(a.Area)) errors.Add($"Site area for Stadium {a.StadiumLevel} lies outside the site.");
+                if (i > 0 && site.Areas[i - 1].Area != null && !a.Area.Contains(site.Areas[i - 1].Area))
+                    errors.Add($"Site area for Stadium {a.StadiumLevel} must contain the area before it; land is never taken away.");
+            }
 
             bool hasHq = false;
             var occupied = new HashSet<(int, int)>();
+            var startArea = site.AreaAt(1);
             foreach (var sb in e.StartingBuildings)
             {
                 if (!byId.TryGetValue(sb.Building ?? "", out var def)) { errors.Add($"Starting building '{sb.Building}' is unknown."); continue; }
                 if (def.IsHeadquarters) hasHq = true;
                 if (sb.Level < 1 || sb.Level > def.MaxLevel) errors.Add($"Starting building '{sb.Building}' has invalid level {sb.Level}.");
-                if (!site.BuildableArea.Contains(sb.X, sb.Y, def.FootprintWidth, def.FootprintHeight))
-                    errors.Add($"Starting building '{sb.Building}' is outside the buildable area.");
+                if (!startArea.Contains(sb.X, sb.Y, def.FootprintWidth, def.FootprintHeight))
+                    errors.Add($"Starting building '{sb.Building}' is outside the starting buildable area.");
                 for (int x = sb.X; x < sb.X + def.FootprintWidth; x++)
                     for (int y = sb.Y; y < sb.Y + def.FootprintHeight; y++)
                         if (!occupied.Add((x, y))) errors.Add($"Starting building '{sb.Building}' overlaps another at ({x},{y}).");
             }
             if (!hasHq) errors.Add("The club must start with its headquarters.");
-        }
-
-        static long SafeEval(Curve c, int level)
-        {
-            try { return c.Evaluate(level); } catch (System.ArgumentOutOfRangeException) { return 0; }
         }
 
         static void RequireCategory(Dictionary<string, string> kinds, string id, string kind, List<string> errors)
@@ -212,15 +239,22 @@ namespace FCE.Core.Content
             else if (actual != kind) errors.Add($"Ledger category '{id}' must be {kind}.");
         }
 
-        static void CheckCurve(Curve curve, int maxLevel, string what, List<string> errors, bool allowZero, bool nonDecreasing)
+        static long SafeEval(Curve c, int level)
+        {
+            try { return c.Evaluate(level); } catch (System.ArgumentOutOfRangeException) { return 0; }
+        }
+
+        /// <param name="nonDecreasingFrom">The first level from which values must never fall; 0 for no check.</param>
+        static void CheckCurve(Curve curve, int maxLevel, string what, List<string> errors, bool allowZero, int nonDecreasingFrom)
         {
             if (curve == null) { errors.Add($"{what} is missing."); return; }
-            if (curve.IsExplicit && curve.Values.Length != maxLevel)
+            if (curve.ExplicitCount > maxLevel) { errors.Add($"{what} lists {curve.ExplicitCount} values but there are only {maxLevel} levels."); return; }
+            if (curve.ExplicitCount < maxLevel && !curve.HasFormula)
             {
-                errors.Add($"{what} lists {curve.Values.Length} values but there are {maxLevel} levels.");
+                errors.Add($"{what} lists {curve.ExplicitCount} values but there are {maxLevel} levels, and no formula continues it.");
                 return;
             }
-            if (!curve.IsExplicit && curve.Growth <= 0) { errors.Add($"{what} growth must be positive."); return; }
+            if (curve.HasFormula && curve.Growth <= 0) { errors.Add($"{what} growth must be positive."); return; }
 
             long previous = long.MinValue;
             for (int level = 1; level <= maxLevel; level++)
@@ -228,7 +262,7 @@ namespace FCE.Core.Content
                 long v = curve.Evaluate(level);
                 if (v < 0 || (!allowZero && v == 0)) { errors.Add($"{what} level {level} is {v}."); return; }
                 if (v > Money.MaxBalance) { errors.Add($"{what} level {level} is {v}, above the £999bn economy ceiling."); return; }
-                if (nonDecreasing && v < previous) { errors.Add($"{what} decreases at level {level}."); return; }
+                if (nonDecreasingFrom > 0 && level > nonDecreasingFrom && v < previous) { errors.Add($"{what} decreases at level {level}."); return; }
                 previous = v;
             }
         }

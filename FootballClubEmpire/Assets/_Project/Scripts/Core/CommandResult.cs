@@ -24,7 +24,8 @@ namespace FCE.Core
         public const string AlreadyUnderConstruction = "already_under_construction";
         public const string NotUnderConstruction = "not_under_construction";
         public const string MaxLevel = "max_level";
-        public const string ClubhouseTooLow = "clubhouse_too_low";
+        /// <summary>This building, this level of it, or another one of it, needs a higher Stadium level.</summary>
+        public const string StadiumTooLow = "stadium_too_low";
         public const string RequirementNotMet = "requirement_not_met";
         public const string LimitReached = "limit_reached";
         public const string NoFreeCrew = "no_free_crew";

@@ -1,36 +1,35 @@
 {
   "buildings": [
     {
-      "id": "pitch",
-      "name": "Pitch",
-      "description": "Where it all happens. Drainage, turf and markings improve with every level.",
+      "id": "stadium",
+      "name": "Stadium",
+      "description": "The heart of the club and the measure of its ambition. Every Stadium level opens a new stage of the club: new facilities, more of the ones you have, higher limits and more land.",
       "department": "stadium",
-      "footprintWidth": 12,
-      "footprintHeight": 8,
-      "maxLevel": 10,
-      "cost":         { "base": 600, "growth": 1.7, "round": 50 },
-      "buildSeconds": { "base": 30, "growth": 2.2, "round": 5 },
-      "requiredClubhouse": [1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-      "limits": [ { "clubhouseLevel": 1, "count": 1 } ],
+      "isHeadquarters": true,
+      "footprintWidth": 16,
+      "footprintHeight": 12,
+      "maxLevel": 25,
+      "notes": "Levels 2-5 are explicit so the first day moves quickly; from level 6 cost grows 1.5x and build time about 1.19x a level, reaching about £890m and a week at level 25.",
+      "cost": {"values": [0, 1000, 8000, 40000, 150000], "base": 52675, "growth": 1.5, "significant": 2},
+      "buildSeconds": {"values": [0, 60, 600, 2700, 10800], "base": 8981, "growth": 1.1919, "significant": 2},
+      "levelRequirements": [
+        {"atLevel": 3, "building": "training_ground", "level": 5},
+        {"atLevel": 4, "building": "club_shop", "level": 5},
+        {"atLevel": 4, "building": "medical_room", "level": 3},
+        {"atLevel": 5, "building": "youth_pitch", "level": 3}
+      ],
+      "limits": [
+        {"stadiumLevel": 1, "count": 1}
+      ],
       "stats": [
-        { "stat": "pitch_quality", "value": { "values": [25, 30, 35, 40, 46, 52, 58, 64, 70, 76] } }
-      ]
-    },
-    {
-      "id": "main_stand",
-      "name": "Main Stand",
-      "description": "Starts as a few rows of benches under a tin roof. Grows into a proper grandstand.",
-      "department": "stadium",
-      "footprintWidth": 12,
-      "footprintHeight": 2,
-      "maxLevel": 10,
-      "cost":         { "base": 800, "growth": 1.75, "round": 50 },
-      "buildSeconds": { "base": 40, "growth": 2.3, "round": 5 },
-      "requiredClubhouse": [1, 1, 2, 3, 4, 5, 6, 7, 8, 10],
-      "limits": [ { "clubhouseLevel": 1, "count": 1 } ],
-      "stats": [
-        { "stat": "stadium_capacity", "value": { "values": [150, 250, 400, 600, 850, 1150, 1500, 1900, 2400, 3000] } },
-        { "stat": "seated_capacity",  "value": { "values": [50, 100, 180, 280, 400, 550, 720, 900, 1100, 1350] } }
+        {
+          "stat": "construction_crews",
+          "value": {"values": [1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6]}
+        },
+        {"stat": "stadium_capacity", "value": {"base": 250, "growth": 1.27, "significant": 2}},
+        {"stat": "seated_capacity", "value": {"base": 50, "growth": 1.33, "significant": 2}},
+        {"stat": "pitch_quality", "value": {"base": 20, "add": 2.5}},
+        {"stat": "reputation", "value": {"base": 5, "growth": 1.2, "significant": 2}}
       ]
     }
   ]

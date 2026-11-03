@@ -30,7 +30,8 @@ namespace FCE.Core.Systems
 
         public BuildingState FindBuilding(int id) => State.Buildings.FirstOrDefault(b => b.Id == id);
 
-        public int ClubhouseLevel
+        /// <summary>The Stadium's completed level: the club's progression tier.</summary>
+        public int StadiumLevel
         {
             get
             {

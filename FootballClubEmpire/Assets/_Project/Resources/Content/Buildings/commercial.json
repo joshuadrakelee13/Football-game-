@@ -3,72 +3,110 @@
     {
       "id": "drinks_stand",
       "name": "Drinks Stand",
-      "description": "Tea, coffee and cold drinks from a hatch. Small, quick takings that need collecting often.",
+      "description": "Tea, coffee and cold drinks from a hatch. Quick takings that need collecting often.",
       "department": "commercial",
       "footprintWidth": 2,
       "footprintHeight": 2,
-      "maxLevel": 10,
-      "cost":         { "base": 100, "growth": 1.5, "round": 25 },
-      "buildSeconds": { "base": 10, "growth": 2.0, "round": 5 },
-      "requiredClubhouse": [1, 1, 2, 2, 3, 4, 5, 6, 7, 8],
+      "maxLevel": 30,
+      "notes": "Upgrade cost = income gained x a payback period that starts at 1 minute and grows 1.265x a level (about 12-24 hours of production by level 30). Holds 15 minutes of takings.",
+      "cost": {"values": [25], "base": 9.5, "growth": 1.265, "significant": 2},
+      "buildSeconds": {"values": [0, 0, 0, 0, 3], "base": 2.18, "growth": 1.4, "significant": 2},
+      "levelCaps": [
+        {"stadiumLevel": 1, "maxLevel": 10},
+        {"stadiumLevel": 2, "maxLevel": 12},
+        {"stadiumLevel": 3, "maxLevel": 15},
+        {"stadiumLevel": 4, "maxLevel": 18},
+        {"stadiumLevel": 5, "maxLevel": 20},
+        {"stadiumLevel": 6, "maxLevel": 22},
+        {"stadiumLevel": 7, "maxLevel": 24},
+        {"stadiumLevel": 8, "maxLevel": 26},
+        {"stadiumLevel": 9, "maxLevel": 28},
+        {"stadiumLevel": 10, "maxLevel": 30}
+      ],
       "limits": [
-        { "clubhouseLevel": 1, "count": 1 },
-        { "clubhouseLevel": 3, "count": 2 },
-        { "clubhouseLevel": 6, "count": 3 }
+        {"stadiumLevel": 1, "count": 1},
+        {"stadiumLevel": 5, "count": 2},
+        {"stadiumLevel": 9, "count": 3},
+        {"stadiumLevel": 14, "count": 4}
       ],
       "producer": {
         "currency": "cash",
         "incomeCategory": "food_drink",
-        "amountPerCycle": { "base": 5, "add": 1 },
-        "cycleSeconds":   { "base": 5 },
-        "capacity":       { "base": 600, "add": 120 }
+        "amountPerCycle": {"base": 5, "add": 1},
+        "cycleSeconds": {"base": 5},
+        "capacity": {"base": 900, "add": 180}
       }
     },
     {
       "id": "food_stall",
       "name": "Food Stall",
-      "description": "Pies, burgers and bacon rolls. Steady takings that can be left for half an hour.",
+      "description": "Pies, burgers and bacon rolls. Steady takings that can be left for an hour.",
       "department": "commercial",
       "footprintWidth": 3,
       "footprintHeight": 2,
-      "maxLevel": 10,
-      "cost":         { "base": 500, "growth": 1.5, "round": 50 },
-      "buildSeconds": { "base": 60, "growth": 2.0, "round": 10 },
-      "requiredClubhouse": [2, 2, 3, 3, 4, 5, 6, 7, 8, 9],
+      "maxLevel": 30,
+      "notes": "Upgrade cost = income gained x a payback period that starts at 90 seconds and grows 1.265x a level (about 12-24 hours of production by level 30). Holds an hour of takings.",
+      "cost": {"values": [150], "base": 9.5, "growth": 1.265, "significant": 2},
+      "buildSeconds": {"values": [0, 0, 5], "base": 3, "growth": 1.4, "significant": 2},
+      "levelCaps": [
+        {"stadiumLevel": 2, "maxLevel": 10},
+        {"stadiumLevel": 3, "maxLevel": 12},
+        {"stadiumLevel": 4, "maxLevel": 15},
+        {"stadiumLevel": 5, "maxLevel": 18},
+        {"stadiumLevel": 6, "maxLevel": 20},
+        {"stadiumLevel": 7, "maxLevel": 22},
+        {"stadiumLevel": 8, "maxLevel": 24},
+        {"stadiumLevel": 9, "maxLevel": 26},
+        {"stadiumLevel": 10, "maxLevel": 28},
+        {"stadiumLevel": 11, "maxLevel": 30}
+      ],
       "limits": [
-        { "clubhouseLevel": 2, "count": 1 },
-        { "clubhouseLevel": 5, "count": 2 }
+        {"stadiumLevel": 2, "count": 1},
+        {"stadiumLevel": 6, "count": 2},
+        {"stadiumLevel": 11, "count": 3}
       ],
       "producer": {
         "currency": "cash",
         "incomeCategory": "food_drink",
-        "amountPerCycle": { "base": 20, "add": 4 },
-        "cycleSeconds":   { "base": 30 },
-        "capacity":       { "base": 1200, "add": 240 }
+        "amountPerCycle": {"base": 20, "add": 4},
+        "cycleSeconds": {"base": 30},
+        "capacity": {"base": 2400, "add": 480}
       }
     },
     {
       "id": "club_shop",
       "name": "Club Shop",
-      "description": "Scarves, shirts and programmes. Earns slowly but holds hours of takings, so it keeps earning while you are away.",
+      "description": "Scarves, shirts and programmes. Earns slowly but holds a night's takings.",
       "department": "commercial",
       "footprintWidth": 3,
       "footprintHeight": 3,
-      "maxLevel": 10,
-      "cost":         { "base": 1500, "growth": 1.5, "round": 50 },
-      "buildSeconds": { "base": 120, "growth": 2.0, "round": 10 },
-      "requiredClubhouse": [1, 1, 2, 2, 3, 4, 5, 6, 7, 8],
+      "maxLevel": 30,
+      "notes": "Upgrade cost = income gained x a payback period that starts at 2 minutes and grows 1.265x a level (about 12-24 hours of production by level 30). Holds 8 hours of takings.",
+      "cost": {"values": [400], "base": 7.9, "growth": 1.265, "significant": 2},
+      "buildSeconds": {"values": [30], "base": 4, "growth": 1.4, "significant": 2},
+      "levelCaps": [
+        {"stadiumLevel": 3, "maxLevel": 10},
+        {"stadiumLevel": 4, "maxLevel": 12},
+        {"stadiumLevel": 5, "maxLevel": 15},
+        {"stadiumLevel": 6, "maxLevel": 18},
+        {"stadiumLevel": 7, "maxLevel": 20},
+        {"stadiumLevel": 8, "maxLevel": 22},
+        {"stadiumLevel": 9, "maxLevel": 24},
+        {"stadiumLevel": 10, "maxLevel": 26},
+        {"stadiumLevel": 11, "maxLevel": 28},
+        {"stadiumLevel": 12, "maxLevel": 30}
+      ],
       "limits": [
-        { "clubhouseLevel": 1, "count": 1 },
-        { "clubhouseLevel": 4, "count": 2 },
-        { "clubhouseLevel": 7, "count": 3 }
+        {"stadiumLevel": 3, "count": 1},
+        {"stadiumLevel": 8, "count": 2},
+        {"stadiumLevel": 13, "count": 3}
       ],
       "producer": {
         "currency": "cash",
         "incomeCategory": "merchandise",
-        "amountPerCycle": { "base": 50, "add": 10 },
-        "cycleSeconds":   { "base": 120 },
-        "capacity":       { "base": 6000, "add": 1200 }
+        "amountPerCycle": {"base": 50, "add": 10},
+        "cycleSeconds": {"base": 120},
+        "capacity": {"base": 12000, "add": 2400}
       }
     }
   ]

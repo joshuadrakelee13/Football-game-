@@ -56,5 +56,6 @@ namespace FCE.Core.Economy
     {
         public const string Construction = "construction";
         public const string Refunds = "refunds";
+        public const string Rewards = "rewards";
     }
 }

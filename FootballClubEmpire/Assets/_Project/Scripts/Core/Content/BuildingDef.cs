@@ -5,6 +5,9 @@ namespace FCE.Core.Content
     /// <summary>
     /// Everything about a type of building, as authored in Content/Buildings/*.json.
     /// Level 1 is the first built level: its cost and build time are what it costs to place the building.
+    ///
+    /// Every instance the club owns progresses on its own from level 1 along these same curves: a second Drinks
+    /// Stand unlocked years in starts at level 1 with level-1 prices, whatever the first one has reached.
     /// </summary>
     public sealed class BuildingDef
     {
@@ -14,7 +17,10 @@ namespace FCE.Core.Content
         /// <summary>stadium, training, youth, medical, commercial, operations or media.</summary>
         public string Department { get; set; }
 
-        /// <summary>The Clubhouse. Exactly one building must be the headquarters; its level gates everything else.</summary>
+        /// <summary>
+        /// The Stadium. Exactly one building is the headquarters: its level is the club's progression tier and gates
+        /// which buildings exist, how many of each, how far each can be upgraded and how much land there is.
+        /// </summary>
         public bool IsHeadquarters { get; set; }
 
         public int FootprintWidth { get; set; } = 1;
@@ -29,16 +35,20 @@ namespace FCE.Core.Content
         public Curve BuildSeconds { get; set; }
 
         /// <summary>
-        /// Clubhouse level needed to start building each level, one entry per level.
-        /// Not used on the headquarters itself (see <see cref="LevelRequirements"/>).
+        /// How far this building can be upgraded at each Stadium level, sorted by Stadium level. For example
+        /// {stadiumLevel 1, maxLevel 10}, {stadiumLevel 3, maxLevel 15} means levels 11-15 open at Stadium 3.
+        /// Not used on the headquarters itself.
         /// </summary>
-        public int[] RequiredClubhouse { get; set; }
+        public List<LevelCap> LevelCaps { get; set; } = new List<LevelCap>();
 
         /// <summary>Additional "building X at level Y" requirements for specific levels.</summary>
         public List<LevelRequirement> LevelRequirements { get; set; } = new List<LevelRequirement>();
 
-        /// <summary>How many of this building the club may own, by Clubhouse level. Sorted by Clubhouse level.</summary>
+        /// <summary>How many of this building the club may own, by Stadium level. Sorted by Stadium level.</summary>
         public List<CountLimit> Limits { get; set; } = new List<CountLimit>();
+
+        /// <summary>Free text for designers: why the numbers are what they are. Not shown to players.</summary>
+        public string Notes { get; set; }
 
         /// <summary>The stats this building contributes at each level.</summary>
         public List<StatGrant> Stats { get; set; } = new List<StatGrant>();
@@ -57,8 +67,14 @@ namespace FCE.Core.Content
 
     public sealed class CountLimit
     {
-        public int ClubhouseLevel { get; set; }
+        public int StadiumLevel { get; set; }
         public int Count { get; set; }
+    }
+
+    public sealed class LevelCap
+    {
+        public int StadiumLevel { get; set; }
+        public int MaxLevel { get; set; }
     }
 
     public sealed class StatGrant

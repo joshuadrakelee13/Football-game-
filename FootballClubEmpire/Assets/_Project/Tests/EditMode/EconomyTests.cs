@@ -1,6 +1,7 @@
 using FCE.Core.Content;
 using FCE.Core.Economy;
 using NUnit.Framework;
+using static FCE.Core.Tests.TestGame;
 
 namespace FCE.Core.Tests
 {
@@ -56,44 +57,43 @@ namespace FCE.Core.Tests
         public void BalancesStopAtTheCeiling()
         {
             var t = new TestGame();
-            var placed = t.Game.PlaceBuilding("drinks_stand", 32, 12);
-            t.Wait(10);
+            int id = t.Game.PlaceBuilding("drinks_stand", FreeX, FreeY).BuildingId;
             t.State.Wallet.Balances[Currencies.Cash] = Money.MaxBalance - 20;
             t.Wait(60); // £60 waiting
-            t.Game.Collect(placed.BuildingId);
+            t.Game.Collect(id);
             Assert.That(t.Game.Balance(Currencies.Cash), Is.EqualTo(Money.MaxBalance));
-            Assert.That(t.Game.FindBuilding(placed.BuildingId).Producer.Stored, Is.EqualTo(40), "what the club cannot hold stays in the building");
+            Assert.That(t.Game.FindBuilding(id).Producer.Stored, Is.EqualTo(40), "what the club cannot hold stays in the building");
         }
 
         [Test]
         public void ConstructionIsRecordedAsAnExpense()
         {
             var t = new TestGame();
-            t.Game.PlaceBuilding("drinks_stand", 32, 12);
+            t.Game.PlaceBuilding("drinks_stand", FreeX, FreeY);
             var day = t.State.Ledger.Day(t.Game.Now);
-            Assert.That(day.Expenses[LedgerCategories.Construction], Is.EqualTo(100));
-            Assert.That(day.Net, Is.EqualTo(-100));
-            Assert.That(t.State.Ledger.Lifetime.TotalExpenses, Is.EqualTo(100));
+            Assert.That(day.Expenses[LedgerCategories.Construction], Is.EqualTo(25));
+            Assert.That(day.Net, Is.EqualTo(-25));
+            Assert.That(t.State.Ledger.Lifetime.TotalExpenses, Is.EqualTo(25));
         }
 
         [Test]
         public void PremiumSpendingIsNotClubFinance()
         {
             var t = new TestGame();
-            var hq = t.Find("clubhouse");
-            t.Game.StartUpgrade(hq.Id);
-            t.Game.FinishNow(hq.Id);
-            Assert.That(t.State.Ledger.Lifetime.Expenses[LedgerCategories.Construction], Is.EqualTo(1200), "only the £1,200 build cost, not the credits");
+            t.GiveCash(1000);
+            t.Game.StartUpgrade(t.Stadium.Id);
+            t.Game.FinishNow(t.Stadium.Id);
+            Assert.That(t.State.Ledger.Lifetime.Expenses[LedgerCategories.Construction], Is.EqualTo(1000), "only the £1,000 build cost, not the credits");
         }
 
         [Test]
         public void LedgerKeepsAFortnightOfDays()
         {
             var t = new TestGame();
-            var id = t.Game.PlaceBuilding("drinks_stand", 32, 12).BuildingId;
+            var id = t.Game.PlaceBuilding("drinks_stand", FreeX, FreeY).BuildingId;
             for (int day = 0; day < 20; day++) { t.Wait(86400); t.Game.Collect(id); }
             Assert.That(t.State.Ledger.Days.Count, Is.EqualTo(Ledger.DaysKept));
-            Assert.That(t.State.Ledger.Lifetime.Income["food_drink"], Is.EqualTo(20 * 600));
+            Assert.That(t.State.Ledger.Lifetime.Income["food_drink"], Is.EqualTo(20 * 900));
         }
     }
 }

@@ -3,25 +3,30 @@
     {
       "id": "clubhouse",
       "name": "Clubhouse",
-      "description": "The heart of the club. Its level decides how far every other facility can be developed, and how many projects can run at once.",
+      "description": "Changing rooms, a committee room and a bar. Where the club's reputation is built.",
       "department": "operations",
-      "isHeadquarters": true,
       "footprintWidth": 4,
       "footprintHeight": 4,
-      "maxLevel": 10,
-      "cost":         { "values": [0, 1200, 4500, 12000, 30000, 70000, 150000, 300000, 600000, 1200000] },
-      "buildSeconds": { "values": [0, 120, 900, 3600, 10800, 28800, 57600, 115200, 172800, 259200] },
-      "levelRequirements": [
-        { "atLevel": 3, "building": "training_ground", "level": 2 },
-        { "atLevel": 4, "building": "club_shop", "level": 3 },
-        { "atLevel": 4, "building": "main_stand", "level": 3 },
-        { "atLevel": 5, "building": "youth_pitch", "level": 1 },
-        { "atLevel": 5, "building": "medical_room", "level": 2 }
+      "maxLevel": 30,
+      "cost": {"values": [0], "base": 14, "growth": 1.265, "significant": 2},
+      "buildSeconds": {"values": [0, 0, 0], "base": 3, "growth": 1.4, "significant": 2},
+      "levelCaps": [
+        {"stadiumLevel": 1, "maxLevel": 10},
+        {"stadiumLevel": 2, "maxLevel": 12},
+        {"stadiumLevel": 3, "maxLevel": 15},
+        {"stadiumLevel": 4, "maxLevel": 18},
+        {"stadiumLevel": 5, "maxLevel": 20},
+        {"stadiumLevel": 6, "maxLevel": 22},
+        {"stadiumLevel": 7, "maxLevel": 24},
+        {"stadiumLevel": 8, "maxLevel": 26},
+        {"stadiumLevel": 9, "maxLevel": 28},
+        {"stadiumLevel": 10, "maxLevel": 30}
       ],
-      "limits": [ { "clubhouseLevel": 1, "count": 1 } ],
+      "limits": [
+        {"stadiumLevel": 1, "count": 1}
+      ],
       "stats": [
-        { "stat": "construction_crews", "value": { "values": [1, 1, 2, 2, 2, 3, 3, 3, 4, 4] } },
-        { "stat": "reputation",         "value": { "values": [5, 10, 18, 28, 40, 55, 72, 92, 115, 140] } }
+        {"stat": "reputation", "value": {"base": 2, "add": 1}}
       ]
     },
     {
@@ -31,13 +36,26 @@
       "department": "operations",
       "footprintWidth": 2,
       "footprintHeight": 2,
-      "maxLevel": 5,
-      "cost":         { "base": 700, "growth": 2.2, "round": 50 },
-      "buildSeconds": { "base": 60, "growth": 3.0, "round": 10 },
-      "requiredClubhouse": [2, 3, 5, 7, 9],
-      "limits": [ { "clubhouseLevel": 2, "count": 1 } ],
+      "maxLevel": 30,
+      "cost": {"values": [200], "base": 14, "growth": 1.265, "significant": 2},
+      "buildSeconds": {"values": [0, 0, 0], "base": 3, "growth": 1.4, "significant": 2},
+      "levelCaps": [
+        {"stadiumLevel": 2, "maxLevel": 10},
+        {"stadiumLevel": 3, "maxLevel": 12},
+        {"stadiumLevel": 4, "maxLevel": 15},
+        {"stadiumLevel": 5, "maxLevel": 18},
+        {"stadiumLevel": 6, "maxLevel": 20},
+        {"stadiumLevel": 7, "maxLevel": 22},
+        {"stadiumLevel": 8, "maxLevel": 24},
+        {"stadiumLevel": 9, "maxLevel": 26},
+        {"stadiumLevel": 10, "maxLevel": 28},
+        {"stadiumLevel": 11, "maxLevel": 30}
+      ],
+      "limits": [
+        {"stadiumLevel": 2, "count": 1}
+      ],
       "stats": [
-        { "stat": "pitch_quality", "value": { "values": [2, 4, 6, 8, 10] } }
+        {"stat": "pitch_quality", "value": {"base": 1, "add": 0.6}}
       ]
     }
   ]

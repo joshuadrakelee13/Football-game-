@@ -108,7 +108,14 @@ namespace FCE.Core
         // Queries read the state as of the last update. Call Update() first if you need it to the second.
 
         public long Now => State.Now;
-        public int ClubhouseLevel => _ctx.ClubhouseLevel;
+        /// <summary>The Stadium's level: the club's progression tier.</summary>
+        public int StadiumLevel => _ctx.StadiumLevel;
+
+        /// <summary>The chapter of the game the club is in, from economy.json (null if none are defined).</summary>
+        public ChapterDef Chapter => Content.ChapterAt(StadiumLevel);
+
+        /// <summary>What reaching a Stadium level opens up. Use for the "next milestone" panel.</summary>
+        public StadiumUnlocks UnlocksAtStadium(int level) => StadiumUnlocks.Between(Content, level - 1, level);
         public ClubStats Stats => _ctx.Stats;
         public int TotalCrews => _ctx.TotalCrews;
         public int FreeCrews => _ctx.FreeCrews;
@@ -119,9 +126,15 @@ namespace FCE.Core
         /// <summary>Why a building could not be placed here right now, or null if it can.</summary>
         public string CheckPlacement(string buildingDef, int x, int y) => ConstructionSystem.ValidatePlace(_ctx, buildingDef, x, y);
 
-        /// <summary>How many more of this building the club may place at its current Clubhouse level.</summary>
+        /// <summary>A free spot for a new building near the middle of the grounds, or null if none fits.</summary>
+        public (int x, int y)? FindPlacement(string buildingDef) => SitePlacement.FindSpot(_ctx, Content.GetBuilding(buildingDef));
+
+        /// <summary>How many more of this building the club may place at its current Stadium level.</summary>
         public int RemainingAllowance(string buildingDef) =>
-            Content.AllowedCount(buildingDef, ClubhouseLevel) - _ctx.CountOwned(buildingDef);
+            Content.AllowedCount(buildingDef, StadiumLevel) - _ctx.CountOwned(buildingDef);
+
+        /// <summary>How far a building can currently be upgraded, given the Stadium level.</summary>
+        public int CurrentMaxLevel(string buildingDef) => Content.MaxLevelAt(buildingDef, StadiumLevel);
 
         public long FinishNowCost(int buildingId)
         {

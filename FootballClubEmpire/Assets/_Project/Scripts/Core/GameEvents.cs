@@ -41,6 +41,15 @@ namespace FCE.Core
         public int NewLevel { get; }
     }
 
+    /// <summary>The Stadium reached a new level: a new chapter of the club, with everything it opened up.</summary>
+    public sealed class StadiumLevelReached : GameEvent
+    {
+        public StadiumLevelReached(long at, int level, Systems.StadiumUnlocks unlocks) : base(at)
+        { Level = level; Unlocks = unlocks; }
+        public int Level { get; }
+        public Systems.StadiumUnlocks Unlocks { get; }
+    }
+
     public sealed class UpgradeCancelled : GameEvent
     {
         public UpgradeCancelled(long at, int buildingId, bool buildingRemoved, string currency, long refund) : base(at)

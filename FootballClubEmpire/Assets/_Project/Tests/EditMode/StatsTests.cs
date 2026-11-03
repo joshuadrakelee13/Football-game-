@@ -1,64 +1,67 @@
 using System.Linq;
 using NUnit.Framework;
+using static FCE.Core.Tests.TestGame;
 
 namespace FCE.Core.Tests
 {
     public class StatsTests
     {
+        long StatAt(string building, int level, string stat) => TestContent.Shipped.GetLevel(building, level).Stats[stat];
+
         [Test]
         public void StatsAreBasePlusEveryBuildingAtItsLevel()
         {
             var t = new TestGame();
-            // Base 100 plus the level-1 Main Stand's 150.
             Assert.That(t.Game.Stats.Get("stadium_capacity"), Is.EqualTo(250));
-            // Base 20 plus the level-1 Pitch's 25.
-            Assert.That(t.Game.Stats.Get("pitch_quality"), Is.EqualTo(45));
-            Assert.That(t.Game.Stats.Get("reputation"), Is.EqualTo(5));
+            Assert.That(t.Game.Stats.Get("pitch_quality"), Is.EqualTo(20));
+            Assert.That(t.Game.Stats.Get("reputation"), Is.EqualTo(5 + 2), "Stadium 5, Clubhouse 2");
+            Assert.That(t.Game.Stats.Get("training_quality"), Is.EqualTo(10), "base value; no training ground yet");
         }
 
         [Test]
         public void StatsChangeOnCompletionNotOnStart()
         {
             var t = new TestGame();
-            var stand = t.Find("main_stand");
-            t.Game.StartUpgrade(stand.Id);
-            Assert.That(t.Game.Stats.Get("stadium_capacity"), Is.EqualTo(250), "the old stand stays open while the new one is built");
-            t.Wait(stand.Construction.EndsAt - t.Clock.UtcNowSeconds);
-            Assert.That(t.Game.Stats.Get("stadium_capacity"), Is.EqualTo(350));
-            Assert.That(t.Game.Stats.Get("seated_capacity"), Is.EqualTo(100));
+            t.GiveCash(1000);
+            t.Game.StartUpgrade(t.Stadium.Id);
+            Assert.That(t.Game.Stats.Get("stadium_capacity"), Is.EqualTo(250), "the old ground stays open while work goes on");
+            t.Finish(t.Stadium.Id);
+            Assert.That(t.Game.Stats.Get("stadium_capacity"), Is.EqualTo(StatAt("stadium", 2, "stadium_capacity")));
+            Assert.That(t.Game.Stats.Get("stadium_capacity"), Is.GreaterThan(250));
         }
 
         [Test]
         public void SeveralBuildingsContributeToOneStat()
         {
             var t = new TestGame();
-            t.ForceLevel(t.Find("clubhouse").Id, 2);
-            var shed = t.Game.PlaceBuilding("groundskeepers_shed", 32, 12);
-            Assert.That(shed.Ok, Is.True, shed.Error);
-            t.Wait(3600);
-            Assert.That(t.Game.Stats.Get("pitch_quality"), Is.EqualTo(20 + 25 + 2));
+            t.ReachStadium(2);
+            t.Build("groundskeepers_shed");
+            Assert.That(t.Game.Stats.Get("pitch_quality"),
+                Is.EqualTo(StatAt("stadium", 2, "pitch_quality") + StatAt("groundskeepers_shed", 1, "pitch_quality")));
         }
 
         [Test]
         public void QuoteShowsCostTimeAndStatChanges()
         {
             var t = new TestGame();
-            var quote = t.Game.QuoteUpgrade(t.Find("main_stand").Id);
+            int ground = t.Build("training_ground");
+            var quote = t.Game.QuoteUpgrade(ground);
             Assert.That(quote.CanStart, Is.True);
             Assert.That(quote.NextLevel.Level, Is.EqualTo(2));
-            Assert.That(quote.NextLevel.Cost, Is.EqualTo(t.Content.GetLevel("main_stand", 2).Cost));
-            var capacity = quote.StatChanges.Single(s => s.Stat == "stadium_capacity");
-            Assert.That((capacity.From, capacity.To), Is.EqualTo((150L, 250L)));
+            Assert.That(quote.NextLevel.Cost, Is.EqualTo(t.Content.GetLevel("training_ground", 2).Cost));
+            var change = quote.StatChanges.Single(s => s.Stat == "training_quality");
+            Assert.That((change.From, change.To), Is.EqualTo((StatAt("training_ground", 1, "training_quality"), StatAt("training_ground", 2, "training_quality"))));
         }
 
         [Test]
         public void QuoteExplainsWhyAnUpgradeIsBlocked()
         {
             var t = new TestGame();
-            var pitch = t.Find("pitch");
-            t.ForceLevel(pitch.Id, 2);
-            Assert.That(t.Game.QuoteUpgrade(pitch.Id).BlockedBy, Is.EqualTo(Errors.ClubhouseTooLow));
-            Assert.That(t.Game.QuoteUpgrade(pitch.Id).NextLevel.RequiredClubhouse, Is.EqualTo(2));
+            int stand = t.Game.PlaceBuilding("drinks_stand", FreeX, FreeY).BuildingId;
+            t.ForceLevel(stand, 10);
+            var quote = t.Game.QuoteUpgrade(stand);
+            Assert.That(quote.BlockedBy, Is.EqualTo(Errors.StadiumTooLow));
+            Assert.That(quote.NextLevel.RequiredStadium, Is.EqualTo(2));
         }
     }
 }

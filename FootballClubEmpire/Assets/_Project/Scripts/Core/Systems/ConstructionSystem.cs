@@ -27,13 +27,15 @@ namespace FCE.Core.Systems
         public static string ValidateBuild(GameContext ctx, string defId)
         {
             if (defId == null || !ctx.Content.Buildings.TryGetValue(defId, out var def)) return Errors.UnknownBuilding;
-            if (ctx.CountOwned(defId) >= ctx.Content.AllowedCount(defId, ctx.ClubhouseLevel)) return Errors.LimitReached;
+            int allowed = ctx.Content.AllowedCount(defId, ctx.StadiumLevel);
+            if (ctx.CountOwned(defId) >= allowed)
+                return allowed < MaxEverAllowed(def) ? Errors.StadiumTooLow : Errors.LimitReached;
 
             var first = ctx.Content.GetLevel(defId, 1);
             string requirement = CheckRequirements(ctx, def, first);
             if (requirement != null) return requirement;
 
-            if (ctx.FreeCrews < 1) return Errors.NoFreeCrew;
+            if (!first.IsInstant && ctx.FreeCrews < 1) return Errors.NoFreeCrew;
             if (!ctx.State.Wallet.CanAfford(def.CostCurrency, first.Cost)) return Errors.NotEnoughCurrency;
             return null;
         }
@@ -72,7 +74,7 @@ namespace FCE.Core.Systems
             string requirement = CheckRequirements(ctx, def, next);
             if (requirement != null) return requirement;
 
-            if (ctx.FreeCrews < 1) return Errors.NoFreeCrew;
+            if (!next.IsInstant && ctx.FreeCrews < 1) return Errors.NoFreeCrew;
             if (!ctx.State.Wallet.CanAfford(def.CostCurrency, next.Cost)) return Errors.NotEnoughCurrency;
             return null;
         }
@@ -87,10 +89,10 @@ namespace FCE.Core.Systems
             return CommandResult.Success(buildingId);
         }
 
-        /// <summary>Clubhouse level, then other-building requirements. Returns the first unmet one, or null.</summary>
+        /// <summary>Stadium level, then other-building requirements. Returns the first unmet one, or null.</summary>
         static string CheckRequirements(GameContext ctx, BuildingDef def, BuildingLevel level)
         {
-            if (!def.IsHeadquarters && ctx.ClubhouseLevel < level.RequiredClubhouse) return Errors.ClubhouseTooLow;
+            if (!def.IsHeadquarters && ctx.StadiumLevel < level.RequiredStadium) return Errors.StadiumTooLow;
             foreach (var req in level.Requirements)
                 if (ctx.HighestLevel(req.Building) < req.Level) return Errors.RequirementNotMet;
             return null;
@@ -111,8 +113,8 @@ namespace FCE.Core.Systems
             ProductionSystem.OnConstructionStarted(ctx, building);
             ctx.Raise(new UpgradeStarted(ctx.State.Now, building.Id, targetLevel, building.Construction.EndsAt, def.CostCurrency, level.Cost));
 
-            // Zero-second levels (rare, but allowed in content) complete on the spot rather than waiting a tick.
-            if (level.BuildSeconds <= 0) Complete(ctx, building);
+            // Instant levels complete on the spot. They never held a crew, so they never wait for one.
+            if (level.IsInstant) Complete(ctx, building);
         }
 
         // ---- Finishing early and cancelling -------------------------------------------------------------------
@@ -180,6 +182,20 @@ namespace FCE.Core.Systems
             ctx.InvalidateStats();
             ProductionSystem.OnConstructionEnded(ctx, building);
             ctx.Raise(new UpgradeCompleted(ctx.State.Now, building.Id, building.Def, building.Level));
+
+            if (building.Def == ctx.Content.Headquarters.Id) StadiumMilestone(ctx, building.Level);
         }
+
+        /// <summary>A new Stadium level: pay its reward and announce the chapter of the game it opens.</summary>
+        static void StadiumMilestone(GameContext ctx, int level)
+        {
+            foreach (var reward in ctx.Content.Economy.StadiumRewards)
+                if (reward.Level == level)
+                    foreach (var kv in reward.Currencies.OrderBy(kv => kv.Key, System.StringComparer.Ordinal))
+                        ctx.Credit(kv.Key, kv.Value, LedgerCategories.Rewards);
+            ctx.Raise(new StadiumLevelReached(ctx.State.Now, level, StadiumUnlocks.Between(ctx.Content, level - 1, level)));
+        }
+
+        static int MaxEverAllowed(BuildingDef def) => def.Limits.Count == 0 ? 0 : def.Limits[def.Limits.Count - 1].Count;
     }
 }
